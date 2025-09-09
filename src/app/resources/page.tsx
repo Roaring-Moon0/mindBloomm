@@ -13,9 +13,9 @@ const categoriesData = {
     name: "Anxiety Relief",
     description: "Techniques and resources to calm your mind and manage anxiety.",
     videos: [
-      { title: "5-Minute Meditation for Anxiety (English)", id: "O-6f5wQXSu8" },
+      { title: "5-Minute Meditation for Anxiety", id: "O-6f5wQXSu8" },
       { title: "Release Anxiety, Stress & Overthinking (Hindi)", id: "wf4dJ6E-45g" },
-      { title: "Guided Meditation for Anxiety & Stress (English)", id: "4pLUleLdwY4" },
+      { title: "Guided Meditation for Anxiety & Stress", id: "4pLUleLdwY4" },
       { title: "Quick Anxiety Relief in 5 Minutes (Hindi)", id: "rCzpe7jA4iA" },
     ],
     audios: [
@@ -31,9 +31,9 @@ const categoriesData = {
     name: "Overcoming Depression",
     description: "A gentle guide to understanding and coping with depression.",
     videos: [
-        { title: "What is depression? (English)", id: "z-IR48A_O_c" },
+        { title: "What is depression?", id: "z-IR48A_O_c" },
         { title: "अवसाद या डिप्रेशन क्या है? (Hindi)", id: "fWpOD5OisC0" },
-        { title: "How to get stuff done when you are depressed (English)", id: "fM1V1l2uC3A" },
+        { title: "How to get stuff done when you are depressed", id: "fM1V1l2uC3A" },
         { title: "How To Fight Depression? (Hindi)", id: "gQ4Y18yA-p8" },
     ],
     audios: [
@@ -49,9 +49,9 @@ const categoriesData = {
     name: "Better Sleep",
     description: "Improve your sleep hygiene and get the rest you deserve.",
     videos: [
-        { title: "Sleep Hypnosis for a Deep Sleep (English)", id: "_2_gP4LMW2s" },
+        { title: "Sleep Hypnosis for a Deep Sleep", id: "_2_gP4LMW2s" },
         { title: "5 मिनट में गहरी नींद के लिए हिप्नोटिक कहानी (Hindi)", id: "a4sB0QzCgA8" },
-        { title: "Bedtime Yoga (English)", id: "BiG4Q2-r5Co" },
+        { title: "Bedtime Yoga", id: "BiG4Q2-r5Co" },
         { title: "Yoga For Deep Sleep (Hindi)", id: "xePaJpEdn2s" },
     ],
     audios: [
@@ -67,9 +67,9 @@ const categoriesData = {
     name: "Understanding Stress",
     description: "Learn about the causes of stress and effective solutions.",
     videos: [
-        { title: "How stress affects your body (English)", id: "v-t1Z5-oPtU" },
+        { title: "How stress affects your body", id: "v-t1Z5-oPtU" },
         { title: "तनाव को कैसे खत्म करें? (Hindi)", id: "pS31_O2_sAE" },
-        { title: "How to make stress your friend (English)", id: "RcGyVTAoXEU" },
+        { title: "How to make stress your friend", id: "RcGyVTAoXEU" },
         { title: "What is Stress? (Hindi)", id: "7p4kY_O3yYw" },
     ],
     audios: [
