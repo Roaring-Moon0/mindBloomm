@@ -2,13 +2,18 @@
 
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import Logo from '@/components/icons/Logo';
-import React from 'react';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const navLinks = [
@@ -23,8 +28,10 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  React.useEffect(() => {
-    setOpen(false);
+  useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
   }, [pathname]);
 
   return (
@@ -47,7 +54,7 @@ export function Header() {
             ))}
           </nav>
         </div>
-        
+
         <div className="flex flex-1 items-center justify-end md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -57,7 +64,7 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
-               <VisuallyHidden>
+              <VisuallyHidden>
                 <SheetTitle>Mobile Navigation Menu</SheetTitle>
                 <SheetDescription>
                   A list of links to navigate the MindBloom website.
@@ -81,7 +88,6 @@ export function Header() {
             </SheetContent>
           </Sheet>
         </div>
-
       </div>
     </header>
   );
