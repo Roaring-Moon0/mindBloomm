@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, HeartHandshake } from 'lucide-react';
@@ -75,11 +76,11 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://picsum.photos/id/225/1200/800"
+                src="https://picsum.photos/id/1015/1200/800"
                 width={1200}
                 height={800}
                 alt="Calm natural scenery"
-                data-ai-hint="calm nature"
+                data-ai-hint="lake sunrise"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
               />
             </div>
