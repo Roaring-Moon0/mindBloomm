@@ -17,19 +17,7 @@ import {z} from 'genkit';
 
 // Define the input schema for the flow
 const GeneratePersonalizedRecommendationsInputSchema = z.object({
-  mood: z
-    .string()
-    .describe('The current mood of the user (e.g., happy, sad, anxious).'),
-  preferences: z
-    .string()
-    .describe(
-      'The user preferences for mental health resources (e.g., meditation, exercise, reading).'
-    ),
-  trackedData: z
-    .string()
-    .describe(
-      'The user tracked data, including sleep patterns, activity levels, and app usage.'
-    ),
+  userInput: z.string().describe('The user\'s freeform text input about their feelings, preferences, and recent experiences.'),
 });
 
 export type GeneratePersonalizedRecommendationsInput = z.infer<
@@ -61,13 +49,13 @@ const personalizedRecommendationsPrompt = ai.definePrompt({
   name: 'personalizedRecommendationsPrompt',
   input: {schema: GeneratePersonalizedRecommendationsInputSchema},
   output: {schema: GeneratePersonalizedRecommendationsOutputSchema},
-  prompt: `Based on the user's current mood, preferences, and tracked data, generate personalized recommendations for mental health resources, exercises, and activities.
+  prompt: `You are a caring and empathetic AI assistant for an app called MindBloom. Your goal is to provide supportive and personalized mental health recommendations.
 
-User Mood: {{{mood}}}
-User Preferences: {{{preferences}}}
-Tracked Data: {{{trackedData}}}
+Analyze the following user input to understand their mood, potential preferences, and any mentioned activities or patterns. Based on this, generate a few (2-3) actionable and compassionate recommendations. These can include suggestions for resources, simple exercises, or activities available in the app or generally.
 
-Recommendations:`,
+User Input: {{{userInput}}}
+
+Based on this, provide a few recommendations. Phrase your response in a gentle and encouraging tone. Start your response with "Here are a few suggestions that might help:"`,
 });
 
 // Define the Genkit flow

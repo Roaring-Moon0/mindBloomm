@@ -7,17 +7,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { generatePersonalizedRecommendations } from '@/ai/flows/generate-personalized-recommendations';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Loader2, Sparkles, User } from 'lucide-react';
+import { Loader2, Sparkles, User, Send } from 'lucide-react';
 import Logo from '@/components/icons/Logo';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
-  mood: z.string().min(3, { message: 'Please describe your current mood.' }),
-  preferences: z.string().min(3, { message: 'Tell us what you enjoy (e.g., meditation, walking, music).' }),
-  trackedData: z.string().min(3, { message: 'Describe your recent sleep, activity, or feelings.' }),
+  userInput: z.string().min(10, { message: 'Please tell me a little more about what\'s on your mind.' }),
 });
 
 type Message = {
@@ -37,31 +34,23 @@ export function ChatUI() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      mood: '',
-      preferences: '',
-      trackedData: '',
+        userInput: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-
-    const userMessageContent = (
-      <div className="space-y-2 text-sm">
-        <p><span className="font-semibold">Mood:</span> {values.mood}</p>
-        <p><span className="font-semibold">Preferences:</span> {values.preferences}</p>
-        <p><span className="font-semibold">Recent Activity:</span> {values.trackedData}</p>
-      </div>
-    );
     
-    setMessages((prev) => [...prev, { role: 'user', content: userMessageContent }]);
+    setMessages((prev) => [...prev, { role: 'user', content: values.userInput }]);
 
     try {
-      const result = await generatePersonalizedRecommendations(values);
-      const recommendations = result.recommendations.split('\n').filter(rec => rec.trim() !== '');
+      const result = await generatePersonalizedRecommendations({ userInput: values.userInput });
+      const recommendations = result.recommendations.split('\n').filter(rec => rec.trim() !== '' && !rec.toLowerCase().startsWith('here are a few suggestions'));
+      const intro = result.recommendations.split('\n')[0];
+
       const formattedRecommendations = (
         <div className="space-y-2">
-            <h4 className="font-semibold flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary"/>Here are a few personalized suggestions for you:</h4>
+            <h4 className="font-semibold flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary"/>{intro}</h4>
             <ul className="list-disc list-inside space-y-1">
                 {recommendations.map((rec, index) => <li key={index}>{rec.replace(/^- /, '')}</li>)}
             </ul>
@@ -90,7 +79,7 @@ export function ChatUI() {
                         <AvatarFallback><Logo className="w-5 h-5 text-primary"/></AvatarFallback>
                     </Avatar>
                     )}
-                    <div className={`rounded-lg p-3 max-w-md ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
+                    <div className={`rounded-lg p-3 max-w-lg ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
                         <div className="text-sm">{message.content}</div>
                     </div>
                     {message.role === 'user' && (
@@ -118,50 +107,40 @@ export function ChatUI() {
             <div className="mt-6 border-t pt-6">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="mood"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>How are you feeling?</FormLabel>
-                                    <FormControl>
-                                    <Input placeholder="e.g., a bit anxious" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="preferences"
-                                render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>What helps you relax?</FormLabel>
-                                    <FormControl>
-                                    <Input placeholder="e.g., music, walking" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                                )}
-                            />
-                        </div>
                         <FormField
                             control={form.control}
-                            name="trackedData"
+                            name="userInput"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Any recent patterns you've noticed?</FormLabel>
+                                <FormLabel className="sr-only">Your message</FormLabel>
                                 <FormControl>
-                                <Textarea placeholder="e.g., I haven't been sleeping well..." {...field} rows={2} />
+                                    <div className="relative">
+                                        <Textarea 
+                                            placeholder="Tell me what's on your mind..." 
+                                            className="min-h-[80px] pr-20" 
+                                            {...field} 
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                    e.preventDefault();
+                                                    form.handleSubmit(onSubmit)();
+                                                }
+                                            }}
+                                        />
+                                        <Button 
+                                            type="submit" 
+                                            size="icon" 
+                                            className="absolute right-2.5 top-1/2 -translate-y-1/2" 
+                                            disabled={isLoading || !field.value}
+                                        >
+                                            <Send className="w-5 h-5"/>
+                                            <span className="sr-only">Send message</span>
+                                        </Button>
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isLoading}>
-                            Get Recommendations
-                        </Button>
                     </form>
                 </Form>
             </div>
