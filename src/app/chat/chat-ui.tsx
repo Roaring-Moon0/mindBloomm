@@ -45,15 +45,9 @@ export function ChatUI() {
 
     try {
       const result = await generatePersonalizedRecommendations({ userInput: values.userInput });
-      const recommendations = result.recommendations.split('\n').filter(rec => rec.trim() !== '' && !rec.toLowerCase().startsWith('here are a few suggestions'));
-      const intro = result.recommendations.split('\n')[0];
-
       const formattedRecommendations = (
-        <div className="space-y-2">
-            <h4 className="font-semibold flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary"/>{intro}</h4>
-            <ul className="list-disc list-inside space-y-1">
-                {recommendations.map((rec, index) => <li key={index}>{rec.replace(/^- /, '')}</li>)}
-            </ul>
+        <div className="space-y-2 whitespace-pre-wrap">
+          {result.recommendations}
         </div>
       );
       setMessages((prev) => [...prev, { role: 'assistant', content: formattedRecommendations }]);
