@@ -82,8 +82,10 @@ export function ColorMatch() {
         } else {
             setMessage('Game Over!');
             saveScore();
-            setScore(0); // This was missing, so the score wouldn't reset visually on game over.
-            setTimeout(restartGame, 1500); // Changed to restartGame to fully reset
+            setTimeout(() => {
+                setScore(0);
+                restartGame();
+            }, 1500);
         }
     };
 
