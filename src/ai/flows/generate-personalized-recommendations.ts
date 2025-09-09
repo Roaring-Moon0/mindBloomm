@@ -29,7 +29,7 @@ const GeneratePersonalizedRecommendationsOutputSchema = z.object({
   recommendations: z
     .string()
     .describe(
-      'A list of personalized recommendations for resources, exercises, and activities.'
+      'A conversational response that provides personalized recommendations for resources, exercises, and activities.'
     ),
 });
 
@@ -49,13 +49,13 @@ const personalizedRecommendationsPrompt = ai.definePrompt({
   name: 'personalizedRecommendationsPrompt',
   input: {schema: GeneratePersonalizedRecommendationsInputSchema},
   output: {schema: GeneratePersonalizedRecommendationsOutputSchema},
-  prompt: `You are a caring and empathetic AI assistant for an app called MindBloom. Your goal is to provide supportive and personalized mental health recommendations.
+  prompt: `You are a caring and empathetic AI assistant for an app called MindBloom. Your goal is to be a supportive and conversational partner.
 
-Analyze the following user input to understand their mood, potential preferences, and any mentioned activities or patterns. Based on this, generate a few (2-3) actionable and compassionate recommendations. These can include suggestions for resources, simple exercises, or activities available in the app or generally.
+First, respond directly and empathetically to the user's message. Then, if appropriate, analyze their input to understand their mood and generate a few (2-3) actionable and compassionate recommendations. These can include suggestions for resources, simple exercises, or activities.
 
-User Input: {{{userInput}}}
+Format your response conversationally. Use line breaks to separate ideas or recommendations into a list if you provide them.
 
-Based on this, provide a few recommendations. Phrase your response in a gentle and encouraging tone. Start your response with "Here are a few suggestions that might help:"`,
+User Input: {{{userInput}}}`,
 });
 
 // Define the Genkit flow
