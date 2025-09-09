@@ -1,10 +1,29 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BreathingVisualizer } from '@/components/games/BreathingVisualizer';
-import { ColorMatch } from '@/components/games/ColorMatch';
-import { MemoryGame } from '@/components/games/MemoryGame';
 import { Music, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import dynamic from 'next/dynamic';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const GameSkeleton = () => (
+    <div className="w-full max-w-md mx-auto">
+        <Skeleton className="h-[400px] w-full" />
+    </div>
+)
+
+const BreathingVisualizer = dynamic(() => import('@/components/games/BreathingVisualizer').then(mod => mod.BreathingVisualizer), {
+    loading: () => <GameSkeleton />,
+    ssr: false
+});
+const ColorMatch = dynamic(() => import('@/components/games/ColorMatch').then(mod => mod.ColorMatch), {
+    loading: () => <GameSkeleton />,
+    ssr: false
+});
+const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mod => mod.MemoryGame), {
+    loading: () => <GameSkeleton />,
+    ssr: false
+});
+
 
 export default function GamesPage() {
     return (
