@@ -14,7 +14,7 @@ import Logo from '@/components/icons/Logo';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
-  userInput: z.string().min(10, { message: 'Please tell me a little more about what\'s on your mind.' }),
+  userInput: z.string().min(1, { message: 'Message cannot be empty.' }),
 });
 
 type Message = {
