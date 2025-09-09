@@ -14,14 +14,14 @@ const categoriesData = {
     name: "Anxiety Relief",
     description: "Techniques and resources to calm your mind and manage anxiety.",
     videos: [
-      { title: "5-Minute Meditation for Anxiety", id: "inpok4MKVLM" },
       { title: "Guided Meditation for Anxiety & Stress", id: "1dbYduxIpwE" },
-      { title: "Breathing Exercise for Anxiety", id: "8VwufP6h3oY" },
       { title: "Yoga For Anxiety and Stress", id: "hJbRpHq_dO0" },
+      { title: "Quick Anxiety Relief in 5 Minutes", id: "MR57rug8NsM" },
+      { title: "How to Stop an Anxiety Attack", id: "O-6f5wQXSu8" },
     ],
     audios: [
-      { title: "Calming Music for Anxiety & Stress", id: "k9g2vbrd_I4" },
-      { title: "Relaxing Music for Stress Relief", id: "R_adgDXbbvA" },
+      { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
+      { title: "ASMR for Anxiety Relief", id: "X4qJpE3y_4w" },
     ],
     pdfs: [
       { title: "Understanding Your Anxiety Workbook", source: "#" },
@@ -135,6 +135,7 @@ const QuoteDisplay = () => {
     const [quoteIndex, setQuoteIndex] = useState<number | null>(null);
 
     useEffect(() => {
+        // Set quote only on the client to avoid hydration mismatch
         setQuoteIndex(Math.floor(Math.random() * allQuotes.length));
     }, []);
 
