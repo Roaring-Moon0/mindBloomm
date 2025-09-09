@@ -16,6 +16,7 @@ import {
 import Logo from '@/components/icons/Logo';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { AuthButton } from './AuthButton';
 
 const navLinks = [
   { href: '/resources', label: 'Resources' },
@@ -56,7 +57,7 @@ export function Header() {
           </nav>
         </div>
 
-        <div className="flex flex-1 items-center justify-between md:justify-end">
+        <div className="flex flex-1 items-center justify-between md:justify-end md:gap-4">
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
@@ -94,8 +95,11 @@ export function Header() {
             <Logo className="h-6 w-6 text-primary" />
             <span className="font-bold">MindBloom</span>
           </Link>
-
-          <ThemeToggle />
+          
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <AuthButton />
+          </div>
         </div>
       </div>
     </header>
