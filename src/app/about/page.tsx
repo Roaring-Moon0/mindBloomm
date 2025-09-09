@@ -4,12 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
 
 const teamMembers = [
-  { name: 'Dr. Evelyn Reed', role: 'Lead Psychologist & Founder', avatar: 'https://picsum.photos/id/1027/200/200', dataAiHint: 'woman face', bio: 'With over 15 years of experience in clinical psychology, Dr. Reed is passionate about making mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
-  { name: 'Alex Chen', role: 'Mindfulness Expert', avatar: 'https://picsum.photos/id/1005/200/200', dataAiHint: 'man face', bio: 'Alex is a certified mindfulness instructor and guides the development of our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
-  { name: 'Maria Garcia', role: 'Lead AI & Product', avatar: 'https://picsum.photos/id/1011/200/200', dataAiHint: 'woman face', bio: 'Maria leads the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
-  { name: 'Sam Jones', role: 'Content Strategist', avatar: 'https://picsum.photos/id/1012/200/200', dataAiHint: 'person face', bio: 'Sam curates our resource library, ensuring all content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
-  { name: 'Ben Carter', role: 'UX/UI Designer', avatar: 'https://picsum.photos/id/1025/200/200', dataAiHint: 'man face', bio: 'Ben is the creative mind behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
-  { name: 'Priya Patel', role: 'Community Manager', avatar: 'https://picsum.photos/id/433/200/200', dataAiHint: 'woman face', bio: 'Priya fosters a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
+  { name: 'Dr. Evelyn Reed', role: 'Student & Founder', avatar: 'https://picsum.photos/id/1027/200/200', dataAiHint: 'woman face', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
+  { name: 'Alex Chen', role: 'Student & Mindfulness Advocate', avatar: 'https://picsum.photos/id/1005/200/200', dataAiHint: 'man face', bio: 'Alex is a student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
+  { name: 'Maria Garcia', role: 'Student & AI/Product Lead', avatar: 'https://picsum.photos/id/1011/200/200', dataAiHint: 'woman face', bio: 'Maria is a student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
+  { name: 'Sam Jones', role: 'Student & Content Strategist', avatar: 'https://picsum.photos/id/1012/200/200', dataAiHint: 'person face', bio: 'Sam is a student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
+  { name: 'Ben Carter', role: 'Student & UX/UI Designer', avatar: 'https://picsum.photos/id/1025/200/200', dataAiHint: 'man face', bio: 'Ben is the creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
+  { name: 'Priya Patel', role: 'Student & Community Manager', avatar: 'https://picsum.photos/id/433/200/200', dataAiHint: 'woman face', bio: 'Priya is a student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
 ];
 
 const values = [
@@ -47,7 +47,7 @@ export default function AboutPage() {
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tight font-headline">Meet Our Team</h2>
                     <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                        We are a diverse group of psychologists, technologists, and creatives dedicated to your well-being.
+                        We are a diverse group of students, technologists, and creatives dedicated to your well-being.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

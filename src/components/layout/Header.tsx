@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
+import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import Logo from '@/components/icons/Logo';
+import React from 'react';
 
 const navLinks = [
   { href: '/resources', label: 'Resources' },
@@ -14,6 +19,13 @@ const navLinks = [
 ];
 
 export function Header() {
+  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+
+  React.useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -36,7 +48,7 @@ export function Header() {
         </div>
         
         <div className="flex flex-1 items-center justify-end md:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
