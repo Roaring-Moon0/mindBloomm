@@ -4,8 +4,9 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileAudio, FileText, RefreshCw } from 'lucide-react';
+import { Youtube, FileAudio, FileText, RefreshCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const categoriesData = {
   anxiety: {
@@ -132,70 +133,118 @@ const QuoteDisplay = () => {
 }
 
 export default function ResourcesPage() {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [activeTab, setActiveTab] = useState('anxiety');
+
+    const filteredData = useMemo(() => {
+        if (!searchTerm) {
+            return categoriesData[activeTab as keyof typeof categoriesData];
+        }
+
+        const lowercasedFilter = searchTerm.toLowerCase();
+        const categoryData = categoriesData[activeTab as keyof typeof categoriesData];
+
+        const filterItems = (items: { title: string }[]) => 
+            items.filter(item => item.title.toLowerCase().includes(lowercasedFilter));
+
+        return {
+            ...categoryData,
+            videos: filterItems(categoryData.videos),
+            audios: filterItems(categoryData.audios),
+            pdfs: filterItems(categoryData.pdfs),
+        };
+    }, [searchTerm, activeTab]);
+
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
-            <div className="text-center mb-12">
+            <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold tracking-tight font-headline">Resource Library</h1>
                 <p className="mt-4 text-lg text-muted-foreground">A curated collection of tools and knowledge for your mental well-being.</p>
             </div>
 
-            <Tabs defaultValue="anxiety" className="w-full">
+            <div className="w-full max-w-md mx-auto mb-12">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input 
+                        placeholder="Search resources in this category..." 
+                        className="pl-10"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <p className="text-xs text-center text-muted-foreground mt-2">e.g., "meditation", "sleep", "stress"</p>
+            </div>
+
+            <Tabs defaultValue="anxiety" className="w-full" onValueChange={(value) => setActiveTab(value)}>
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
                     {Object.entries(categoriesData).map(([key, category]) => (
                         <TabsTrigger key={key} value={key} className="py-2">{category.name}</TabsTrigger>
                     ))}
                 </TabsList>
 
-                {Object.entries(categoriesData).map(([key, category]) => (
+                {Object.entries(categoriesData).map(([key]) => (
                     <TabsContent key={key} value={key} className="mt-8">
                         <Card className="bg-secondary/30">
-                            <CardHeader>
-                                <CardTitle className="text-2xl font-headline">{category.name}</CardTitle>
-                                <CardDescription>{category.description}</CardDescription>
+                             <CardHeader>
+                                <CardTitle className="text-2xl font-headline">{filteredData.name}</CardTitle>
+                                <CardDescription>{filteredData.description}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-8">
-                                <div>
-                                    <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Youtube className="text-primary"/> Videos</h3>
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        {category.videos.map(video => (
-                                             <div key={video.id} className="flex flex-col gap-2">
-                                                <div className="aspect-video">
-                                                    <iframe
-                                                        className="w-full h-full rounded-lg"
-                                                        src={`https://www.youtube.com/embed/${video.id}`}
-                                                        title={video.title}
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowFullScreen
-                                                    ></iframe>
+                                {filteredData.videos.length > 0 && (
+                                    <div>
+                                        <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Youtube className="text-primary"/> Videos</h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            {filteredData.videos.map(video => (
+                                                 <div key={video.id} className="flex flex-col gap-2">
+                                                    <div className="aspect-video">
+                                                        <iframe
+                                                            className="w-full h-full rounded-lg"
+                                                            src={`https://www.youtube.com/embed/${video.id}`}
+                                                            title={video.title}
+                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                            allowFullScreen
+                                                        ></iframe>
+                                                    </div>
+                                                    <p className="text-sm font-medium text-center">{video.title}</p>
                                                 </div>
-                                                <p className="text-sm font-medium text-center">{video.title}</p>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 
                                 <div className="grid md:grid-cols-2 gap-8">
-                                    <div>
-                                        <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileAudio className="text-primary"/> Audio Resources</h3>
-                                        <div className="space-y-4">
-                                            {category.audios.map(audio => (
-                                                <a href={audio.source} key={audio.title} target="_blank" rel="noopener noreferrer">
-                                                    <ResourceCard icon={<FileAudio/>} title={audio.title} type="Audio"/>
-                                                </a>
-                                            ))}
+                                    {filteredData.audios.length > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileAudio className="text-primary"/> Audio Resources</h3>
+                                            <div className="space-y-4">
+                                                {filteredData.audios.map(audio => (
+                                                    <a href={audio.source} key={audio.title} target="_blank" rel="noopener noreferrer">
+                                                        <ResourceCard icon={<FileAudio/>} title={audio.title} type="Audio"/>
+                                                    </a>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
-                                        <div className="space-y-4">
-                                            {category.pdfs.map(pdf => (
-                                                <a href={pdf.source} key={pdf.title} target="_blank" rel="noopener noreferrer">
-                                                    <ResourceCard icon={<FileText/>} title={pdf.title} type="PDF Document"/>
-                                                </a>
-                                            ))}
+                                    )}
+                                    {filteredData.pdfs.length > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
+                                            <div className="space-y-4">
+                                                {filteredData.pdfs.map(pdf => (
+                                                    <a href={pdf.source} key={pdf.title} target="_blank" rel="noopener noreferrer">
+                                                        <ResourceCard icon={<FileText/>} title={pdf.title} type="PDF Document"/>
+                                                    </a>
+                                                ))}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
+                                
+                                {filteredData.videos.length === 0 && filteredData.audios.length === 0 && filteredData.pdfs.length === 0 && (
+                                     <div className="text-center py-12">
+                                        <p className="text-muted-foreground font-semibold">No resources found for "{searchTerm}".</p>
+                                        <p className="text-muted-foreground text-sm">Try a different search term or check other categories.</p>
+                                     </div>
+                                )}
 
                                 <QuoteDisplay />
                                 

@@ -9,6 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowRight, Bot, Gamepad2, Library } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 const quickLinks = [
     { title: "Talk to AI Assistant", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
@@ -20,6 +23,7 @@ const quickLinks = [
 export default function DashboardPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
+    const [journalText, setJournalText] = useState('');
 
     const getInitials = (email: string | null | undefined) => {
         if (!email) return "U";
@@ -99,9 +103,29 @@ export default function DashboardPage() {
                         </CardHeader>
                         <CardContent>
                             <p className="italic text-muted-foreground">"What is one small thing I can do today that would make tomorrow better?"</p>
-                             <Button variant="link" className="px-0 mt-2">
-                                Start Writing <ArrowRight className="ml-2 h-4 w-4" />
-                            </Button>
+                             <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button variant="link" className="px-0 mt-2">
+                                        Start Writing <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                    <DialogTitle>My Private Journal</DialogTitle>
+                                    <DialogDescription>
+                                        This is your space. Your thoughts are not saved and will be cleared when you close this window.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="py-4">
+                                    <Textarea 
+                                        placeholder="Start writing..." 
+                                        className="min-h-[200px]" 
+                                        value={journalText} 
+                                        onChange={(e) => setJournalText(e.target.value)}
+                                    />
+                                </div>
+                                </DialogContent>
+                            </Dialog>
                         </CardContent>
                     </Card>
                 </div>
