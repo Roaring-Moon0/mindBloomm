@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileAudio, FileText, RefreshCw, Search } from 'lucide-react';
+import { Youtube, FileText, RefreshCw, Search, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -19,8 +19,8 @@ const categoriesData = {
       { title: "Quick Anxiety Relief in 5 Minutes (Hindi)", id: "rCzpe7jA4iA" },
     ],
     audios: [
-      { title: "Calming Music for Anxiety", source: "#" },
-      { title: "Deep Breathing Exercise Audio", source: "#" },
+      { title: "Calming Music for Anxiety & Stress", id: "WUXEE22Y-h4" },
+      { title: "ASMR for Anxiety Relief", id: "LUdGcmj2D-s" },
     ],
     pdfs: [
       { title: "Understanding Your Anxiety Workbook", source: "#" },
@@ -37,8 +37,8 @@ const categoriesData = {
         { title: "How To Fight Depression? (Hindi)", id: "gQ4Y18yA-p8" },
     ],
     audios: [
-      { title: "Uplifting Podcast for a Better Mood", source: "#" },
-      { title: "Affirmations for Self-Love", source: "#" },
+      { title: "Uplifting Music to Boost Your Mood", id: "W8rJU4b_o_I" },
+      { title: "Gentle ASMR for Positive Energy", id: "5o2a6k-DKLw" },
     ],
     pdfs: [
       { title: "A Guide to Self-Compassion", source: "#" },
@@ -55,8 +55,8 @@ const categoriesData = {
         { title: "Yoga For Deep Sleep (Hindi)", id: "xePaJpEdn2s" },
     ],
     audios: [
-      { title: "Guided Sleep Meditation", source: "#" },
-      { title: "Calming Nature Sounds for Sleep", source: "#" },
+      { title: "Deep Sleep Music, Insomnia, Relaxing Music", id: "aIq_HqVSlqA" },
+      { title: "Rain Sounds for Sleeping", id: "j4dwyAPg8eA" },
     ],
     pdfs: [
       { title: "The Ultimate Guide to a Better Sleep Routine", source: "#" },
@@ -73,8 +73,8 @@ const categoriesData = {
         { title: "What is Stress? (Hindi)", id: "7p4kY_O3yYw" },
     ],
     audios: [
-      { title: "Mindfulness for Stress Reduction", source: "#" },
-      { title: "Ambient sounds for focus and relaxation", source: "#" },
+      { title: "3 Hours of Relaxing Music for Stress Relief", id: "calI9aV_eWc" },
+      { title: "Gentle ASMR to Melt Your Stress Away", id: "Y_t-bWpG4jA" },
     ],
     pdfs: [
       { title: "The Stress Management Handbook", source: "#" },
@@ -92,6 +92,13 @@ const allQuotes = [
     { quote: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
     { quote: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
     { quote: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { quote: "Your limitation—it's only your imagination.", author: "Unknown" },
+    { quote: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
+    { quote: "Sometimes later becomes never. Do it now.", author: "Unknown" },
+    { quote: "Great things never come from comfort zones.", author: "Unknown" },
+    { quote: "Dream it. Wish it. Do it.", author: "Unknown" },
+    { quote: "Success doesn’t just find you. You have to go out and get it.", author: "Unknown" },
+    { quote: "The harder you work for something, the greater you’ll feel when you achieve it.", author: "Unknown" }
 ];
 
 
@@ -106,6 +113,22 @@ const ResourceCard = ({ icon, title, type }: { icon: React.ReactNode, title: str
         </CardContent>
     </Card>
 );
+
+const VideoCard = ({ id, title }: { id: string, title: string }) => (
+    <div className="flex flex-col gap-2">
+        <div className="aspect-video">
+            <iframe
+                className="w-full h-full rounded-lg"
+                src={`https://www.youtube.com/embed/${id}`}
+                title={title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+            ></iframe>
+        </div>
+        <p className="text-sm font-medium text-center">{title}</p>
+    </div>
+);
+
 
 const QuoteDisplay = () => {
     const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * allQuotes.length));
@@ -137,12 +160,12 @@ export default function ResourcesPage() {
     const [activeTab, setActiveTab] = useState('anxiety');
 
     const filteredData = useMemo(() => {
+        const categoryData = categoriesData[activeTab as keyof typeof categoriesData];
         if (!searchTerm) {
-            return categoriesData[activeTab as keyof typeof categoriesData];
+            return categoryData;
         }
 
         const lowercasedFilter = searchTerm.toLowerCase();
-        const categoryData = categoriesData[activeTab as keyof typeof categoriesData];
 
         const filterItems = (items: { title: string }[]) => 
             items.filter(item => item.title.toLowerCase().includes(lowercasedFilter));
@@ -193,51 +216,37 @@ export default function ResourcesPage() {
                                 {filteredData.videos.length > 0 && (
                                     <div>
                                         <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Youtube className="text-primary"/> Videos</h3>
-                                        <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="grid md:grid-cols-2 gap-6">
                                             {filteredData.videos.map(video => (
-                                                 <div key={video.id} className="flex flex-col gap-2">
-                                                    <div className="aspect-video">
-                                                        <iframe
-                                                            className="w-full h-full rounded-lg"
-                                                            src={`https://www.youtube.com/embed/${video.id}`}
-                                                            title={video.title}
-                                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                            allowFullScreen
-                                                        ></iframe>
-                                                    </div>
-                                                    <p className="text-sm font-medium text-center">{video.title}</p>
-                                                </div>
+                                                <VideoCard key={video.id} {...video} />
                                             ))}
                                         </div>
                                     </div>
                                 )}
                                 
-                                <div className="grid md:grid-cols-2 gap-8">
-                                    {filteredData.audios.length > 0 && (
-                                        <div>
-                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileAudio className="text-primary"/> Audio Resources</h3>
-                                            <div className="space-y-4">
-                                                {filteredData.audios.map(audio => (
-                                                    <a href={audio.source} key={audio.title} target="_blank" rel="noopener noreferrer">
-                                                        <ResourceCard icon={<FileAudio/>} title={audio.title} type="Audio"/>
-                                                    </a>
-                                                ))}
-                                            </div>
+                                {filteredData.audios.length > 0 && (
+                                    <div>
+                                        <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Music className="text-primary"/> Audio & Music</h3>
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {filteredData.audios.map(audio => (
+                                                 <VideoCard key={audio.id} {...audio} />
+                                            ))}
                                         </div>
-                                    )}
-                                    {filteredData.pdfs.length > 0 && (
-                                        <div>
-                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
-                                            <div className="space-y-4">
-                                                {filteredData.pdfs.map(pdf => (
-                                                    <a href={pdf.source} key={pdf.title} target="_blank" rel="noopener noreferrer">
-                                                        <ResourceCard icon={<FileText/>} title={pdf.title} type="PDF Document"/>
-                                                    </a>
-                                                ))}
-                                            </div>
+                                    </div>
+                                )}
+
+                                {filteredData.pdfs.length > 0 && (
+                                    <div>
+                                        <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            {filteredData.pdfs.map(pdf => (
+                                                <a href={pdf.source} key={pdf.title} target="_blank" rel="noopener noreferrer">
+                                                    <ResourceCard icon={<FileText/>} title={pdf.title} type="PDF Document"/>
+                                                </a>
+                                            ))}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                )}
                                 
                                 {filteredData.videos.length === 0 && filteredData.audios.length === 0 && filteredData.pdfs.length === 0 && (
                                      <div className="text-center py-12">
@@ -256,3 +265,5 @@ export default function ResourcesPage() {
         </div>
     );
 }
+
+    
