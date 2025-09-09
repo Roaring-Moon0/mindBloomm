@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Student & Leader', avatar: 'https://picsum.photos/id/1027/200/200', dataAiHint: 'man face', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
+  { name: 'Aryan', role: 'Founder & Student & Leader', avatar: 'https://storage.googleapis.com/studiostage-308320.appspot.com/image/917a86e3-f86a-4934-8178-0d19f44927dd.png', dataAiHint: 'man face', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
   { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/200/200', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
   { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/200/200', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
   { name: 'Member 4', role: 'Student', avatar: 'https://picsum.photos/id/1012/200/200', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
