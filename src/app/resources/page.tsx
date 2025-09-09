@@ -1,12 +1,13 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Youtube, FileText, RefreshCw, Search, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const categoriesData = {
   anxiety: {
@@ -131,20 +132,25 @@ const VideoCard = ({ id, title }: { id: string, title: string }) => (
 
 
 const QuoteDisplay = () => {
-    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * allQuotes.length));
+    const [quoteIndex, setQuoteIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        setQuoteIndex(Math.floor(Math.random() * allQuotes.length));
+    }, []);
 
     const handleChangeQuote = () => {
-        setQuoteIndex(prev => (prev + 1) % allQuotes.length);
+        setQuoteIndex(prev => (prev !== null ? (prev + 1) % allQuotes.length : 0));
     };
     
-    const currentQuote = allQuotes[quoteIndex];
+    const currentQuote = quoteIndex !== null ? allQuotes[quoteIndex] : null;
 
     return (
          <div>
             <h3 className="font-semibold text-xl mb-4">Inspirational Quote</h3>
             <div className="space-y-4">
                 <blockquote className="border-l-4 border-accent pl-4 italic text-muted-foreground min-h-[60px]">
-                   "{currentQuote.quote}" - <cite className="font-semibold not-italic">{currentQuote.author}</cite>
+                   {currentQuote ? `"${currentQuote.quote}" - ` : <Skeleton className="h-5 w-3/4" />}
+                   {currentQuote && <cite className="font-semibold not-italic">{currentQuote.author}</cite>}
                 </blockquote>
                 <Button onClick={handleChangeQuote} variant="outline" size="sm">
                     <RefreshCw className="mr-2 h-4 w-4" />
@@ -265,5 +271,3 @@ export default function ResourcesPage() {
         </div>
     );
 }
-
-    

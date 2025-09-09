@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowRight, Bot, Gamepad2, Library, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const quickLinks = [
     { title: "Talk to AI Assistant", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
@@ -29,13 +29,17 @@ const allQuotes = [
 ];
 
 const QuoteDisplay = () => {
-    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * allQuotes.length));
+    const [quoteIndex, setQuoteIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        setQuoteIndex(Math.floor(Math.random() * allQuotes.length));
+    }, []);
 
     const handleChangeQuote = () => {
-        setQuoteIndex(prev => (prev + 1) % allQuotes.length);
+        setQuoteIndex(prev => (prev !== null ? (prev + 1) % allQuotes.length : 0));
     };
     
-    const currentQuote = allQuotes[quoteIndex];
+    const currentQuote = quoteIndex !== null ? allQuotes[quoteIndex] : null;
 
     return (
         <Card className="bg-secondary/50">
@@ -45,7 +49,8 @@ const QuoteDisplay = () => {
             </CardHeader>
             <CardContent>
                  <blockquote className="border-l-4 border-accent pl-4 italic text-muted-foreground min-h-[60px]">
-                   "{currentQuote.quote}" - <cite className="font-semibold not-italic">{currentQuote.author}</cite>
+                   {currentQuote ? `"${currentQuote.quote}" - ` : <Skeleton className="h-5 w-3/4" />}
+                   {currentQuote && <cite className="font-semibold not-italic">{currentQuote.author}</cite>}
                 </blockquote>
                 <Button onClick={handleChangeQuote} variant="link" size="sm" className="px-0 mt-2">
                     <RefreshCw className="mr-2 h-4 w-4" />
