@@ -6,12 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowRight, Bot, Gamepad2, Library } from 'lucide-react';
+import { ArrowRight, Bot, Gamepad2, Library, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 
 const quickLinks = [
     { title: "Talk to AI Assistant", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
@@ -19,11 +17,49 @@ const quickLinks = [
     { title: "Explore Resources", description: "Find articles and guides.", href: "/resources", icon: <Library className="w-8 h-8 text-primary" /> },
 ];
 
+const allQuotes = [
+    { quote: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { quote: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+    { quote: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+    { quote: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+    { quote: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+    { quote: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { quote: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+    { quote: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+];
+
+const QuoteDisplay = () => {
+    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * allQuotes.length));
+
+    const handleChangeQuote = () => {
+        setQuoteIndex(prev => (prev + 1) % allQuotes.length);
+    };
+    
+    const currentQuote = allQuotes[quoteIndex];
+
+    return (
+        <Card className="bg-secondary/50">
+            <CardHeader>
+                <CardTitle>Inspirational Quote</CardTitle>
+                 <CardDescription>A thought for your day.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                 <blockquote className="border-l-4 border-accent pl-4 italic text-muted-foreground min-h-[60px]">
+                   "{currentQuote.quote}" - <cite className="font-semibold not-italic">{currentQuote.author}</cite>
+                </blockquote>
+                <Button onClick={handleChangeQuote} variant="link" size="sm" className="px-0 mt-2">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    New Quote
+                </Button>
+            </CardContent>
+        </Card>
+    )
+}
+
 
 export default function DashboardPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
-    const [journalText, setJournalText] = useState('');
 
     const getInitials = (email: string | null | undefined) => {
         if (!email) return "U";
@@ -96,38 +132,7 @@ export default function DashboardPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="bg-secondary/50">
-                        <CardHeader>
-                            <CardTitle>Journal Prompt</CardTitle>
-                             <CardDescription>A thought for your day.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="italic text-muted-foreground">"What is one small thing I can do today that would make tomorrow better?"</p>
-                             <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button variant="link" className="px-0 mt-2">
-                                        Start Writing <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
-                                </DialogTrigger>
-                                <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>My Private Journal</DialogTitle>
-                                    <DialogDescription>
-                                        This is your space. Your thoughts are not saved and will be cleared when you close this window.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="py-4">
-                                    <Textarea 
-                                        placeholder="Start writing..." 
-                                        className="min-h-[200px]" 
-                                        value={journalText} 
-                                        onChange={(e) => setJournalText(e.target.value)}
-                                    />
-                                </div>
-                                </DialogContent>
-                            </Dialog>
-                        </CardContent>
-                    </Card>
+                    <QuoteDisplay />
                 </div>
             </div>
         </div>
