@@ -43,9 +43,9 @@ const resourceCategories = [
 ];
 
 const teamMembers = [
-  { name: 'Dr. Evelyn Reed', role: 'Lead Psychologist', avatar: 'https://picsum.photos/id/1027/100/100', dataAiHint: 'woman face' },
-  { name: 'Alex Chen', role: 'Mindfulness Expert', avatar: 'https://picsum.photos/id/1005/100/100', dataAiHint: 'man face' },
-  { name: 'Maria Garcia', role: 'AI Specialist', avatar: 'https://picsum.photos/id/1011/100/100', dataAiHint: 'woman face' },
+  { name: 'Aryan', role: 'Founder & Student', avatar: 'https://picsum.photos/id/1027/100/100', dataAiHint: 'man face' },
+  { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/100/100', dataAiHint: 'person face' },
+  { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/100/100', dataAiHint: 'person face' },
 ];
 
 export default function Home() {

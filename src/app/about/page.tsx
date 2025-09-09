@@ -4,12 +4,12 @@ import { Badge } from '@/components/ui/badge';
 import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
 
 const teamMembers = [
-  { name: 'Dr. Evelyn Reed', role: 'Student & Founder', avatar: 'https://picsum.photos/id/1027/200/200', dataAiHint: 'woman face', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
-  { name: 'Alex Chen', role: 'Student & Mindfulness Advocate', avatar: 'https://picsum.photos/id/1005/200/200', dataAiHint: 'man face', bio: 'Alex is a student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
-  { name: 'Maria Garcia', role: 'Student & AI/Product Lead', avatar: 'https://picsum.photos/id/1011/200/200', dataAiHint: 'woman face', bio: 'Maria is a student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
-  { name: 'Sam Jones', role: 'Student & Content Strategist', avatar: 'https://picsum.photos/id/1012/200/200', dataAiHint: 'person face', bio: 'Sam is a student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
-  { name: 'Ben Carter', role: 'Student & UX/UI Designer', avatar: 'https://picsum.photos/id/1025/200/200', dataAiHint: 'man face', bio: 'Ben is the creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
-  { name: 'Priya Patel', role: 'Student & Community Manager', avatar: 'https://picsum.photos/id/433/200/200', dataAiHint: 'woman face', bio: 'Priya is a student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
+  { name: 'Aryan', role: 'Founder & Student & Leader', avatar: 'https://picsum.photos/id/1027/200/200', dataAiHint: 'man face', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
+  { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/200/200', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
+  { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/200/200', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
+  { name: 'Member 4', role: 'Student', avatar: 'https://picsum.photos/id/1012/200/200', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
+  { name: 'Member 5', role: 'Student', avatar: 'https://picsum.photos/id/1025/200/200', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
+  { name: 'Member 6', role: 'Student', avatar: 'https://picsum.photos/id/433/200/200', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
 ];
 
 const values = [
