@@ -22,6 +22,15 @@ type Message = {
   content: string | React.ReactNode;
 };
 
+// A simple markdown to HTML converter
+const formatMarkdown = (text: string) => {
+  // Bold
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Italics
+  text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  return text;
+};
+
 export function ChatUI() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -49,9 +58,10 @@ export function ChatUI() {
     try {
       const result = await generatePersonalizedRecommendations({ userInput: values.userInput });
       const formattedRecommendations = (
-        <div className="space-y-2 whitespace-pre-wrap">
-          {result.recommendations}
-        </div>
+        <div 
+          className="space-y-2 whitespace-pre-wrap"
+          dangerouslySetInnerHTML={{ __html: formatMarkdown(result.recommendations) }}
+        />
       );
       setMessages((prev) => [...prev, { role: 'assistant', content: formattedRecommendations }]);
     } catch (error: any) {
@@ -102,7 +112,7 @@ export function ChatUI() {
                     </div>
                 )}
             </div>
-        </ScrollArea>
+        </ScrollAreadiv>
         
         {showForm && (
             <div className="mt-6 border-t pt-6">
