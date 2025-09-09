@@ -15,7 +15,7 @@ const categoriesData = {
     description: "Techniques and resources to calm your mind and manage anxiety.",
     videos: [
       { title: "5-Minute Meditation for Anxiety", id: "inpok4MKVLM" },
-      { title: "Guided Meditation for Anxiety & Stress", id: "FzoX_by23QA" },
+      { title: "Guided Meditation for Anxiety & Stress", id: "1dbYduxIpwE" },
       { title: "Breathing Exercise for Anxiety", id: "8VwufP6h3oY" },
       { title: "Yoga For Anxiety and Stress", id: "hJbRpHq_dO0" },
     ],
@@ -39,7 +39,7 @@ const categoriesData = {
     ],
     audios: [
       { title: "Uplifting Music to Boost Your Mood", id: "W8rJU4b_o_I" },
-      { title: "Gentle ASMR for Positive Energy", id_backup: "5o2a6k-DKLw", id: "sjkrrmBnpZ8"},
+      { title: "Gentle ASMR for Positive Energy", id: "sjkrrmBnpZ8"},
     ],
     pdfs: [
       { title: "A Guide to Self-Compassion", source: "#" },
@@ -75,7 +75,7 @@ const categoriesData = {
     ],
     audios: [
       { title: "3 Hours of Relaxing Music for Stress Relief", id: "calI9aV_eWc" },
-      { title: "Gentle ASMR to Melt Your Stress Away", id_backup: "Y_t-bWpG4jA", id:"pPHeP_S6d34" },
+      { title: "Gentle ASMR to Melt Your Stress Away", id:"pPHeP_S6d34" },
     ],
     pdfs: [
       { title: "The Stress Management Handbook", source: "#" },
