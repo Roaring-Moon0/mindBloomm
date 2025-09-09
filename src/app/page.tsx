@@ -43,7 +43,7 @@ const resourceCategories = [
 ];
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Student', avatar: 'https://storage.googleapis.com/studiostage-308320.appspot.com/image/917a86e3-f86a-4934-8178-0d19f44927dd.png', dataAiHint: 'man face' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://storage.googleapis.com/studiostage-308320.appspot.com/image/5b7f033c-308c-4443-85f0-517b63f4b50c.png', dataAiHint: 'anime man' },
   { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/100/100', dataAiHint: 'person face' },
   { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/100/100', dataAiHint: 'person face' },
 ];
