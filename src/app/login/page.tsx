@@ -1,10 +1,10 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,37 +35,37 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result) {
+          setIsLoading(true);
+          const user = result.user;
+          toast({
+            title: "Login Successful!",
+            description: `Welcome back, ${user.displayName || 'User'}.`,
+          });
+          router.push("/dashboard");
+        }
+      } catch (error: any) {
+        console.error("Google Sign-in redirect error:", error);
+        toast({
+          variant: "destructive",
+          title: "Google Sign-In Failed",
+          description: "Could not sign in with Google. Please try again.",
+        });
+        setIsLoading(false);
+      }
+    };
+    handleRedirectResult();
+  }, [router]);
+
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      
-      toast({
-        title: "Login Successful!",
-        description: `Welcome back, ${user.displayName || 'User'}.`,
-      });
-      router.push("/dashboard");
-
-    } catch (error: any) {
-      console.error("Google Sign-in error:", error);
-      toast({
-        variant: "destructive",
-        title: "Google Sign-In Failed",
-        description: "Could not sign in with Google. Please try again.",
-      });
-    } finally {
-      setIsGoogleLoading(false);
-    }
+    const provider = new GoogleAuthProvider();
+    await signInWithRedirect(auth, provider);
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -136,7 +136,7 @@ export default function LoginPage() {
           
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
             {isGoogleLoading ? (
-              "Signing in..."
+              "Redirecting..."
             ) : (
               <>
                 <GoogleIcon />
