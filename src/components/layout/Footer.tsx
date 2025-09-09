@@ -12,10 +12,10 @@ export function Footer() {
           </p>
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <Link href="/about" className="hover:text-foreground">About</Link>
-          <Link href="/contact" className="hover:text-foreground">Contact</Link>
-          <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
-          <Link href="#" className="hover:text-foreground">Terms of Service</Link>
+          <Link href="/about" className="hover:text-foreground" prefetch={true}>About</Link>
+          <Link href="/contact" className="hover:text-foreground" prefetch={true}>Contact</Link>
+          <Link href="#" className="hover:text-foreground" prefetch={true}>Privacy Policy</Link>
+          <Link href="#" className="hover:text-foreground" prefetch={true}>Terms of Service</Link>
         </div>
       </div>
     </footer>
