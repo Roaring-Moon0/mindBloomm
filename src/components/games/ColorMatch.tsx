@@ -4,10 +4,6 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, X, RotateCw } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { toast } from '@/hooks/use-toast';
 
 const generateRandomColor = () => {
     const h = Math.floor(Math.random() * 360);
@@ -29,7 +25,6 @@ const generateOptions = (targetColor: string) => {
 
 
 export function ColorMatch() {
-    const { user } = useAuth();
     const [targetColor, setTargetColor] = useState('');
     const [options, setOptions] = useState<string[]>([]);
     const [message, setMessage] = useState('');
@@ -53,24 +48,6 @@ export function ColorMatch() {
         newRound();
     }, []);
 
-    const saveScore = async () => {
-        if (user && score > 0) {
-            try {
-                await addDoc(collection(db, "scores"), {
-                    userId: user.uid,
-                    username: user.displayName || user.email,
-                    score: score,
-                    game: 'ColorMatch',
-                    createdAt: serverTimestamp()
-                });
-                toast({ title: "Score Saved!", description: `Your score of ${score} has been saved to the leaderboard.` });
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                toast({ variant: "destructive", title: "Uh oh!", description: "Could not save your score." });
-            }
-        }
-    };
-
     const handleOptionClick = (color: string) => {
         if (showFeedback) return;
 
@@ -80,8 +57,7 @@ export function ColorMatch() {
             setScore(score + 1);
             setTimeout(newRound, 1500);
         } else {
-            setMessage('Game Over!');
-            saveScore();
+            setMessage('Try Again!');
             setTimeout(() => {
                 setScore(0);
                 restartGame();

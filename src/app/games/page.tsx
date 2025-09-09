@@ -10,13 +10,6 @@ export default function GamesPage() {
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight font-headline">Calming Games</h1>
                 <p className="mt-4 text-lg text-muted-foreground">Relax your mind with our collection of soothing and satisfying games.</p>
-                <div className="mt-6">
-                    <Button asChild>
-                        <Link href="/leaderboard">
-                            <Trophy className="mr-2 h-5 w-5" /> View Leaderboard
-                        </Link>
-                    </Button>
-                </div>
             </div>
 
             <GamesClient />

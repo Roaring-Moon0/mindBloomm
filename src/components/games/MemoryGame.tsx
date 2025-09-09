@@ -6,10 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { BrainCircuit, Heart, Leaf, Smile, Star, Sun, Zap, Anchor } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
-import { db } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { toast } from '@/hooks/use-toast';
 
 const icons = [
     <BrainCircuit key="brain" />, <Heart key="heart"/>, <Leaf key="leaf"/>, <Smile key="smile"/>, 
@@ -24,30 +20,10 @@ const createBoard = () => {
 }
 
 export function MemoryGame() {
-    const { user } = useAuth();
     const [board, setBoard] = useState(createBoard());
     const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
     const [moves, setMoves] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
-
-    const saveScore = async () => {
-        if (!user || moves === 0) return;
-        // Lower moves is better, so we'll store it as a positive score
-        const score = 1000 - (moves * 10); // Simple scoring logic
-        try {
-            await addDoc(collection(db, "scores"), {
-                userId: user.uid,
-                username: user.displayName || user.email,
-                score: score > 0 ? score : 0, // Ensure score isn't negative
-                game: 'MemoryGame',
-                createdAt: serverTimestamp()
-            });
-            toast({ title: "Score Saved!", description: `Your score of ${score} has been saved.` });
-        } catch (e) {
-            console.error("Error adding document: ", e);
-            toast({ variant: "destructive", title: "Uh oh!", description: "Could not save your score." });
-        }
-    };
 
     const resetGame = () => {
         setBoard(createBoard());
@@ -83,11 +59,10 @@ export function MemoryGame() {
 
     useEffect(() => {
         const allMatched = board.every(card => card.isMatched);
-        if (allMatched && !isComplete) {
+        if (allMatched && moves > 0 && !isComplete) {
             setIsComplete(true);
-            saveScore();
         }
-    }, [board, isComplete, saveScore]);
+    }, [board, isComplete, moves]);
 
     const handleCardClick = (index: number) => {
         if (flippedIndices.length === 2 || board[index].isFlipped || isComplete) return;
