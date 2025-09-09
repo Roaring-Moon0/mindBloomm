@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -43,37 +43,31 @@ export default function LoginPage() {
     },
   });
 
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result) {
-          setIsLoading(true);
-          const user = result.user;
-          toast({
-            title: "Login Successful!",
-            description: `Welcome back, ${user.displayName || 'User'}.`,
-          });
-          router.push("/dashboard");
-        }
-      } catch (error: any) {
-        console.error("Google Sign-in redirect error:", error);
-        toast({
-          variant: "destructive",
-          title: "Google Sign-In Failed",
-          description: "Could not sign in with Google. Please try again.",
-        });
-        setIsLoading(false);
-      }
-    };
-    handleRedirectResult();
-  }, [router]);
-
-
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
-    await signInWithRedirect(auth, provider);
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        toast({
+            title: "Login Successful!",
+            description: `Welcome back, ${user.displayName || 'User'}.`,
+        });
+        router.push("/dashboard");
+    } catch (error: any) {
+        console.error("Google Sign-in error:", error);
+        let errorMessage = "Could not sign in with Google. Please try again.";
+        if (error.code === 'auth/popup-closed-by-user') {
+            errorMessage = "The sign-in window was closed before completion.";
+        }
+        toast({
+            variant: "destructive",
+            title: "Google Sign-In Failed",
+            description: errorMessage,
+        });
+    } finally {
+        setIsGoogleLoading(false);
+    }
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
