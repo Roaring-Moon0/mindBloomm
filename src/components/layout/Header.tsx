@@ -6,9 +6,10 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import Logo from '@/components/icons/Logo';
 import React from 'react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const navLinks = [
   { href: '/resources', label: 'Resources' },
@@ -56,6 +57,12 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="pr-0">
+               <VisuallyHidden>
+                <SheetTitle>Mobile Navigation Menu</SheetTitle>
+                <SheetDescription>
+                  A list of links to navigate the MindBloom website.
+                </SheetDescription>
+              </VisuallyHidden>
               <Link href="/" className="flex items-center space-x-2">
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="font-bold">MindBloom</span>
