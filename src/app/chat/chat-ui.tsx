@@ -54,9 +54,13 @@ export function ChatUI() {
         </div>
       );
       setMessages((prev) => [...prev, { role: 'assistant', content: formattedRecommendations }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      setMessages((prev) => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again later.' }]);
+      let errorMessage = 'Sorry, I encountered an error. Please try again later.';
+      if (error.message && error.message.includes('503')) {
+        errorMessage = "I'm experiencing high demand right now. Please wait a moment and try your message again."
+      }
+      setMessages((prev) => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsLoading(false);
       form.reset();
