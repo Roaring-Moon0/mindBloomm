@@ -112,7 +112,7 @@ export function ChatUI() {
                     </div>
                 )}
             </div>
-        </ScrollAreadiv>
+        </ScrollArea>
         
         {showForm && (
             <div className="mt-6 border-t pt-6">
