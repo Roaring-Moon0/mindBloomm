@@ -14,7 +14,7 @@ import Logo from '@/components/icons/Logo';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const formSchema = z.object({
-  userInput: z.string().min(1, { message: 'Message cannot be empty.' }),
+  userInput: z.string(),
 });
 
 type Message = {
@@ -39,6 +39,9 @@ export function ChatUI() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!values.userInput.trim()) {
+        return;
+    }
     setIsLoading(true);
     
     setMessages((prev) => [...prev, { role: 'user', content: values.userInput }]);
