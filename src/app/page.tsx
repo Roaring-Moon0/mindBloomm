@@ -43,7 +43,7 @@ const resourceCategories = [
 ];
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/founder-avatar.png', dataAiHint: 'anime man' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/C9B6FF/183047?text=A', dataAiHint: 'anime man' },
   { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/100/100', dataAiHint: 'person face' },
   { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/100/100', dataAiHint: 'person face' },
 ];
