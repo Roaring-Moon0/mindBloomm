@@ -23,7 +23,7 @@ const formSchema = z.object({
 });
 
 const GoogleIcon = () => (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M22.56 12.25C22.56 11.45 22.49 10.68 22.36 9.92H12V14.45H18.02C17.72 16.03 16.85 17.41 15.49 18.33V20.94H19.51C21.45 19.12 22.56 16.03 22.56 12.25Z" fill="#4285F4"/>
       <path d="M12 23C14.97 23 17.47 22.02 19.51 20.94L15.49 18.33C14.51 18.96 13.33 19.34 12 19.34C9.48 19.34 7.33 17.75 6.53 15.47L2.43 15.47V18.15C4.48 21.05 7.97 23 12 23Z" fill="#34A853"/>
       <path d="M6.53 15.47C6.35 14.97 6.25 14.44 6.25 13.88C6.25 13.31 6.35 12.78 6.53 12.28V9.59L2.43 9.59C1.52 11.29 1 12.98 1 14.88C1 16.78 1.52 18.47 2.43 20.17L6.53 15.47Z" fill="#FBBC05"/>
@@ -165,7 +165,7 @@ export default function SignUpPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
             </div>
           </div>
           
