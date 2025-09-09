@@ -1,8 +1,7 @@
-
 // src/lib/firebase.ts
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { getAuth, connectAuthEmulator, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   projectId: "mindbloom-l8ow7",
@@ -14,19 +13,45 @@ const firebaseConfig = {
   messagingSenderId: "202583968080"
 };
 
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-if (isDevelopment) {
-    firebaseConfig.authDomain = 'localhost:9002';
-}
+try {
+    if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp();
+    }
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+    auth = getAuth(app);
+    db = getFirestore(app);
 
-if (isDevelopment && process.env.FIREBASE_AUTH_EMULATOR_HOST) {
-    connectAuthEmulator(auth, `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
+    if (isDevelopment && process.env.NEXT_PUBLIC_EMULATOR_HOST) {
+      // It's important to check if the emulator is already connected
+      // to prevent errors on hot reloads.
+      if (!(auth as any).emulatorConfig) {
+        connectAuthEmulator(auth, `http://${process.env.NEXT_PUBLIC_EMULATOR_HOST}:9099`, { disableWarnings: true });
+        console.log("Connected to Firebase Auth Emulator");
+      }
+    } else if (isDevelopment && firebaseConfig.authDomain !== 'localhost:9002') {
+        firebaseConfig.authDomain = 'localhost:9002';
+    }
+
+} catch (error) {
+    console.error("Firebase initialization error:", error);
+    // In case of an error, we still want to export something to avoid breaking the app.
+    if (!app!) {
+      app = initializeApp(firebaseConfig);
+    }
+    if (!auth!) {
+        auth = getAuth(app);
+    }
+    if(!db!) {
+        db = getFirestore(app);
+    }
 }
 
 
