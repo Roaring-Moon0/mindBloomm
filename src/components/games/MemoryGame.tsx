@@ -1,10 +1,15 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { BrainCircuit, Heart, Leaf, Smile, Star, Sun, Zap, Anchor, Award, Bone } from 'lucide-react';
+import { BrainCircuit, Heart, Leaf, Smile, Star, Sun, Zap, Anchor } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { db } from '@/lib/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { toast } from '@/hooks/use-toast';
 
 const icons = [
     <BrainCircuit key="brain" />, <Heart key="heart"/>, <Leaf key="leaf"/>, <Smile key="smile"/>, 
@@ -19,14 +24,36 @@ const createBoard = () => {
 }
 
 export function MemoryGame() {
+    const { user } = useAuth();
     const [board, setBoard] = useState(createBoard());
     const [flippedIndices, setFlippedIndices] = useState<number[]>([]);
     const [moves, setMoves] = useState(0);
+    const [isComplete, setIsComplete] = useState(false);
+
+    const saveScore = async () => {
+        if (!user || moves === 0) return;
+        // Lower moves is better, so we'll store it as a positive score
+        const score = 1000 - (moves * 10); // Simple scoring logic
+        try {
+            await addDoc(collection(db, "scores"), {
+                userId: user.uid,
+                username: user.displayName || user.email,
+                score: score > 0 ? score : 0, // Ensure score isn't negative
+                game: 'MemoryGame',
+                createdAt: serverTimestamp()
+            });
+            toast({ title: "Score Saved!", description: `Your score of ${score} has been saved.` });
+        } catch (e) {
+            console.error("Error adding document: ", e);
+            toast({ variant: "destructive", title: "Uh oh!", description: "Could not save your score." });
+        }
+    };
 
     const resetGame = () => {
         setBoard(createBoard());
         setFlippedIndices([]);
         setMoves(0);
+        setIsComplete(false);
     }
     
     useEffect(() => {
@@ -36,14 +63,12 @@ export function MemoryGame() {
             const secondCard = board[secondIndex];
 
             if (firstCard.icon.key === secondCard.icon.key) {
-                // Match
                 const newBoard = [...board];
                 newBoard[firstIndex].isMatched = true;
                 newBoard[secondIndex].isMatched = true;
                 setBoard(newBoard);
                 setFlippedIndices([]);
             } else {
-                // No match
                 setTimeout(() => {
                     const newBoard = [...board];
                     newBoard[firstIndex].isFlipped = false;
@@ -56,8 +81,16 @@ export function MemoryGame() {
         }
     }, [flippedIndices, board]);
 
+    useEffect(() => {
+        const allMatched = board.every(card => card.isMatched);
+        if (allMatched && !isComplete) {
+            setIsComplete(true);
+            saveScore();
+        }
+    }, [board, isComplete, saveScore]);
+
     const handleCardClick = (index: number) => {
-        if (flippedIndices.length === 2 || board[index].isFlipped) return;
+        if (flippedIndices.length === 2 || board[index].isFlipped || isComplete) return;
 
         const newBoard = [...board];
         newBoard[index].isFlipped = true;
@@ -65,8 +98,6 @@ export function MemoryGame() {
         setFlippedIndices([...flippedIndices, index]);
     };
     
-    const allMatched = board.every(card => card.isMatched);
-
     return (
         <Card className="w-full max-w-lg mx-auto">
             <CardHeader className="text-center">
@@ -92,13 +123,13 @@ export function MemoryGame() {
                         </div>
                     ))}
                 </div>
-                {allMatched && (
-                    <div className="text-center space-y-2">
-                        <p className="font-semibold text-lg">You won!</p>
+                {isComplete && (
+                    <div className="text-center space-y-2 mt-4">
+                        <p className="font-semibold text-lg">You won in {moves} moves!</p>
                         <Button onClick={resetGame}>Play Again</Button>
                     </div>
                 )}
-                 {!allMatched && <Button onClick={resetGame} variant="outline" className="mt-4">Reset Game</Button>}
+                 {!isComplete && <Button onClick={resetGame} variant="outline" className="mt-4">Reset Game</Button>}
             </CardContent>
         </Card>
     );

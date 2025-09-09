@@ -1,8 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileAudio, FileText } from 'lucide-react';
 
-const categories = {
+"use client";
+
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Youtube, FileAudio, FileText, RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const categoriesData = {
   anxiety: {
     name: "Anxiety Relief",
     description: "Techniques and resources to calm your mind and manage anxiety.",
@@ -19,10 +24,6 @@ const categories = {
     pdfs: [
       { title: "Understanding Your Anxiety Workbook", source: "#" },
       { title: "Cognitive Behavioral Therapy Techniques", source: "#" },
-    ],
-    quotes: [
-      { text: "You don't have to control your thoughts. You just have to stop letting them control you.", author: "Dan Millman" },
-      { text: "The greatest weapon against stress is our ability to choose one thought over another.", author: "William James" },
     ],
   },
   depression: {
@@ -42,9 +43,6 @@ const categories = {
       { title: "A Guide to Self-Compassion", source: "#" },
       { title: "Building a Routine When Depressed", source: "#" },
     ],
-     quotes: [
-      { text: "Even the darkest night will end and the sun will rise.", author: "Victor Hugo" },
-    ],
   },
   sleep: {
     name: "Better Sleep",
@@ -62,9 +60,6 @@ const categories = {
     pdfs: [
       { title: "The Ultimate Guide to a Better Sleep Routine", source: "#" },
       { title: "Journal Prompts for Bedtime", source: "#" },
-    ],
-    quotes: [
-      { text: "Sleep is the best meditation.", author: "Dalai Lama" },
     ],
   },
   stress: {
@@ -84,11 +79,20 @@ const categories = {
       { title: "The Stress Management Handbook", source: "#" },
       { title: "Identifying Your Stress Triggers", source: "#" },
     ],
-    quotes: [
-      { text: "It's not the load that breaks you down, it's the way you carry it.", author: "Lou Holtz" },
-    ],
   },
 };
+
+const allQuotes = [
+    { quote: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { quote: "You are never too old to set another goal or to dream a new dream.", author: "C.S. Lewis" },
+    { quote: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+    { quote: "What you get by achieving your goals is not as important as what you become by achieving your goals.", author: "Zig Ziglar" },
+    { quote: "The only limit to our realization of tomorrow will be our doubts of today.", author: "Franklin D. Roosevelt" },
+    { quote: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { quote: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+    { quote: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+];
+
 
 const ResourceCard = ({ icon, title, type }: { icon: React.ReactNode, title: string, type: string }) => (
     <Card className="hover:shadow-md transition-shadow">
@@ -102,6 +106,31 @@ const ResourceCard = ({ icon, title, type }: { icon: React.ReactNode, title: str
     </Card>
 );
 
+const QuoteDisplay = () => {
+    const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * allQuotes.length));
+
+    const handleChangeQuote = () => {
+        setQuoteIndex(prev => (prev + 1) % allQuotes.length);
+    };
+    
+    const currentQuote = allQuotes[quoteIndex];
+
+    return (
+         <div>
+            <h3 className="font-semibold text-xl mb-4">Inspirational Quote</h3>
+            <div className="space-y-4">
+                <blockquote className="border-l-4 border-accent pl-4 italic text-muted-foreground min-h-[60px]">
+                   "{currentQuote.quote}" - <cite className="font-semibold not-italic">{currentQuote.author}</cite>
+                </blockquote>
+                <Button onClick={handleChangeQuote} variant="outline" size="sm">
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    New Quote
+                </Button>
+            </div>
+        </div>
+    )
+}
+
 export default function ResourcesPage() {
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
@@ -112,17 +141,17 @@ export default function ResourcesPage() {
 
             <Tabs defaultValue="anxiety" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
-                    {Object.entries(categories).map(([key, category]) => (
+                    {Object.entries(categoriesData).map(([key, category]) => (
                         <TabsTrigger key={key} value={key} className="py-2">{category.name}</TabsTrigger>
                     ))}
                 </TabsList>
 
-                {Object.entries(categories).map(([key, category]) => (
+                {Object.entries(categoriesData).map(([key, category]) => (
                     <TabsContent key={key} value={key} className="mt-8">
                         <Card className="bg-secondary/30">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-headline">{category.name}</CardTitle>
-                                <p className="text-muted-foreground">{category.description}</p>
+                                <CardDescription>{category.description}</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-8">
                                 <div>
@@ -168,16 +197,8 @@ export default function ResourcesPage() {
                                     </div>
                                 </div>
 
-                                <div>
-                                    <h3 className="font-semibold text-xl mb-4">Inspirational Quotes</h3>
-                                    <div className="space-y-4">
-                                        {category.quotes.map((quote, index) => (
-                                            <blockquote key={index} className="border-l-4 border-accent pl-4 italic text-muted-foreground">
-                                                "{quote.text}" - <cite className="font-semibold not-italic">{quote.author}</cite>
-                                            </blockquote>
-                                        ))}
-                                    </div>
-                                </div>
+                                <QuoteDisplay />
+                                
                             </CardContent>
                         </Card>
                     </TabsContent>
