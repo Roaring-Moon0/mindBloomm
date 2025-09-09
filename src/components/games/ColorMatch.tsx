@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Check, X } from 'lucide-react';
+import { Check, X, RotateCw } from 'lucide-react';
 
 const generateRandomColor = () => {
     const h = Math.floor(Math.random() * 360);
@@ -39,6 +39,11 @@ export function ColorMatch() {
         setTargetColor(newTarget);
         setOptions(generateOptions(newTarget));
     };
+    
+    const restartGame = () => {
+        setScore(0);
+        newRound();
+    }
 
     useEffect(() => {
         newRound();
@@ -80,11 +85,14 @@ export function ColorMatch() {
                 </div>
 
                 {showFeedback && (
-                    <div className="flex items-center gap-2 font-semibold">
+                    <div className="flex items-center gap-2 font-semibold h-6">
                          {message === 'Correct!' ? <Check className="w-6 h-6 text-green-500"/> : <X className="w-6 h-6 text-red-500"/>}
                          <span>{message}</span>
                     </div>
                 )}
+                 <div className="h-6">
+                    {!showFeedback && <Button onClick={restartGame} variant="outline" size="sm"><RotateCw className="mr-2 h-4 w-4"/>Restart Game</Button>}
+                </div>
             </CardContent>
         </Card>
     );
