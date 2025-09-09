@@ -2,7 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BreathingVisualizer } from '@/components/games/BreathingVisualizer';
 import { ColorMatch } from '@/components/games/ColorMatch';
 import { MemoryGame } from '@/components/games/MemoryGame';
-import { Music } from 'lucide-react';
+import { Music, Trophy } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export default function GamesPage() {
     return (
@@ -10,6 +12,13 @@ export default function GamesPage() {
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold tracking-tight font-headline">Calming Games</h1>
                 <p className="mt-4 text-lg text-muted-foreground">Relax your mind with our collection of soothing and satisfying games.</p>
+                <div className="mt-6">
+                    <Button asChild>
+                        <Link href="/leaderboard">
+                            <Trophy className="mr-2 h-5 w-5" /> View Leaderboard
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div className="grid gap-12 lg:grid-cols-2 items-start">
