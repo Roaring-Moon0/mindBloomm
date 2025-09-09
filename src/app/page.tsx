@@ -75,7 +75,7 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://picsum.photos/1200/800"
+                src="https://picsum.photos/id/225/1200/800"
                 width={1200}
                 height={800}
                 alt="Calm natural scenery"
