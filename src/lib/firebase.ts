@@ -1,6 +1,7 @@
+
 // src/lib/firebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -13,9 +14,20 @@ const firebaseConfig = {
   messagingSenderId: "202583968080"
 };
 
+const isDevelopment = process.env.NODE_ENV === 'development';
+
+if (isDevelopment) {
+    firebaseConfig.authDomain = 'localhost:9002';
+}
+
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+if (isDevelopment && process.env.FIREBASE_AUTH_EMULATOR_HOST) {
+    connectAuthEmulator(auth, `http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}`);
+}
+
 
 export { app, auth, db };
