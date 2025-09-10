@@ -1,8 +1,46 @@
+
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, ShieldAlert } from "lucide-react";
+import { Phone, ShieldAlert, Loader2 } from "lucide-react";
 import { ChatUI } from './chat-ui';
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function ChatPage() {
+    const { user, loading } = useAuth();
+    const router = useRouter();
+
+    if (loading) {
+        return (
+            <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center">
+                <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary"/>
+                <h1 className="text-2xl font-bold">Checking authentication...</h1>
+                <p className="text-muted-foreground">Please wait a moment.</p>
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+            <div className="container mx-auto py-12 px-4 md:px-6 text-center">
+                <Card className="max-w-lg mx-auto">
+                    <CardHeader>
+                        <CardTitle>Access Denied</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <p>You need to be logged in to use the AI Assistant.</p>
+                        <Button asChild>
+                           <Link href="/login">Login to Chat</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
              <div className="text-center mb-8">

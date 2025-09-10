@@ -38,16 +38,19 @@ const formatMarkdown = (text: string) => {
   text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   // Italics
   text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  // Line breaks
+  text = text.replace(/\n/g, '<br />');
   return text;
 };
 
+const defaultInitialMessage: Message = {
+  role: 'assistant',
+  content: "Hello! I'm here to help. To give you the best recommendations, could you please tell me a bit about how you're feeling today?",
+};
+
+
 export function ChatUI() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: "Hello! I'm here to help. To give you the best recommendations, could you please tell me a bit about how you're feeling today?",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -60,9 +63,55 @@ export function ChatUI() {
     },
   });
 
+  // Load messages from localStorage on initial render
+  useEffect(() => {
+    const savedMessages = localStorage.getItem('chatHistory');
+    if (savedMessages) {
+        try {
+            const parsedMessages = JSON.parse(savedMessages).map((msg: Message) => {
+                if (msg.role === 'assistant' && typeof msg.content === 'string') {
+                    return {
+                        ...msg,
+                        content: (
+                            <div
+                                className="space-y-2 whitespace-pre-wrap"
+                                dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }}
+                            />
+                        ),
+                    };
+                }
+                return msg;
+            });
+            setMessages(parsedMessages);
+        } catch (e) {
+            setMessages([defaultInitialMessage]);
+        }
+    } else {
+      setMessages([defaultInitialMessage]);
+    }
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    const messagesToSave = messages.map(msg => {
+        // We need to convert ReactNode back to a string for storage
+        if (typeof msg.content !== 'string') {
+            // This is a simple and imperfect way to get text content.
+            // A more robust solution might be needed for complex nodes.
+            return { ...msg, content: (msg.content as any)?.props?.dangerouslySetInnerHTML?.__html || '...' };
+        }
+        return msg;
+    });
+    localStorage.setItem('chatHistory', JSON.stringify(messagesToSave));
+  }, [messages]);
+
+
   useEffect(() => {
     if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+        if (viewport) {
+             viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+        }
     }
   }, [messages, isLoading]);
 
@@ -101,7 +150,7 @@ export function ChatUI() {
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto p-4 md:p-6 flex flex-col h-full">
-        <ScrollArea className="flex-1 pr-4">
+        <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
             <div className="space-y-6">
                 {messages.map((message, index) => (
                 <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
@@ -132,7 +181,6 @@ export function ChatUI() {
                     </div>
                 )}
             </div>
-            <div ref={scrollAreaRef} />
         </ScrollArea>
         
         {showForm && (
