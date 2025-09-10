@@ -46,12 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Listen for auth state changes. This is the single source of truth.
+  // onAuthStateChanged is the single source of truth for the user's session.
+  // It correctly handles all auth scenarios: initial load, sign-in, sign-out, and token refreshes.
+  // It also fires after a successful signInWithPopup or signInWithRedirect.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // User is signed in.
-        // This handles returning users, and the completion of a redirect sign-in.
+        // User is signed in. Ensure their document exists in Firestore.
         await ensureUserDocument(currentUser);
         setUser(currentUser);
       } else {

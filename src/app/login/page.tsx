@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -47,14 +47,20 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        await signInWithRedirect(auth, provider);
+        await signInWithPopup(auth, provider);
+        router.push("/dashboard");
+        toast({
+            title: "Login Successful!",
+            description: "Welcome back.",
+        });
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
         toast({
             variant: "destructive",
             title: "Google Sign-In Failed",
-            description: "Could not start the sign-in process. Please try again.",
+            description: "Could not complete the sign-in process. Please try again.",
         });
+    } finally {
         setIsGoogleLoading(false);
     }
   };
@@ -127,7 +133,7 @@ export default function LoginPage() {
           
           <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading || isGoogleLoading}>
             {isGoogleLoading ? (
-              "Redirecting..."
+              "Signing in..."
             ) : (
               <>
                 <GoogleIcon />

@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,16 +50,21 @@ export default function SignUpPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        // The redirect result is handled globally in the AuthProvider
-        await signInWithRedirect(auth, provider);
-
+        await signInWithPopup(auth, provider);
+        // The AuthProvider will handle creating the user document
+        router.push('/dashboard');
+        toast({
+            title: "Account Created!",
+            description: "Welcome to MindBloom.",
+        });
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
         toast({
             variant: "destructive",
-            title: "Google Sign-In Failed",
-            description: "Could not start the sign-in process. Please try again.",
+            title: "Google Sign-Up Failed",
+            description: "Could not complete the sign-up process. Please try again.",
         });
+    } finally {
         setIsGoogleLoading(false);
     }
   };
