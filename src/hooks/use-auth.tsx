@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth';
+import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -18,19 +18,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Helper function to create user document if it doesn't exist
 const ensureUserDocument = async (user: User) => {
+    if (!user) return;
     const userDocRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userDocRef);
-    if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || user.email?.split('@')[0],
-            photoURL: user.photoURL,
-            createdAt: new Date(),
-        });
-        return true; // Indicates a new user was created
+    try {
+        const userDoc = await getDoc(userDocRef);
+        if (!userDoc.exists()) {
+            // This is a new user, create their document
+            await setDoc(userDocRef, {
+                uid: user.uid,
+                email: user.email,
+                displayName: user.displayName || user.email?.split('@')[0],
+                photoURL: user.photoURL,
+                createdAt: new Date(),
+            });
+            toast({
+                title: "Account Created!",
+                description: `Welcome to MindBloom, ${user.displayName || 'Friend'}.`,
+            });
+        }
+    } catch (error) {
+        console.error("Error ensuring user document:", error);
     }
-    return false; // Indicates user already existed
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -38,46 +46,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Handle redirect result on initial load
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result && result.user) {
-          const isNewUser = await ensureUserDocument(result.user);
-           if (isNewUser) {
-               toast({
-                  title: "Account Created!",
-                  description: `Welcome to MindBloom, ${result.user.displayName || 'Friend'}.`,
-              });
-          } else {
-               toast({
-                  title: "Login Successful!",
-                  description: `Welcome back, ${result.user.displayName || 'Friend'}.`,
-              });
-          }
-          router.push('/dashboard');
-        }
-      })
-      .catch((error) => {
-        console.error("Error processing redirect result:", error);
-      });
-  // The anugular brackets here tell eslint to only run this effect once on mount.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Listen for auth state changes
+  // Listen for auth state changes. This is the single source of truth.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // This ensures that even if a user exists, we double-check their doc is there.
+        // User is signed in.
+        // This handles returning users, and the completion of a redirect sign-in.
         await ensureUserDocument(currentUser);
         setUser(currentUser);
       } else {
+        // User is signed out.
         setUser(null);
       }
       setLoading(false);
     });
 
+    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, []);
 

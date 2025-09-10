@@ -47,9 +47,7 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        // We are intentionally not awaiting this call.
-        // It will navigate the user away and they will be redirected back.
-        // The auth state change will be handled by our main AuthProvider.
+        // The redirect result is handled globally in the AuthProvider.
         await signInWithRedirect(auth, provider);
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
