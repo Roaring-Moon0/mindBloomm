@@ -110,7 +110,7 @@ export default function LoginPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                     <FormMessage />
-                  </Item>
+                  </FormItem>
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
@@ -150,3 +150,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
