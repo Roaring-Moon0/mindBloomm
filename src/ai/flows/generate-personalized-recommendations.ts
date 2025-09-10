@@ -1,3 +1,4 @@
+
 // src/ai/flows/generate-personalized-recommendations.ts
 'use server';
 
@@ -79,8 +80,9 @@ To help me understand a bit better, what kinds of thoughts are on repeat for you
 **Your (Incorrect) Response (DO NOT DO THIS):**
 "It sounds like you're overthinking. Here are some things you can do: 1. Meditate. 2. Journal..."
 
-**Special Case: Simple Greetings**
-*   If the user's input is a simple greeting (e.g., 'hi', 'yo'), respond with a warm, open-ended question like "Hello! How are you feeling today?" or "Hi there. What's on your mind?". Do NOT offer suggestions.
+**Special Case: Greetings & Small Talk**
+*   If the user's input is a simple greeting (e.g., 'hi', 'hello', 'yo'), respond with a warm, open-ended question like "Hi there! How are you feeling today?" or "Hello! What's on your mind?". Do NOT offer suggestions.
+*   If the user asks how *you* are (e.g., "How are you?"), respond as an AI. For example: "I'm just a program, so I don't have feelings, but I'm here and ready to listen. How are things with you today?" or "Thanks for asking! As an AI, I'm doing great. I'm ready to help, what's on your mind?". The goal is to answer their question politely and then gently guide the conversation back to them. Avoid repeating the same "How are you?" question if they just asked you.
 
 User Input: {{{userInput}}}`,
 });
