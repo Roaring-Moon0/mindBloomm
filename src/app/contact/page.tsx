@@ -16,7 +16,6 @@ import { Mail, Phone, Clock } from 'lucide-react';
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email." }),
-  subject: z.string().min(5, { message: "Subject must be at least 5 characters." }),
   message: z.string().min(10, { message: "Message must be at least 10 characters." }),
 });
 
@@ -45,35 +44,29 @@ export default function ContactPage() {
     defaultValues: {
       name: "",
       email: "",
-      subject: "",
       message: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // IMPORTANT: Replace this with your own access key from web3forms.com
     const WEB3FORMS_ACCESS_KEY = "633ecc02-b95a-4b81-a3a7-2f72428ead47";
 
-    if (WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY_HERE") {
-        toast({
-            variant: "destructive",
-            title: "Setup Required!",
-            description: "Please replace 'YOUR_ACCESS_KEY_HERE' in the code to enable the contact form.",
-        });
-        return;
-    }
-    
-    const formData = new FormData();
-    formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-    formData.append("name", values.name);
-    formData.append("email", values.email);
-    formData.append("subject", values.subject);
-    formData.append("message", values.message);
+    const data = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        name: values.name,
+        email: values.email,
+        message: values.message,
+        subject: `New message from ${values.name}`,
+    };
 
     try {
         const response = await fetch("https://api.web3forms.com/submit", {
             method: "POST",
-            body: formData,
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify(data),
         });
 
         const result = await response.json();
@@ -131,14 +124,6 @@ export default function ContactPage() {
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl><Input type="email" placeholder="your.email@example.com" {...field} /></FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField control={form.control} name="subject" render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Subject</FormLabel>
-                        <FormControl><Input placeholder="How can we help?" {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
