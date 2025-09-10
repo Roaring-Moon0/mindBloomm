@@ -50,49 +50,20 @@ export default function ContactPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const WEB3FORMS_ACCESS_KEY = "633ecc02-b95a-4b81-a3a7-2f72428ead47";
+    const subject = `Message from ${values.name} via MindBloom`;
+    const body = `Name: ${values.name}\nEmail: ${values.email}\n\nMessage:\n${values.message}`;
+    const mailtoLink = `mailto:mindcrafters417@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // This will attempt to open the user's default email client
+    window.location.href = mailtoLink;
 
-    const data = {
-        access_key: WEB3FORMS_ACCESS_KEY,
-        name: values.name,
-        email: values.email,
-        message: values.message,
-    };
+    toast({
+        title: "Opening Email Client",
+        description: "Please complete sending the message in your email application.",
+    });
 
-    try {
-        const response = await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            body: JSON.stringify(data),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            toast({
-              title: "Message Sent!",
-              description: "Thank you for reaching out. We'll get back to you soon.",
-            });
-            form.reset();
-        } else {
-            console.error("Web3Forms Error:", result);
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: result.message || "Could not send your message. Please try again.",
-            });
-        }
-    } catch (error) {
-        console.error("Submission Error:", error);
-        toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: "There was a problem sending your message. Please check your connection and try again.",
-        });
-    }
+    // We can reset the form optimistically
+    form.reset();
   }
 
   return (
@@ -138,7 +109,7 @@ export default function ContactPage() {
                         )}
                     />
                     <Button type="submit" disabled={form.formState.isSubmitting}>
-                        {form.formState.isSubmitting ? "Sending..." : "Send Message"}
+                        {form.formState.isSubmitting ? "Preparing..." : "Open in Email"}
                     </Button>
                     </form>
                 </Form>
