@@ -56,7 +56,6 @@ export default function ContactPage() {
         name: values.name,
         email: values.email,
         message: values.message,
-        subject: `New message from ${values.name}`,
     };
 
     try {
