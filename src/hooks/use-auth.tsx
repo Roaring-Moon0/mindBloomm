@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, onAuthStateChanged, signOut, getRedirectResult, UserCredential } from 'firebase/auth';
+import { User, onAuthStateChanged, signOut, getRedirectResult } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
@@ -38,51 +38,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // This effect handles both redirect results and persisted auth state.
+  // Handle redirect result on initial load
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+          const isNewUser = await ensureUserDocument(result.user);
+           if (isNewUser) {
+               toast({
+                  title: "Account Created!",
+                  description: `Welcome to MindBloom, ${result.user.displayName || 'Friend'}.`,
+              });
+          } else {
+               toast({
+                  title: "Login Successful!",
+                  description: `Welcome back, ${result.user.displayName || 'Friend'}.`,
+              });
+          }
+          router.push('/dashboard');
+        }
+      })
+      .catch((error) => {
+        console.error("Error processing redirect result:", error);
+      });
+  // The anugular brackets here tell eslint to only run this effect once on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true); // Start loading when auth state might be changing
       if (currentUser) {
+        // This ensures that even if a user exists, we double-check their doc is there.
         await ensureUserDocument(currentUser);
         setUser(currentUser);
       } else {
-        // If there's no persisted user, check for a redirect result.
-        try {
-            const result = await getRedirectResult(auth);
-            if (result && result.user) {
-                const isNewUser = await ensureUserDocument(result.user);
-                 if (isNewUser) {
-                     toast({
-                        title: "Account Created!",
-                        description: `Welcome to MindBloom, ${result.user.displayName || 'Friend'}.`,
-                    });
-                } else {
-                     toast({
-                        title: "Login Successful!",
-                        description: `Welcome back, ${result.user.displayName || 'Friend'}.`,
-                    });
-                }
-                router.push('/dashboard');
-                setUser(result.user); // Set user immediately after successful redirect
-            } else {
-                setUser(null);
-            }
-        } catch (error) {
-            console.error("Auth Error:", error);
-            setUser(null);
-        }
+        setUser(null);
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
   const logout = async () => {
     await signOut(auth);
-    // The onAuthStateChanged listener will handle setting user to null.
+    setUser(null);
     router.push('/'); 
   };
 
