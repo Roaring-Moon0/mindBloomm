@@ -67,6 +67,15 @@ export default function DashboardPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
 
+    useEffect(() => {
+        // This effect handles redirecting unauthenticated users.
+        // It runs after the initial render and whenever `loading` or `user` change.
+        if (!loading && !user) {
+            router.push('/login');
+        }
+    }, [loading, user, router]);
+
+
     const getInitials = (emailOrName: string | null | undefined) => {
         if (!emailOrName) return "U";
         const nameParts = emailOrName.split(' ');
@@ -76,7 +85,9 @@ export default function DashboardPage() {
         return emailOrName.substring(0, 2).toUpperCase();
     }
 
-    if (loading) {
+    if (loading || !user) {
+        // While loading or if there's no user, show a skeleton screen.
+        // The useEffect hook above will handle the redirect if there's no user.
         return (
             <div className="container mx-auto py-12 px-4 md:px-6">
                 <Skeleton className="h-10 w-1/2 mb-4" />
@@ -89,14 +100,6 @@ export default function DashboardPage() {
             </div>
         );
     }
-    
-    if (!user) {
-        // This should not happen if routing is protected, but as a fallback
-        // we can redirect to login. In a real app, this would be handled by middleware.
-         router.push('/login');
-         return null; // Render nothing while redirecting
-    }
-
 
     return (
         <FadeIn>
