@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { FadeIn } from '@/components/ui/fade-in';
 
 const features = [
   {
@@ -47,6 +48,9 @@ const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man' },
   { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=G', dataAiHint: 'person face' },
   { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=K', dataAiHint: 'person face' },
+  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=A', dataAiHint: 'person face' },
+  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=D', dataAiHint: 'person face' },
+  { name: 'Shubham', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=S', dataAiHint: 'person face' },
 ];
 
 export default function Home() {
@@ -58,31 +62,35 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-4">
+                <FadeIn>
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
                     A Digital Support System for Students in Higher Education
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
                     MindBloom is a digital sanctuary for mental wellness, providing accessible, and stigma-free support to help students navigate life's challenges.
                   </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
-                    <Link href="/resources">Explore Resources</Link>
-                  </Button>
-                  <Button asChild size="lg" variant="outline">
-                     <Link href="/chat">Talk to AI Assistant</Link>
-                  </Button>
-                </div>
+                </FadeIn>
+                <FadeIn delay={0.2}>
+                  <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                    <Button asChild size="lg">
+                      <Link href="/resources">Explore Resources</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline">
+                       <Link href="/chat">Talk to AI Assistant</Link>
+                    </Button>
+                  </div>
+                </FadeIn>
               </div>
-              <Image
-                src="https://picsum.photos/seed/1/1200/800"
-                width={1200}
-                height={800}
-                alt="Students studying in a calm environment"
-                data-ai-hint="students calm"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              />
+              <FadeIn>
+                <Image
+                  src="https://picsum.photos/seed/1/1200/800"
+                  width={1200}
+                  height={800}
+                  alt="Students studying in a calm environment"
+                  data-ai-hint="students calm"
+                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+                />
+              </FadeIn>
             </div>
           </div>
         </section>
@@ -90,7 +98,7 @@ export default function Home() {
         {/* Features Section */}
         <section id="features" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Key Features</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">A Path to a Healthier Mind</h2>
@@ -98,20 +106,22 @@ export default function Home() {
                   Our platform offers a suite of tools designed to support your mental health journey, from guided meditations to AI-powered conversations.
                 </p>
               </div>
-            </div>
+            </FadeIn>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
               {features.map((feature, index) => (
-                <Link href={feature.href} key={index} className="block h-full">
-                    <Card className="h-full hover:shadow-lg transition-shadow duration-300">
-                        <CardHeader className="flex flex-col items-center text-center gap-4">
-                            {feature.icon}
-                            <CardTitle>{feature.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-center text-muted-foreground">
-                            {feature.description}
-                        </CardContent>
-                    </Card>
-                </Link>
+                <FadeIn key={index} delay={0.1 * (index + 1)}>
+                  <Link href={feature.href} className="block h-full">
+                      <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                          <CardHeader className="flex flex-col items-center text-center gap-4">
+                              {feature.icon}
+                              <CardTitle>{feature.title}</CardTitle>
+                          </CardHeader>
+                          <CardContent className="text-center text-muted-foreground">
+                              {feature.description}
+                          </CardContent>
+                      </Card>
+                  </Link>
+                </FadeIn>
               ))}
             </div>
           </div>
@@ -119,7 +129,7 @@ export default function Home() {
 
         {/* Resources Preview */}
         <section id="resources-preview" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
-          <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
+          <FadeIn className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Explore Our Library</h2>
               <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -140,13 +150,13 @@ export default function Home() {
                     </Link>
                 </Button>
             </div>
-          </div>
+          </FadeIn>
         </section>
 
         {/* Team Preview */}
         <section id="team-preview" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Our Experts</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Meet the Team</h2>
@@ -154,32 +164,34 @@ export default function Home() {
                   Our team of dedicated professionals is here to support you.
                 </p>
               </div>
-            </div>
+            </FadeIn>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
-              {teamMembers.map((member, index) => (
-                <Card key={index} className="text-center flex flex-col items-center p-6">
-                  <Avatar className="w-24 h-24 mb-4">
-                    <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
-                    <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <CardTitle className="text-lg">{member.name}</CardTitle>
-                  <p className="text-muted-foreground">{member.role}</p>
-                </Card>
+              {teamMembers.slice(0,3).map((member, index) => (
+                <FadeIn key={index} delay={0.1 * (index + 1)}>
+                  <Card className="text-center flex flex-col items-center p-6 h-full">
+                    <Avatar className="w-24 h-24 mb-4">
+                      <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
+                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <CardTitle className="text-lg">{member.name}</CardTitle>
+                    <p className="text-muted-foreground">{member.role}</p>
+                  </Card>
+                </FadeIn>
               ))}
             </div>
-            <div className="text-center mt-12">
+            <FadeIn className="text-center mt-12">
                 <Button asChild variant="outline">
                     <Link href="/about">
                         More About Us <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
               </Button>
-            </div>
+            </FadeIn>
           </div>
         </section>
 
         {/* Chat CTA */}
         <section id="chat-cta" className="w-full py-12 md:py-24 lg:py-32 bg-primary/10">
-          <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6 lg:gap-10">
+          <FadeIn className="container grid items-center justify-center gap-4 px-4 text-center md:px-6 lg:gap-10">
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">Ready to Talk?</h2>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -191,12 +203,12 @@ export default function Home() {
             <Button asChild size="lg">
                 <Link href="/chat">Start a Conversation</Link>
             </Button>
-          </div>
+          </FadeIn>
         </section>
 
         {/* Newsletter Signup */}
         <section id="newsletter" className="w-full py-12 md:py-24 lg:py-32">
-            <div className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
+            <FadeIn className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
                 <div className="space-y-3">
                     <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Stay in Touch</h2>
                     <p className="mx-auto max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
@@ -212,7 +224,7 @@ export default function Home() {
                         We respect your privacy. Unsubscribe at any time.
                     </p>
                 </div>
-            </div>
+            </FadeIn>
         </section>
 
       </main>
