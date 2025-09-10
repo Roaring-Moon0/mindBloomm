@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -5,11 +6,11 @@ import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
 
 const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/C9B6FF/183047?text=A', dataAiHint: 'anime man', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
-  { name: 'Gorav', role: 'Student', avatar: 'https://placehold.co/200x200/9FD8FF/183047?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
+  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/9FD8FF/183047?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
   { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/C9B6FF/183047?text=K', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
   { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/9FD8FF/183047?text=A', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
-  { name: 'Dharivi', role: 'Student', avatar: 'https://placehold.co/200x200/C9B6FF/183047?text=D', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
-  { name: 'Shubhm', role: 'Student', avatar: 'https://placehold.co/200x200/9FD8FF/183047?text=S', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
+  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/C9B6FF/183047?text=D', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
+  { name: 'Shubham', role: 'Student', avatar: 'https://placehold.co/200x200/9FD8FF/183047?text=S', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
 ];
 
 const values = [

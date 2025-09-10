@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,6 +18,7 @@ import Logo from '@/components/icons/Logo';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AuthButton } from './AuthButton';
+import { Separator } from '../ui/separator';
 
 const navLinks = [
   { href: '/resources', label: 'Resources' },
@@ -26,6 +28,10 @@ const navLinks = [
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact' },
 ];
+
+const adminLinks = [
+    { href: '/admin/login', label: 'Admin Login' }
+]
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -87,6 +93,16 @@ export function Header() {
                       className="text-foreground"
                     >
                       {link.label}
+                    </Link>
+                  ))}
+                  <Separator className="my-2" />
+                  {adminLinks.map((link) => (
+                     <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-foreground"
+                    >
+                        {link.label}
                     </Link>
                   ))}
                 </div>
