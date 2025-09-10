@@ -52,7 +52,7 @@ export default function ContactPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // IMPORTANT: Replace this with your own access key from web3forms.com
-    const WEB3FORMS_ACCESS_KEY = "YOUR_ACCESS_KEY_HERE";
+    const WEB3FORMS_ACCESS_KEY = "633ecc02-b95a-4b81-a3a7-2f72428ead47";
 
     if (WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY_HERE") {
         toast({
