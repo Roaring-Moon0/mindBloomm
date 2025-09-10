@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -25,9 +26,13 @@ export function AuthButton() {
     router.push("/");
   };
   
-  const getInitials = (email: string | null | undefined) => {
-    if (!email) return "?";
-    return email.substring(0, 2).toUpperCase();
+  const getInitials = (emailOrName: string | null | undefined) => {
+    if (!emailOrName) return "?";
+    const nameParts = emailOrName.split(' ');
+    if (nameParts.length > 1) {
+        return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+    }
+    return emailOrName.substring(0, 2).toUpperCase();
   }
 
   if (loading) {
@@ -41,7 +46,7 @@ export function AuthButton() {
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
               <AvatarImage src={user.photoURL || undefined} alt={user.email || 'User'} />
-              <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+              <AvatarFallback>{getInitials(user.displayName || user.email)}</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>

@@ -67,11 +67,13 @@ export default function DashboardPage() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
 
-    const getInitials = (email: string | null | undefined) => {
-        if (!email) return "U";
-        const name = user?.displayName;
-        if (name) return name.substring(0, 2).toUpperCase();
-        return email.substring(0, 2).toUpperCase();
+    const getInitials = (emailOrName: string | null | undefined) => {
+        if (!emailOrName) return "U";
+        const nameParts = emailOrName.split(' ');
+        if (nameParts.length > 1) {
+            return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+        }
+        return emailOrName.substring(0, 2).toUpperCase();
     }
 
     if (loading) {
@@ -130,7 +132,7 @@ export default function DashboardPage() {
                             <CardContent className="pt-6 flex flex-col items-center text-center">
                                 <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
                                     <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                                    <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                                    <AvatarFallback>{getInitials(user.displayName || user.email)}</AvatarFallback>
                                 </Avatar>
                                 <p className="font-semibold text-lg">{user.displayName || 'Anonymous User'}</p>
                                 <p className="text-sm text-muted-foreground">{user.email}</p>

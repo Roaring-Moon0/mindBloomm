@@ -6,6 +6,7 @@ import { User, onAuthStateChanged, signOut, getRedirectResult } from 'firebase/a
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { toast } from './use-toast';
 
 interface AuthContextType {
   user: User | null;
@@ -24,19 +25,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUser(user);
-        
-        // After redirect, if the user document doesn't exist, create it.
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists()) {
-             await setDoc(userDocRef, {
-                uid: user.uid,
-                email: user.email,
-                username: user.displayName || user.email?.split('@')[0],
-                createdAt: new Date(),
-            });
-        }
-        
       } else {
         setUser(null);
       }
@@ -52,14 +40,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getRedirectResult(auth)
       .then(async (result) => {
-        if (result) {
-          // This confirms the user is signed in.
-          // The onAuthStateChanged listener above will handle setting the user state.
-          toast({
-              title: "Login Successful!",
-              description: `Welcome back, ${result.user.displayName || 'User'}.`,
-          });
-          router.push('/dashboard');
+        if (result && result.user) {
+            const user = result.user;
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            // Create user document if it's a new user
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.displayName || user.email?.split('@')[0],
+                    photoURL: user.photoURL,
+                    createdAt: new Date(),
+                });
+            }
+            
+            toast({
+                title: "Login Successful!",
+                description: `Welcome back, ${result.user.displayName || 'User'}.`,
+            });
+            router.push('/dashboard');
         }
       })
       .catch((error) => {

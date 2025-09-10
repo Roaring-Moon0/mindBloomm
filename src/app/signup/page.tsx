@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, updateProfile } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,10 +50,7 @@ export default function SignUpPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        // We are intentionally not awaiting this call.
-        // It will navigate the user away and they will be redirected back.
-        // The auth state change will be handled by our main AuthProvider,
-        // but we'll also check for the result here to create the user doc.
+        // The redirect result is handled globally in the AuthProvider
         await signInWithRedirect(auth, provider);
 
     } catch (error: any) {
@@ -74,6 +71,9 @@ export default function SignUpPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
+      // Update Firebase Auth profile
+      await updateProfile(user, { displayName: values.username });
+      
       // Create a user document in Firestore
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
@@ -104,32 +104,6 @@ export default function SignUpPage() {
     }
   }
   
-  // This effect will run on page load to check if the user is returning from a Google redirect.
-  // It is needed on the signup page to ensure the user's document is created in Firestore.
-  useState(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result && result.user) {
-            const user = result.user;
-            const userDocRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userDocRef);
-
-            if (!userDoc.exists()) {
-                await setDoc(userDocRef, {
-                    uid: user.uid,
-                    email: user.email,
-                    username: user.displayName || user.email?.split('@')[0],
-                    createdAt: new Date(),
-                });
-            }
-        }
-      }).catch((error) => {
-        // We can ignore some errors like the popup-closed-by-user
-        if(error.code !== 'auth/popup-closed-by-user') {
-            console.error("Google redirect result error:", error);
-        }
-      });
-  });
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
@@ -202,5 +176,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-
-    
