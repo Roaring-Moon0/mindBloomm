@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface AdminAuthContextType {
   user: User | null;
@@ -21,11 +21,11 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // User is signed in, check for admin privileges
         const adminConfigDoc = await getDoc(doc(db, 'config', 'admins'));
         if (adminConfigDoc.exists()) {
           const adminEmails = adminConfigDoc.data().emails as string[];
@@ -33,30 +33,33 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
             setUser(user);
             setIsAdmin(true);
           } else {
-            // Not an admin, sign out and redirect
             await signOut(auth);
             setUser(null);
             setIsAdmin(false);
-            router.push('/admin/login');
+            if (pathname !== '/admin/login') {
+                router.push('/admin/login');
+            }
           }
         } else {
-          // Admin config doesn't exist, so no one is an admin
           await signOut(auth);
           setUser(null);
           setIsAdmin(false);
-          router.push('/admin/login');
+          if (pathname !== '/admin/login') {
+            router.push('/admin/login');
+          }
         }
       } else {
-        // No user is signed in
         setUser(null);
         setIsAdmin(false);
-        router.push('/admin/login');
+        if (pathname !== '/admin/login') {
+            router.push('/admin/login');
+        }
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [router, pathname]);
 
   const logout = async () => {
     await signOut(auth);
@@ -72,7 +75,9 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     logout,
   };
 
-  return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
+  // Only render children if loading is false. This prevents rendering the page
+  // before the auth check is complete and avoids flashing content.
+  return <AdminAuthContext.Provider value={value}>{!loading && children}</AdminAuthContext.Provider>;
 }
 
 export function useAdminAuth() {
@@ -82,5 +87,3 @@ export function useAdminAuth() {
   }
   return context;
 }
-
-    
