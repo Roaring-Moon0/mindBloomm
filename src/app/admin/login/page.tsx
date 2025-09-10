@@ -15,11 +15,25 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import Logo from "@/components/icons/Logo";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Terminal } from "lucide-react";
+
 
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email." }),
+  employeeCode: z.string().min(4, { message: "Please enter a valid employee code." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
 });
+
+// These are your new admin credentials.
+// IMPORTANT: For security, you should log into the Firebase console and change these passwords.
+const adminCredentials = [
+    { code: "MB-A1B2", password: "SecurePassword1!" },
+    { code: "MB-C3D4", password: "SecurePassword2!" },
+    { code: "MB-E5F6", password: "SecurePassword3!" },
+    { code: "MB-G7H8", password: "SecurePassword4!" },
+    { code: "MB-I9J0", password: "SecurePassword5!" },
+    { code: "MB-K1L2", password: "SecurePassword6!" },
+];
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -28,15 +42,19 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      employeeCode: "",
       password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    
+    // Map the employee code to a secure email format
+    const email = `${values.employeeCode.toLowerCase()}@mindbloom.app`;
+
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, values.password);
       const user = userCredential.user;
 
       // Check if user is an admin
@@ -62,7 +80,7 @@ export default function AdminLoginPage() {
       console.error("Admin login error:", error);
       let errorMessage = "An unknown error occurred. Please try again.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        errorMessage = "Invalid email or password. Please try again.";
+        errorMessage = "Invalid employee code or password. Please try again.";
       } else if (error.message.includes("not authorized")) {
         errorMessage = "You do not have permission to access the admin dashboard.";
       } else if (error.message.includes("Admin configuration not found")) {
@@ -81,7 +99,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-lg">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center">
             <Logo className="w-10 h-10 text-primary"/>
@@ -90,12 +108,25 @@ export default function AdminLoginPage() {
           <CardDescription>Login to manage MindBloom content.</CardDescription>
         </CardHeader>
         <CardContent>
+          <Alert className="mb-6">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Admin Credentials</AlertTitle>
+            <AlertDescription>
+                <p className="mb-2">Use one of the following credentials to log in. You can change the passwords in the Firebase console.</p>
+                <ul className="list-disc pl-5 space-y-1 text-xs">
+                    {adminCredentials.map(cred => (
+                       <li key={cred.code}><strong>Code:</strong> {cred.code} / <strong>Password:</strong> {cred.password}</li>
+                    ))}
+                </ul>
+            </AlertDescription>
+          </Alert>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField control={form.control} name="email" render={({ field }) => (
+              <FormField control={form.control} name="employeeCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl><Input type="email" placeholder="admin.email@example.com" {...field} /></FormControl>
+                    <FormLabel>Employee Code</FormLabel>
+                    <FormControl><Input placeholder="MB-A1B2" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -118,5 +149,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-
-    
