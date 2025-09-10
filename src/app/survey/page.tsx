@@ -1,12 +1,27 @@
 
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useFirestoreDocument } from '@/hooks/use-firestore';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2 } from 'lucide-react';
 
-// Later, this URL will be managed from the admin dashboard
-const SURVEY_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSc_i92h6A-tM-Jd5T-bYI_H2eXpPQaO9L-nO0U9gU_rEa_bFg/viewform?usp=sf_link";
+
+interface SurveyConfig {
+    url: string;
+}
 
 export default function SurveyPage() {
+    
+    // Later, this will be the real path to the config document in Firestore
+    const { data: surveyConfig, loading, error } = useFirestoreDocument<SurveyConfig>('config/survey');
+    
+    // For now, let's use a placeholder if the data isn't loaded yet.
+    // This will eventually be controlled from your admin dashboard.
+    const surveyFormUrl = surveyConfig?.url || "https://docs.google.com/forms/d/e/1FAIpQLSc_i92h6A-tM-Jd5T-bYI_H2eXpPQaO9L-nO0U9gU_rEa_bFg/viewform?usp=sf_link";
+
     return (
         <div className="container mx-auto py-12 px-4 md:px-6">
             <div className="text-center mb-12">
@@ -22,27 +37,43 @@ export default function SurveyPage() {
                     <CardDescription>The survey will take approximately 5-10 minutes to complete. All responses are completely anonymous.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="aspect-w-16 aspect-h-9">
-                        <iframe
-                            src={SURVEY_FORM_URL}
-                            width="100%"
-                            height="600"
-                            frameBorder="0"
-                            marginHeight={0}
-                            marginWidth={0}
-                            className="rounded-md"
-                        >
-                            Loading…
-                        </iframe>
-                    </div>
-                    <div className="text-center mt-6">
-                        <Button asChild>
-                            <Link href={SURVEY_FORM_URL} target="_blank" rel="noopener noreferrer">
-                                Open Survey in New Tab
-                            </Link>
-                        </Button>
-                        <p className="text-xs text-muted-foreground mt-2">If you have trouble viewing the embedded form, please open it in a new tab.</p>
-                    </div>
+                   {loading && (
+                        <div className="flex flex-col items-center justify-center h-[600px]">
+                            <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+                            <p className="text-muted-foreground">Loading survey...</p>
+                        </div>
+                   )}
+                   {!loading && error && (
+                       <div className="flex flex-col items-center justify-center h-[600px] text-center">
+                            <p className="text-destructive font-semibold">Could not load the survey.</p>
+                            <p className="text-muted-foreground text-sm">There might be an issue with our configuration. Please try again later.</p>
+                        </div>
+                   )}
+                   {!loading && !error && (
+                    <>
+                        <div className="aspect-w-16 aspect-h-9">
+                            <iframe
+                                src={surveyFormUrl}
+                                width="100%"
+                                height="600"
+                                frameBorder="0"
+                                marginHeight={0}
+                                marginWidth={0}
+                                className="rounded-md"
+                            >
+                                Loading…
+                            </iframe>
+                        </div>
+                        <div className="text-center mt-6">
+                            <Button asChild>
+                                <Link href={surveyFormUrl} target="_blank" rel="noopener noreferrer">
+                                    Open Survey in New Tab
+                                </Link>
+                            </Button>
+                            <p className="text-xs text-muted-foreground mt-2">If you have trouble viewing the embedded form, please open it in a new tab.</p>
+                        </div>
+                    </>
+                   )}
                 </CardContent>
             </Card>
         </div>
