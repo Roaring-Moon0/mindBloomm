@@ -44,7 +44,7 @@ const resourceCategories = [
 ];
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/C9B6FF/183047?text=A', dataAiHint: 'anime man' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man' },
   { name: 'Member 2', role: 'Student', avatar: 'https://picsum.photos/id/1005/100/100', dataAiHint: 'person face' },
   { name: 'Member 3', role: 'Student', avatar: 'https://picsum.photos/id/1011/100/100', dataAiHint: 'person face' },
 ];
@@ -59,11 +59,14 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
+                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-primary font-semibold">
+                    PS ID: 25092 - Gov. of Jammu and Kashmir
+                  </div>
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    Find Your Calm, Bloom Into You
+                    A Support System for Students in Higher Education
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    MindBloom is your personal sanctuary for mental wellness. Discover resources, tools, and support to help you navigate life's challenges.
+                    MindBloom is a digital sanctuary for mental wellness, providing accessible, and stigma-free support to help students navigate life's challenges.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -76,11 +79,11 @@ export default function Home() {
                 </div>
               </div>
               <Image
-                src="https://picsum.photos/id/1015/1200/800"
+                src="https://picsum.photos/seed/1/1200/800"
                 width={1200}
                 height={800}
-                alt="Calm natural scenery"
-                data-ai-hint="lake sunrise"
+                alt="Students studying in a calm environment"
+                data-ai-hint="students calm"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
               />
             </div>
@@ -219,5 +222,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
