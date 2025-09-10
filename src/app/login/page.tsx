@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -47,25 +47,17 @@ export default function LoginPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        toast({
-            title: "Login Successful!",
-            description: `Welcome back, ${user.displayName || 'User'}.`,
-        });
-        router.push("/dashboard");
+        // We are intentionally not awaiting this call.
+        // It will navigate the user away and they will be redirected back.
+        // The auth state change will be handled by our main AuthProvider.
+        signInWithRedirect(auth, provider);
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
-        let errorMessage = "Could not sign in with Google. Please try again.";
-        if (error.code === 'auth/popup-closed-by-user') {
-            errorMessage = "The sign-in window was closed before completion.";
-        }
         toast({
             variant: "destructive",
             title: "Google Sign-In Failed",
-            description: errorMessage,
+            description: "Could not start the sign-in process. Please try again.",
         });
-    } finally {
         setIsGoogleLoading(false);
     }
   };
@@ -118,7 +110,7 @@ export default function LoginPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                     <FormMessage />
-                  </FormItem>
+                  </Item>
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>

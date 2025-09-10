@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } from "firebase/auth";
 import { auth, db } from "@/lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,38 +50,19 @@ export default function SignUpPage() {
     setIsGoogleLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
+        // We are intentionally not awaiting this call.
+        // It will navigate the user away and they will be redirected back.
+        // The auth state change will be handled by our main AuthProvider,
+        // but we'll also check for the result here to create the user doc.
+        await signInWithRedirect(auth, provider);
 
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (!userDoc.exists()) {
-            await setDoc(userDocRef, {
-                uid: user.uid,
-                email: user.email,
-                username: user.displayName || user.email?.split('@')[0],
-                createdAt: new Date(),
-            });
-        }
-        
-        toast({
-          title: "Sign Up Successful!",
-          description: `Welcome, ${user.displayName || 'User'}.`,
-        });
-        router.push("/dashboard");
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
-        let errorMessage = "Could not sign in with Google. Please try again.";
-        if (error.code === 'auth/popup-closed-by-user') {
-            errorMessage = "The sign-in window was closed before completion.";
-        }
         toast({
             variant: "destructive",
             title: "Google Sign-In Failed",
-            description: errorMessage,
+            description: "Could not start the sign-in process. Please try again.",
         });
-    } finally {
         setIsGoogleLoading(false);
     }
   };
@@ -122,6 +103,33 @@ export default function SignUpPage() {
       setIsLoading(false);
     }
   }
+  
+  // This effect will run on page load to check if the user is returning from a Google redirect.
+  // It is needed on the signup page to ensure the user's document is created in Firestore.
+  useState(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result && result.user) {
+            const user = result.user;
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    uid: user.uid,
+                    email: user.email,
+                    username: user.displayName || user.email?.split('@')[0],
+                    createdAt: new Date(),
+                });
+            }
+        }
+      }).catch((error) => {
+        // We can ignore some errors like the popup-closed-by-user
+        if(error.code !== 'auth/popup-closed-by-user') {
+            console.error("Google redirect result error:", error);
+        }
+      });
+  });
 
   return (
     <div className="container mx-auto py-12 px-4 md:px-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
@@ -146,7 +154,7 @@ export default function SignUpPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl><Input type="email" placeholder="your.email@example.com" {...field} /></FormControl>
                     <FormMessage />
-                  </FormItem>
+                  </Item>
                 )}
               />
               <FormField control={form.control} name="password" render={({ field }) => (
@@ -154,7 +162,7 @@ export default function SignUpPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                     <FormMessage />
-                  </FormItem>
+                  </Item>
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
