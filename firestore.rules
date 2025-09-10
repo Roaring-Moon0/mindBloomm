@@ -1,17 +1,24 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Allow public read access to configuration, but restrict writes
+    // Allow read access to the config collection for everyone to check admin status
     match /config/{docId} {
       allow read: if true;
-      allow write: if false; // Later, this will be changed to allow only admins
+      allow write: if false; // Writes must be done from the server/console
     }
 
-    // Lock down all other collections
-    match /{document=**} {
-      allow read, write: if false;
+    // Rules for user profiles
+    match /users/{userId} {
+      // A user can create their own profile when they sign up
+      allow create: if request.auth != null && request.auth.uid == userId;
+      // A user can read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // A user can update their own profile
+      allow update: if request.auth != null && request.auth.uid == userId;
+      // No one can delete a user profile from the client
+      allow delete: if false;
     }
   }
 }
