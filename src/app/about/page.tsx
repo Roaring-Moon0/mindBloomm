@@ -13,7 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'], email: 'aryan.lead@mindbloom.app' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', specialities: ['Web Dev', 'AI/ML', 'Product'], email: 'aryan.lead@mindbloom.app' },
   { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gourav.content@mindbloom.app' },
   { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartik.tech@mindbloom.app' },
   { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'], email: 'abhinav.research@mindbloom.app' },
@@ -82,7 +82,6 @@ const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
                         <a href={`mailto:${member.email}`} className="text-sm hover:underline">{member.email}</a>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Briefcase className="w-5 h-5 text-primary"/>
                         <div className="flex flex-wrap gap-2">
                             {member.specialities.map(spec => (
                                 <Badge key={spec} variant="secondary">{spec}</Badge>
