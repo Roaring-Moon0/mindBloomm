@@ -1,0 +1,17 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Allow public read access to configuration, but restrict writes
+    match /config/{docId} {
+      allow read: if true;
+      allow write: if false; // Later, this will be changed to allow only admins
+    }
+
+    // Lock down all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
