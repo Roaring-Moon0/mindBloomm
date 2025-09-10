@@ -151,11 +151,7 @@ export default function ContactPage() {
                 <CardContent className="space-y-4">
                     <div className="flex items-center gap-4">
                         <Mail className="w-5 h-5 text-muted-foreground" />
-                        <a href="mailto:hello@mindbloom.app" className="hover:text-primary">hello@mindbloom.app</a>
-                    </div>
-                     <div className="flex items-center gap-4">
-                        <Phone className="w-5 h-5 text-muted-foreground" />
-                        <span>(555) 123-4567</span>
+                        <a href="mailto:mindcrafters417@gmail.com" className="hover:text-primary">mindcrafters417@gmail.com</a>
                     </div>
                     <div className="flex items-center gap-4">
                         <Clock className="w-5 h-5 text-muted-foreground" />
