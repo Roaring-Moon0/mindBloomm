@@ -23,7 +23,7 @@ export default function ChatPage() {
                             <ShieldAlert className="w-6 h-6 text-destructive" />
                             <CardTitle>Important Disclaimer</CardTitle>
                         </CardHeader>
-                        <CardContent className="text-sm text-destructive-foreground/90">
+                        <CardContent className="text-sm text-destructive/90 font-medium">
                             <p>This AI assistant is for informational and educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment.</p>
                             <p className="mt-2">If you are in a crisis, please seek help immediately.</p>
                         </CardContent>
