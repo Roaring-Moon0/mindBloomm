@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
+import { FadeIn } from '@/components/ui/fade-in';
 
 const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
@@ -21,57 +22,59 @@ const values = [
 
 export default function AboutPage() {
     return (
-        <div className="container mx-auto py-12 px-4 md:px-6">
-            {/* Mission Section */}
-            <section className="text-center mb-16">
-                <h1 className="text-4xl font-bold tracking-tight font-headline">Our Mission</h1>
-                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                    To empower students in higher education with accessible, compassionate, and stigma-free tools to navigate their mental health journey.
-                </p>
-            </section>
-
-            {/* Values Section */}
-            <section className="mb-24">
-                 <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:gap-12 lg:grid-cols-3">
-                    {values.map((value) => (
-                        <div key={value.title} className="text-center flex flex-col items-center">
-                            {value.icon}
-                            <h3 className="text-xl font-bold mt-4">{value.title}</h3>
-                            <p className="text-muted-foreground mt-2">{value.description}</p>
-                        </div>
-                    ))}
-                 </div>
-            </section>
-
-            {/* Team Section */}
-            <section>
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold tracking-tight font-headline">Meet Our Team</h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-                        We are a diverse group of students, technologists, and creatives dedicated to your well-being.
+        <FadeIn>
+            <div className="container mx-auto py-12 px-4 md:px-6">
+                {/* Mission Section */}
+                <section className="text-center mb-16">
+                    <h1 className="text-4xl font-bold tracking-tight font-headline">Our Mission</h1>
+                    <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                        To empower students in higher education with accessible, compassionate, and stigma-free tools to navigate their mental health journey.
                     </p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {teamMembers.map((member) => (
-                        <Card key={member.name} className="overflow-hidden text-center hover:shadow-lg transition-shadow">
-                            <CardContent className="p-6 flex flex-col items-center">
-                                <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
-                                    <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
-                                    <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
-                                </Avatar>
-                                <CardTitle className="text-xl">{member.name}</CardTitle>
-                                <CardDescription>{member.role}</CardDescription>
-                                <p className="text-muted-foreground text-sm mt-4 flex-grow">{member.bio}</p>
-                                <div className="mt-4 flex flex-wrap justify-center gap-2">
-                                    {member.specialities.map(spec => (
-                                        <Badge key={spec} variant="secondary">{spec}</Badge>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </section>
-        </div>
+                </section>
+
+                {/* Values Section */}
+                <section className="mb-24">
+                    <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-1 md:gap-12 lg:grid-cols-3">
+                        {values.map((value) => (
+                            <div key={value.title} className="text-center flex flex-col items-center">
+                                {value.icon}
+                                <h3 className="text-xl font-bold mt-4">{value.title}</h3>
+                                <p className="text-muted-foreground mt-2">{value.description}</p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                {/* Team Section */}
+                <section>
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold tracking-tight font-headline">Meet Our Team</h2>
+                        <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
+                            We are a diverse group of students, technologists, and creatives dedicated to your well-being.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {teamMembers.map((member) => (
+                            <Card key={member.name} className="overflow-hidden text-center hover:shadow-lg transition-shadow">
+                                <CardContent className="p-6 flex flex-col items-center">
+                                    <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
+                                        <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
+                                        <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                    <CardTitle className="text-xl">{member.name}</CardTitle>
+                                    <CardDescription>{member.role}</CardDescription>
+                                    <p className="text-muted-foreground text-sm mt-4 flex-grow">{member.bio}</p>
+                                    <div className="mt-4 flex flex-wrap justify-center gap-2">
+                                        {member.specialities.map(spec => (
+                                            <Badge key={spec} variant="secondary">{spec}</Badge>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </section>
+            </div>
+        </FadeIn>
     );
 }

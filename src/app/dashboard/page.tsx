@@ -10,6 +10,7 @@ import { ArrowRight, Bot, Gamepad2, Library, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { FadeIn } from '@/components/ui/fade-in';
 
 const quickLinks = [
     { title: "Talk to AI Assistant", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
@@ -96,50 +97,52 @@ export default function DashboardPage() {
 
 
     return (
-        <div className="container mx-auto py-12 px-4 md:px-6">
-            <div className="mb-12">
-                <h1 className="text-4xl font-bold tracking-tight font-headline">Welcome back, {user?.displayName || 'Friend'}!</h1>
-                <p className="mt-2 text-lg text-muted-foreground">Ready to continue your journey to a healthier mind?</p>
-            </div>
+        <FadeIn>
+            <div className="container mx-auto py-12 px-4 md:px-6">
+                <div className="mb-12">
+                    <h1 className="text-4xl font-bold tracking-tight font-headline">Welcome back, {user?.displayName || 'Friend'}!</h1>
+                    <p className="mt-2 text-lg text-muted-foreground">Ready to continue your journey to a healthier mind?</p>
+                </div>
 
-            <div className="grid gap-10 lg:grid-cols-3">
-                <div className="lg:col-span-2">
-                    <h2 className="text-2xl font-bold font-headline mb-6">Quick Actions</h2>
-                     <div className="grid gap-6 md:grid-cols-2">
-                        {quickLinks.map((link) => (
-                             <Link href={link.href} key={link.title}>
-                                <Card className="h-full hover:shadow-lg transition-shadow hover:border-primary/50">
-                                    <CardHeader className="flex flex-row items-center gap-4">
-                                        {link.icon}
-                                        <CardTitle className="text-xl">{link.title}</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="text-muted-foreground">{link.description}</p>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
+                <div className="grid gap-10 lg:grid-cols-3">
+                    <div className="lg:col-span-2">
+                        <h2 className="text-2xl font-bold font-headline mb-6">Quick Actions</h2>
+                        <div className="grid gap-6 md:grid-cols-2">
+                            {quickLinks.map((link) => (
+                                <Link href={link.href} key={link.title}>
+                                    <Card className="h-full hover:shadow-lg transition-shadow hover:border-primary/50">
+                                        <CardHeader className="flex flex-row items-center gap-4">
+                                            {link.icon}
+                                            <CardTitle className="text-xl">{link.title}</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-muted-foreground">{link.description}</p>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-8">
+                        <h2 className="text-2xl font-bold font-headline">Your Profile</h2>
+                        <Card>
+                            <CardContent className="pt-6 flex flex-col items-center text-center">
+                                <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
+                                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
+                                    <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                                </Avatar>
+                                <p className="font-semibold text-lg">{user.displayName || 'Anonymous User'}</p>
+                                <p className="text-sm text-muted-foreground">{user.email}</p>
+
+                                <Button variant="ghost" className="mt-4" onClick={logout}>Log Out</Button>
+                            </CardContent>
+                        </Card>
+
+                        <QuoteDisplay />
                     </div>
                 </div>
-                
-                <div className="space-y-8">
-                     <h2 className="text-2xl font-bold font-headline">Your Profile</h2>
-                    <Card>
-                        <CardContent className="pt-6 flex flex-col items-center text-center">
-                             <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
-                                <AvatarImage src={user.photoURL || ''} alt={user.displayName || 'User'} />
-                                <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                            </Avatar>
-                            <p className="font-semibold text-lg">{user.displayName || 'Anonymous User'}</p>
-                            <p className="text-sm text-muted-foreground">{user.email}</p>
-
-                            <Button variant="ghost" className="mt-4" onClick={logout}>Log Out</Button>
-                        </CardContent>
-                    </Card>
-
-                    <QuoteDisplay />
-                </div>
             </div>
-        </div>
+        </FadeIn>
     );
 }

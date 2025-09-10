@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
+import { FloatingPetals } from '@/components/ui/floating-petals';
 
 const features = [
   {
@@ -48,9 +49,6 @@ const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man' },
   { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=G', dataAiHint: 'person face' },
   { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=K', dataAiHint: 'person face' },
-  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=A', dataAiHint: 'person face' },
-  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=D', dataAiHint: 'person face' },
-  { name: 'Shubham', role: 'Student', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=S', dataAiHint: 'person face' },
 ];
 
 export default function Home() {
@@ -58,8 +56,9 @@ export default function Home() {
     <div className="flex flex-col min-h-dvh">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10">
-          <div className="container px-4 md:px-6">
+        <section className="relative w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10 overflow-hidden">
+          <FloatingPetals />
+          <div className="container px-4 md:px-6 z-10 relative">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
                 <FadeIn>
