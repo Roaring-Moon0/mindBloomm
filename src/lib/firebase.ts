@@ -12,28 +12,16 @@ const firebaseConfig = {
   measurementId: ""
 };
 
-
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-
-if (typeof window !== 'undefined' && !getApps().length) {
-  app = initializeApp(firebaseConfig);
-  auth = getAuth(app);
-  db = getFirestore(app);
-} else {
-  if (getApps().length > 0) {
-    app = getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-  } else {
-    // This is for server-side rendering, which might not be used
-    // for auth directly but good to have for other services.
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-  }
+// This helper function ensures that we have a single instance of the Firebase app.
+const getFirebaseApp = (): FirebaseApp => {
+    if (getApps().length > 0) {
+        return getApp();
+    }
+    return initializeApp(firebaseConfig);
 }
 
+const app: FirebaseApp = getFirebaseApp();
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
 
 export { app, auth, db };

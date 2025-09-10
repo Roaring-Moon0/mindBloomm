@@ -24,7 +24,7 @@ const ensureUserDocument = async (user: User) => {
         await setDoc(userDocRef, {
             uid: user.uid,
             email: user.email,
-            username: user.displayName || user.email?.split('@')[0],
+            displayName: user.displayName || user.email?.split('@')[0],
             photoURL: user.photoURL,
             createdAt: new Date(),
         });
@@ -38,15 +38,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // This effect handles the result of a redirect sign-in.
-  // We run this once when the component mounts.
+  // This effect handles both redirect results and persisted auth state.
   useEffect(() => {
-    const processRedirectResult = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setLoading(true); // Start loading when auth state might be changing
+      if (currentUser) {
+        await ensureUserDocument(currentUser);
+        setUser(currentUser);
+      } else {
+        // If there's no persisted user, check for a redirect result.
         try {
-            const result: UserCredential | null = await getRedirectResult(auth);
+            const result = await getRedirectResult(auth);
             if (result && result.user) {
                 const isNewUser = await ensureUserDocument(result.user);
-                if (isNewUser) {
+                 if (isNewUser) {
                      toast({
                         title: "Account Created!",
                         description: `Welcome to MindBloom, ${result.user.displayName || 'Friend'}.`,
@@ -58,31 +63,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     });
                 }
                 router.push('/dashboard');
+                setUser(result.user); // Set user immediately after successful redirect
+            } else {
+                setUser(null);
             }
-        } catch (error: any) {
-            console.error("Redirect Result Error: ", error);
-            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                toast({
-                    variant: "destructive",
-                    title: "Sign-In Failed",
-                    description: "Something went wrong during the sign-in process. Please try again.",
-                });
-            }
-        } finally {
-            // This part is crucial for the main auth state listener
-            setLoading(false);
+        } catch (error) {
+            console.error("Auth Error:", error);
+            setUser(null);
         }
-    };
-    
-    processRedirectResult();
-    
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        // This ensures that for any authenticated user, their Firestore doc exists.
-        await ensureUserDocument(currentUser);
-        setUser(currentUser);
-      } else {
-        setUser(null);
       }
       setLoading(false);
     });
@@ -94,8 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = async () => {
     await signOut(auth);
-    setUser(null);
-    router.push('/'); // Redirect to home on logout for a better UX
+    // The onAuthStateChanged listener will handle setting user to null.
+    router.push('/'); 
   };
 
   const value = {
