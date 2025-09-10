@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,30 +51,55 @@ export default function ContactPage() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    // Simulate API call
-    console.log("Form submitted:", values);
-    
-    // In a real application, you would send this data to a server or Firebase function.
-    // Example:
-    // try {
-    //   const response = await fetch('/api/contact', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(values),
-    //   });
-    //   if (!response.ok) throw new Error('Something went wrong');
-    //   toast({ title: "Message Sent!", description: "Thank you for reaching out. We'll get back to you soon." });
-    //   form.reset();
-    // } catch (error) {
-    //   toast({ variant: "destructive", title: "Uh oh!", description: "Could not send message. Please try again." });
-    // }
+    // IMPORTANT: Replace this with your own access key from web3forms.com
+    const WEB3FORMS_ACCESS_KEY = "YOUR_ACCESS_KEY_HERE";
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for reaching out. We'll get back to you soon.",
-    });
-    form.reset();
+    if (WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY_HERE") {
+        toast({
+            variant: "destructive",
+            title: "Setup Required!",
+            description: "Please replace 'YOUR_ACCESS_KEY_HERE' in the code to enable the contact form.",
+        });
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append("access_key", WEB3FORMS_ACCESS_KEY);
+    formData.append("name", values.name);
+    formData.append("email", values.email);
+    formData.append("subject", values.subject);
+    formData.append("message", values.message);
+
+    try {
+        const response = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            toast({
+              title: "Message Sent!",
+              description: "Thank you for reaching out. We'll get back to you soon.",
+            });
+            form.reset();
+        } else {
+            console.error("Web3Forms Error:", result);
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: result.message || "Could not send your message. Please try again.",
+            });
+        }
+    } catch (error) {
+        console.error("Submission Error:", error);
+        toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: "There was a problem sending your message. Please check your connection and try again.",
+        });
+    }
   }
 
   return (
