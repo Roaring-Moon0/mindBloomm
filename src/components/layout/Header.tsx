@@ -23,7 +23,7 @@ import { Separator } from '../ui/separator';
 const navLinks = [
   { href: '/resources', label: 'Resources' },
   { href: '/games', label: 'Games' },
-  { href: '/chat', label: 'AI Assistant' },
+  { href: '/chat', label: 'Bloom AI' },
   { href: '/survey', label: 'Survey' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact' },

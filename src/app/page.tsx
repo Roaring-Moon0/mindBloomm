@@ -18,7 +18,7 @@ const features = [
   },
   {
     icon: <MessageSquareHeart className="h-8 w-8 text-primary" />,
-    title: 'AI Chat Assistant',
+    title: 'AI Companion "Bloom"',
     description: 'Get empathetic responses and coping strategies from our AI tool.',
     href: '/chat',
   },
@@ -69,13 +69,13 @@ export default function Home() {
                     MindBloom is a digital sanctuary for mental wellness, providing accessible, and stigma-free support to help students navigate life's challenges.
                   </p>
                 </FadeIn>
-                <FadeIn delay={0.2}>
+                <FadeIn delay={0.1}>
                   <div className="flex flex-col gap-2 min-[400px]:flex-row">
                     <Button asChild size="lg">
                       <Link href="/resources">Explore Resources</Link>
                     </Button>
                     <Button asChild size="lg" variant="outline">
-                       <Link href="/chat">Talk to AI Assistant</Link>
+                       <Link href="/chat">Chat with Bloom</Link>
                     </Button>
                   </div>
                 </FadeIn>
@@ -194,7 +194,7 @@ export default function Home() {
             <div className="space-y-3">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl font-headline">Ready to Talk?</h2>
               <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our AI assistant is available 24/7 to provide a listening ear and helpful suggestions.
+                Our AI companion, Bloom, is available 24/7 to provide a listening ear and helpful suggestions.
                 <br />
                 <span className="text-xs">Disclaimer: The AI is not a substitute for professional medical advice.</span>
               </p>

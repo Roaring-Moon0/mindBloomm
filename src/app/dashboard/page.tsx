@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react';
 import { FadeIn } from '@/components/ui/fade-in';
 
 const quickLinks = [
-    { title: "Talk to AI Assistant", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
+    { title: "Chat with Bloom", description: "Get instant support and guidance.", href: "/chat", icon: <Bot className="w-8 h-8 text-primary" /> },
     { title: "Play Calming Games", description: "Relax and de-stress your mind.", href: "/games", icon: <Gamepad2 className="w-8 h-8 text-primary" /> },
     { title: "Explore Resources", description: "Find articles and guides.", href: "/resources", icon: <Library className="w-8 h-8 text-primary" /> },
 ];

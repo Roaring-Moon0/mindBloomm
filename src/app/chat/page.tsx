@@ -33,7 +33,7 @@ export default function ChatPage() {
                             <CardTitle>Access Denied</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p>You need to be logged in to use the AI Assistant.</p>
+                            <p>You need to be logged in to chat with Bloom.</p>
                             <Button asChild>
                             <Link href="/login">Login to Chat</Link>
                             </Button>
@@ -48,8 +48,8 @@ export default function ChatPage() {
         <FadeIn>
             <div className="container mx-auto py-12 px-4 md:px-6">
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold tracking-tight font-headline">AI Assistant</h1>
-                    <p className="mt-4 text-lg text-muted-foreground">Get personalized suggestions based on your current state.</p>
+                    <h1 className="text-4xl font-bold tracking-tight font-headline">Meet Bloom</h1>
+                    <p className="mt-4 text-lg text-muted-foreground">Your friendly AI companion for personalized support.</p>
                 </div>
                 <div className="grid lg:grid-cols-3 gap-8">
                     <div className="lg:col-span-2">
@@ -66,7 +66,7 @@ export default function ChatPage() {
                                 <CardTitle>Important Disclaimer</CardTitle>
                             </CardHeader>
                             <CardContent className="text-sm text-destructive/90 font-medium">
-                                <p>This AI assistant is for informational and educational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment.</p>
+                                <p>Bloom is an AI and not a substitute for professional medical advice, diagnosis, or treatment.</p>
                                 <p className="mt-2">If you are in a crisis, please seek help immediately.</p>
                             </CardContent>
                         </Card>

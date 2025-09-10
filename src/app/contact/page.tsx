@@ -30,12 +30,12 @@ const faqs = [
         answer: "We take your privacy very seriously. All personal data is encrypted and stored securely. We do not share your personal information with third parties without your explicit consent. Please see our Privacy Policy for more details."
     },
     {
-        question: "How does the AI assistant work?",
-        answer: "Our AI assistant uses a large language model to understand your inputs and provide supportive responses and personalized recommendations from our resource library. It is not a real person and its advice should be considered informational, not medical."
+        question: "How does the AI companion 'Bloom' work?",
+        answer: "Our AI companion uses a large language model to understand your inputs and provide supportive responses and personalized recommendations from our resource library. It is not a real person and its advice should be considered informational, not medical."
     },
     {
         question: "Can I use MindBloom for free?",
-        answer: "Yes, many of our core features, including the resource library and AI assistant, are available for free. We may offer premium features in the future to help sustain and grow the platform."
+        answer: "Yes, many of our core features, including the resource library and AI companion, are available for free. We may offer premium features in the future to help sustain and grow the platform."
     }
 ]
 
