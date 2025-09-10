@@ -17,23 +17,13 @@ import { toast } from "@/hooks/use-toast";
 import Logo from "@/components/icons/Logo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import Link from "next/link";
 
 
 const formSchema = z.object({
-  employeeCode: z.string().min(4, { message: "Please enter a valid employee code." }),
+  email: z.string().email({ message: "Please enter a valid admin email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
 });
-
-// These are your new admin credentials.
-// IMPORTANT: For security, you should log into the Firebase console and change these passwords.
-const adminCredentials = [
-    { code: "MB-A1B2", password: "mB!aDmiN$24pW#1" },
-    { code: "MB-C3D4", password: "gR@v!sEcUre#9k1" },
-    { code: "MB-E5F6", password: "kRtk@sTr0Ng!pW7" },
-    { code: "MB-G7H8", password: "aBnv@c0dE$pW%5" },
-    { code: "MB-I9J0", password: "dRv!pAsS#w@Rd*3" },
-    { code: "MB-K1L2", password: "sHbm@aCcEsS!qZ9" },
-];
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -42,19 +32,16 @@ export default function AdminLoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      employeeCode: "",
+      email: "",
       password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    
-    // Map the employee code to a secure email format
-    const email = `${values.employeeCode.toLowerCase()}@mindbloom.app`;
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, values.password);
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
       // Check if user is an admin
@@ -80,7 +67,7 @@ export default function AdminLoginPage() {
       console.error("Admin login error:", error);
       let errorMessage = "An unknown error occurred. Please try again.";
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        errorMessage = "Invalid employee code or password. Please try again.";
+        errorMessage = "Invalid email or password. Please try again.";
       } else if (error.message.includes("not authorized")) {
         errorMessage = "You do not have permission to access the admin dashboard.";
       } else if (error.message.includes("Admin configuration not found")) {
@@ -110,23 +97,19 @@ export default function AdminLoginPage() {
         <CardContent>
           <Alert className="mb-6">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>Admin Credentials</AlertTitle>
+            <AlertTitle>Admin Access</AlertTitle>
             <AlertDescription>
-                <p className="mb-2">Use one of the following credentials to log in. You can change the passwords in the Firebase console.</p>
-                <ul className="list-disc pl-5 space-y-1 text-xs">
-                    {adminCredentials.map(cred => (
-                       <li key={cred.code}><strong>Code:</strong> {cred.code} / <strong>Password:</strong> {cred.password}</li>
-                    ))}
-                </ul>
+                <p>Please use your designated admin email and password. To gain access, an existing administrator must add your email to the approved list in the Firestore `config/admins` document.</p>
+                <p className="mt-2">New admins should sign up through the regular <Link href="/signup" className="underline">sign-up page</Link> first.</p>
             </AlertDescription>
           </Alert>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField control={form.control} name="employeeCode" render={({ field }) => (
+              <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Employee Code</FormLabel>
-                    <FormControl><Input placeholder="MB-A1B2" {...field} /></FormControl>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl><Input placeholder="admin@example.com" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
