@@ -14,6 +14,7 @@ export function Footer() {
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <Link href="/about" className="hover:text-foreground" prefetch={true}>About</Link>
           <Link href="/contact" className="hover:text-foreground" prefetch={true}>Contact</Link>
+          <Link href="/admin/login" className="hover:text-foreground" prefetch={true}>Admin Login</Link>
           <Link href="#" className="hover:text-foreground" prefetch={true}>Privacy Policy</Link>
           <Link href="#" className="hover:text-foreground" prefetch={true}>Terms of Service</Link>
         </div>
