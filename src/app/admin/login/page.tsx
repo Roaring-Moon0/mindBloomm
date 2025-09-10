@@ -21,18 +21,18 @@ import { Terminal } from "lucide-react";
 
 const formSchema = z.object({
   employeeCode: z.string().min(4, { message: "Please enter a valid employee code." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters." }),
 });
 
 // These are your new admin credentials.
 // IMPORTANT: For security, you should log into the Firebase console and change these passwords.
 const adminCredentials = [
-    { code: "MB-A1B2", password: "SecurePassword1!" },
-    { code: "MB-C3D4", password: "SecurePassword2!" },
-    { code: "MB-E5F6", password: "SecurePassword3!" },
-    { code: "MB-G7H8", password: "SecurePassword4!" },
-    { code: "MB-I9J0", password: "SecurePassword5!" },
-    { code: "MB-K1L2", password: "SecurePassword6!" },
+    { code: "MB-A1B2", password: "mB!aDmiN$24pW#1" },
+    { code: "MB-C3D4", password: "gR@v!sEcUre#9k1" },
+    { code: "MB-E5F6", password: "kRtk@sTr0Ng!pW7" },
+    { code: "MB-G7H8", password: "aBnv@c0dE$pW%5" },
+    { code: "MB-I9J0", password: "dRv!pAsS#w@Rd*3" },
+    { code: "MB-K1L2", password: "sHbm@aCcEsS!qZ9" },
 ];
 
 export default function AdminLoginPage() {
