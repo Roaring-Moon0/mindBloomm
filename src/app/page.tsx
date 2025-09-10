@@ -1,7 +1,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, HeartHandshake } from 'lucide-react';
+import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, HeartHandshake, FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,10 +27,10 @@ const features = [
     href: '/games',
   },
   {
-    icon: <HeartHandshake className="h-8 w-8 text-primary" />,
-    title: 'Guided Meditations',
-    description: 'Cultivate mindfulness and reduce anxiety with our guided exercises.',
-    href: '/resources',
+    icon: <FileQuestion className="h-8 w-8 text-primary" />,
+    title: 'Community Survey',
+    description: 'Share your feedback to help us improve our platform and support.',
+    href: '/survey',
   },
 ];
 
@@ -219,3 +219,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
