@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { HeartHandshake, Lightbulb, Target, Mail, User, Briefcase } from 'lucide-react';
+import { HeartHandshake, Lightbulb, Target, Mail, User } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', specialities: ['Web Dev', 'AI/ML', 'Product'], email: 'aryan.lead@mindbloom.app' },
-  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gourav.content@mindbloom.app' },
-  { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartik.tech@mindbloom.app' },
-  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'], email: 'abhinav.research@mindbloom.app' },
-  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'], email: 'dharvi.design@mindbloom.app' },
-  { name: 'Member 6', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=M6', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'], email: 'member6.community@mindbloom.app' },
+  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gourav.content@mindbloom.app' },
+  { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartik.tech@mindbloom.app' },
+  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', specialities: ['Content Curation', 'Writing'], email: 'abhinav.research@mindbloom.app' },
+  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: '(bio)', specialities: ['Accessible Design', 'UX'], email: 'dharvi.design@mindbloom.app' },
+  { name: 'Member 6', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=M6', dataAiHint: 'person face', bio: '(bio)', specialities: ['Community Building', 'Support'], email: 'member6.community@mindbloom.app' },
 ];
 
 const values = [
