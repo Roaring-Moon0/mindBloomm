@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,6 +23,15 @@ type Message = {
   content: string | React.ReactNode;
 };
 
+const loadingMessages = [
+    "Brewing a fresh cup of calm for you...",
+    "Consulting the wise old owl...",
+    "Finding the perfect words of wisdom...",
+    "Charging up the good vibes...",
+    "Waking up the digital zen master...",
+    "Just a moment, polishing some peaceful thoughts."
+];
+
 // A simple markdown to HTML converter
 const formatMarkdown = (text: string) => {
   // Bold
@@ -39,6 +49,7 @@ export function ChatUI() {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState(loadingMessages[0]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,6 +63,7 @@ export function ChatUI() {
         return;
     }
     setIsLoading(true);
+    setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
     
     setMessages((prev) => [...prev, { role: 'user', content: values.userInput }]);
 
@@ -107,7 +119,7 @@ export function ChatUI() {
                         </Avatar>
                         <div className="rounded-lg p-3 bg-secondary flex items-center gap-2">
                             <Loader2 className="h-4 w-4 animate-spin"/>
-                            <p className="text-sm">Generating recommendations...</p>
+                            <p className="text-sm">{loadingText}</p>
                         </div>
                     </div>
                 )}
