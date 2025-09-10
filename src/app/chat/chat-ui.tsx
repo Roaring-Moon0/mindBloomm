@@ -9,10 +9,11 @@ import { generatePersonalizedRecommendations } from '@/ai/flows/generate-persona
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Loader2, Sparkles, User, Send } from 'lucide-react';
 import Logo from '@/components/icons/Logo';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
   userInput: z.string(),
@@ -50,6 +51,7 @@ const defaultInitialMessage: Message = {
 
 
 export function ChatUI() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
@@ -62,6 +64,13 @@ export function ChatUI() {
         userInput: '',
     },
   });
+
+  const getInitials = (email: string | null | undefined) => {
+    if (!email) return "U";
+    const name = user?.displayName;
+    if (name) return name.substring(0, 2).toUpperCase();
+    return email.substring(0, 2).toUpperCase();
+  }
 
   // Load messages from localStorage on initial render
   useEffect(() => {
@@ -164,9 +173,10 @@ export function ChatUI() {
                     <div className={`rounded-lg p-3 max-w-lg ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
                         <div className="text-sm">{message.content}</div>
                     </div>
-                    {message.role === 'user' && (
+                    {message.role === 'user' && user && (
                     <Avatar className="w-8 h-8">
-                        <AvatarFallback><User className="w-5 h-5"/></AvatarFallback>
+                        <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'}/>
+                        <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
                     </Avatar>
                     )}
                 </div>
