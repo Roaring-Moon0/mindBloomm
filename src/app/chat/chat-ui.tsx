@@ -53,7 +53,7 @@ export function ChatUI() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -107,11 +107,13 @@ export function ChatUI() {
 
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-        const viewport = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-        if (viewport) {
-             viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
-        }
+    const viewport = scrollViewportRef.current;
+    if (viewport) {
+      const isScrolledToBottom = viewport.scrollHeight - viewport.scrollTop <= viewport.clientHeight + 1;
+      const shouldScroll = viewport.scrollHeight > viewport.clientHeight;
+      if (shouldScroll && isScrolledToBottom) {
+        viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
+      }
     }
   }, [messages, isLoading]);
 
@@ -150,7 +152,7 @@ export function ChatUI() {
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto p-4 md:p-6 flex flex-col h-full">
-        <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
+        <ScrollArea className="flex-1 pr-4" viewportRef={scrollViewportRef}>
             <div className="space-y-6">
                 {messages.map((message, index) => (
                 <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
