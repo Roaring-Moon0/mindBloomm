@@ -50,7 +50,7 @@ export default function LoginPage() {
         // We are intentionally not awaiting this call.
         // It will navigate the user away and they will be redirected back.
         // The auth state change will be handled by our main AuthProvider.
-        signInWithRedirect(auth, provider);
+        await signInWithRedirect(auth, provider);
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
         toast({
