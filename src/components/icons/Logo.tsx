@@ -8,14 +8,12 @@ export default function Logo(props: SVGProps<SVGSVGElement>) {
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
         {...props}
     >
-        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z"></path>
-        <path d="M12 2a10 10 0 0 0-3.54 19.14"></path>
-        <path d="M12 2a10 10 0 0 1 3.54 19.14"></path>
+        <circle cx="12" cy="12" r="10" />
     </svg>
   );
 }
