@@ -58,12 +58,9 @@ export default function Home() {
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                   <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-primary font-semibold">
-                    PS ID: 25092 - Gov. of Jammu and Kashmir
-                  </div>
+                <div className="space-y-4">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
-                    A Support System for Students in Higher Education
+                    A Digital Support System for Students in Higher Education
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
                     MindBloom is a digital sanctuary for mental wellness, providing accessible, and stigma-free support to help students navigate life's challenges.
