@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,6 +50,8 @@ export function ChatUI() {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +59,12 @@ export function ChatUI() {
         userInput: '',
     },
   });
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [messages, isLoading]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values.userInput.trim()) {
@@ -124,6 +132,7 @@ export function ChatUI() {
                     </div>
                 )}
             </div>
+            <div ref={scrollAreaRef} />
         </ScrollArea>
         
         {showForm && (
