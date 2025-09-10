@@ -1,24 +1,100 @@
 
+"use client";
+
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { HeartHandshake, Lightbulb, Target } from 'lucide-react';
+import { HeartHandshake, Lightbulb, Target, Mail, User, Briefcase } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'] },
-  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'] },
-  { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'] },
-  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'] },
-  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'] },
-  { name: 'Shubham', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=S', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'] },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A passionate student building tools to make mental health care accessible to all.', specialities: ['CBT', 'Mindfulness', 'Anxiety'], email: 'aryan.lead@mindbloom.app' },
+  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: 'A student and certified mindfulness instructor, guiding our meditation and relaxation content.', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gourav.content@mindbloom.app' },
+  { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: 'A student leading the technical team, ensuring our AI is both helpful and responsible.', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartik.tech@mindbloom.app' },
+  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: 'A student who curates our resource library, ensuring content is evidence-based and easy to understand.', specialities: ['Content Curation', 'Writing'], email: 'abhinav.research@mindbloom.app' },
+  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: 'The creative student behind MindBloom\'s calming and intuitive design.', specialities: ['Accessible Design', 'UX'], email: 'dharvi.design@mindbloom.app' },
+  { name: 'Member 6', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=M6', dataAiHint: 'person face', bio: 'A student fostering a safe and supportive environment for our user community.', specialities: ['Community Building', 'Support'], email: 'member6.community@mindbloom.app' },
 ];
 
 const values = [
     { icon: <HeartHandshake className="h-8 w-8 text-primary"/>, title: "Accessibility", description: "We believe everyone deserves access to quality mental health support, regardless of their circumstances." },
     { icon: <Target className="h-8 w-8 text-primary"/>, title: "Empathy", description: "Our approach is rooted in compassion and understanding for each individual's unique journey." },
     { icon: <Lightbulb className="h-8 w-8 text-primary"/>, title: "Integrity", description: "We are committed to providing evidence-based, responsible, and ethical tools and resources." },
-]
+];
+
+
+const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const isMobile = useIsMobile();
+    let hoverTimeout: NodeJS.Timeout;
+
+    const handleMouseEnter = () => {
+        if (!isMobile) {
+            hoverTimeout = setTimeout(() => {
+                setIsOpen(true);
+            }, 300); // 300ms delay to prevent accidental popups
+        }
+    };
+
+    const handleMouseLeave = () => {
+        if (!isMobile) {
+            clearTimeout(hoverTimeout);
+        }
+    };
+    
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Card 
+                    className="overflow-hidden text-center hover:shadow-lg transition-shadow cursor-pointer"
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onClick={isMobile ? () => setIsOpen(true) : undefined}
+                >
+                    <CardContent className="p-6 flex flex-col items-center">
+                        <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
+                            <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
+                            <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                        </Avatar>
+                        <CardTitle className="text-xl">{member.name}</CardTitle>
+                        <CardDescription>{member.role}</CardDescription>
+                    </CardContent>
+                </Card>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]" onMouseLeave={!isMobile ? () => setIsOpen(false) : undefined}>
+                <DialogHeader className="items-center text-center">
+                     <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
+                        <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
+                        <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <DialogTitle className="text-2xl">{member.name}</DialogTitle>
+                    <DialogDescription>{member.role}</DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <p className="text-muted-foreground text-center">{member.bio}</p>
+                    <div className="flex items-center gap-3">
+                        <Mail className="w-5 h-5 text-primary"/>
+                        <a href={`mailto:${member.email}`} className="text-sm hover:underline">{member.email}</a>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Briefcase className="w-5 h-5 text-primary"/>
+                        <div className="flex flex-wrap gap-2">
+                            {member.specialities.map(spec => (
+                                <Badge key={spec} variant="secondary">{spec}</Badge>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 
 export default function AboutPage() {
     return (
@@ -55,22 +131,7 @@ export default function AboutPage() {
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {teamMembers.map((member) => (
-                            <Card key={member.name} className="overflow-hidden text-center hover:shadow-lg transition-shadow">
-                                <CardContent className="p-6 flex flex-col items-center">
-                                    <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
-                                        <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
-                                        <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
-                                    </Avatar>
-                                    <CardTitle className="text-xl">{member.name}</CardTitle>
-                                    <CardDescription>{member.role}</CardDescription>
-                                    <p className="text-muted-foreground text-sm mt-4 flex-grow">{member.bio}</p>
-                                    <div className="mt-4 flex flex-wrap justify-center gap-2">
-                                        {member.specialities.map(spec => (
-                                            <Badge key={spec} variant="secondary">{spec}</Badge>
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
+                           <TeamMemberCard key={member.name} member={member} />
                         ))}
                     </div>
                 </section>
