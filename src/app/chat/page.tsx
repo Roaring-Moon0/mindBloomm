@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Phone, ShieldAlert, Loader2, Globe } from "lucide-react";
+import { Phone, ShieldAlert, Loader2 } from "lucide-react";
 import { ChatUI } from './chat-ui';
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
@@ -68,17 +68,6 @@ export default function ChatPage() {
                         <CardContent className="text-sm text-destructive/90 font-medium">
                             <p>Bloom is an AI and not a substitute for professional medical advice, diagnosis, or treatment.</p>
                             <p className="mt-2">If you are in a crisis, please seek help immediately.</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <Globe className="w-6 h-6 text-primary" />
-                            <CardTitle>Global Crisis Hotlines</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-2 text-sm">
-                            <p><span className="font-semibold">Crisis Text Line:</span> Text "HOME" to 741741 (US/CA) or 85258 (UK)</p>
-                            <p><span className="font-semibold">International Suicide Hotlines:</span> Visit <Link href="https://www.befrienders.org" target="_blank" className="underline">Befrienders.org</Link></p>
-                             <p><span className="font-semibold">The Trevor Project (LGBTQ Youth):</span> Call 1-866-488-7386</p>
                         </CardContent>
                     </Card>
                     <Card>
