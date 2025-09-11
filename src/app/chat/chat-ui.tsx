@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -123,9 +124,9 @@ export function ChatUI() {
   const showForm = !isLoading && (messages.length === 0 || messages[messages.length - 1].role === 'assistant');
 
   return (
-    <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col h-[calc(100vh-57px)] p-4 md:p-6">
+    <div className="flex-1 w-full max-w-3xl mx-auto flex flex-col h-full p-4 md:p-6">
       {/* Scrollable message area */}
-      <ScrollArea className="flex-grow overflow-y-auto pr-4" viewportRef={scrollViewportRef}>
+      <ScrollArea className="flex-grow pr-4" viewportRef={scrollViewportRef}>
         <div className="space-y-6 pb-4">
           {messages.map((message, index) => (
             <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
@@ -161,7 +162,7 @@ export function ChatUI() {
 
       {/* Input area */}
       {showForm && (
-        <div className="mt-6 pt-6 border-t flex-shrink-0">
+        <div className="mt-auto pt-6 border-t flex-shrink-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
