@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useFirestoreDocument } from '@/hooks/use-firestore';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 
 
@@ -16,12 +16,10 @@ interface SurveyConfig {
 
 export default function SurveyPage() {
     
-    // Later, this will be the real path to the config document in Firestore
     const { data: surveyConfig, loading, error } = useFirestoreDocument<SurveyConfig>('config/survey');
     
-    // For now, let's use a placeholder if the data isn't loaded yet.
-    // This will eventually be controlled from your admin dashboard.
-    const surveyFormUrl = surveyConfig?.url || "https://docs.google.com/forms/d/e/1FAIpQLSc_i92h6A-tM-Jd5T-bYI_H2eXpPQaO9L-nO0U9gU_rEa_bFg/viewform?usp=sf_link";
+    // The survey URL is now dynamically fetched from Firestore.
+    const surveyFormUrl = surveyConfig?.url;
 
     return (
         <FadeIn>
@@ -33,25 +31,32 @@ export default function SurveyPage() {
                     </p>
                 </div>
 
-                <Card className="max-w-4xl mx-auto">
+                <Card className="max-w-4xl mx-auto min-h-[700px]">
                     <CardHeader>
                         <CardTitle>Help Us Grow</CardTitle>
                         <CardDescription>The survey will take approximately 5-10 minutes to complete. All responses are completely anonymous.</CardDescription>
                     </CardHeader>
                     <CardContent>
                     {loading && (
-                            <div className="flex flex-col items-center justify-center h-[600px]">
-                                <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
-                                <p className="text-muted-foreground">Loading survey...</p>
+                            <div className="flex flex-col items-center justify-center h-[600px] gap-4">
+                                <Loader2 className="w-12 h-12 animate-spin text-primary" />
+                                <p className="text-muted-foreground font-medium">Loading survey...</p>
                             </div>
                     )}
-                    {!loading && error && (
-                        <div className="flex flex-col items-center justify-center h-[600px] text-center">
-                                <p className="text-destructive font-semibold">Could not load the survey.</p>
-                                <p className="text-muted-foreground text-sm">There might be an issue with our configuration. Please try again later.</p>
+                    
+                    {!loading && (error || !surveyFormUrl) && (
+                        <div className="flex flex-col items-center justify-center h-[600px] text-center gap-4 bg-secondary/50 rounded-lg">
+                                <AlertTriangle className="w-12 h-12 text-destructive"/>
+                                <p className="text-destructive font-semibold text-lg">Could not load the survey.</p>
+                                <p className="text-muted-foreground text-sm max-w-sm">
+                                    {error ? "There was an error connecting to our database." : "No survey URL has been configured by an administrator."}
+                                    <br />
+                                    Please try again later or contact support.
+                                </p>
                             </div>
                     )}
-                    {!loading && !error && (
+
+                    {!loading && !error && surveyFormUrl && (
                         <>
                             <div className="aspect-w-16 aspect-h-9">
                                 <iframe
