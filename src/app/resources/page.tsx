@@ -33,7 +33,7 @@ const categoriesData = {
     name: "Overcoming Depression",
     description: "A gentle guide to understanding and coping with depression.",
     videos: [
-        { title: "What is depression?", id: "z-IR48A_O_c" },
+        { title: "What is depression?", id: "fWFuQR_Wt4M" },
         { title: "How to deal with depression", id: "1I94RflnC3s" },
         { title: "How to get stuff done when you are depressed", id: "fM1V1l2uC3A" },
         { title: "A Self-Care Action Plan for Depression", id: "2I60_n-tias" },
@@ -302,3 +302,4 @@ export default function ResourcesPage() {
     
 
     
+
