@@ -99,8 +99,8 @@ export default function AdminLoginPage() {
             <Terminal className="h-4 w-4" />
             <AlertTitle>Admin Access</AlertTitle>
             <AlertDescription>
-                <p>Please use your designated admin email and password. To gain access, an existing administrator must add your email to the approved list in the Firestore `config/admins` document.</p>
-                <p className="mt-2">New admins should sign up through the regular <Link href="/signup" className="underline">sign-up page</Link> first.</p>
+                <p>Use your MindBloom account email and password. To gain access, your email must be on the approved admin list in the database.</p>
+                <p className="mt-2">If you don't have an account yet, please sign up through the regular <Link href="/signup" className="underline">sign-up page</Link> first.</p>
             </AlertDescription>
           </Alert>
 
@@ -109,7 +109,7 @@ export default function AdminLoginPage() {
               <FormField control={form.control} name="email" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
-                    <FormControl><Input placeholder="admin@example.com" {...field} /></FormControl>
+                    <FormControl><Input placeholder="your.email@example.com" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
