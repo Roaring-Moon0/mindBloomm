@@ -23,6 +23,7 @@ const categoriesData = {
     ],
     audios: [
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
+      { title: "ASMR for Anxiety Relief", id: "CM_ZDGorTn8" },
     ],
     pdfs: [
       { title: "Understanding Your Anxiety Workbook", source: "/pdf/understanding-your-anxiety-workbook.pdf" },
@@ -35,7 +36,7 @@ const categoriesData = {
     videos: [
         { title: "What is depression?", id: "fWFuQR_Wt4M" },
         { title: "How to deal with depression", id: "mn6WxY4NYEA" },
-        { title: "How to get stuff done when you are depressed", id: "fM1V1l2uC3A" },
+        { title: "How to get stuff done when you are depressed", id: "ngvOyccUzzY" },
         { title: "A Self-Care Action Plan for Depression", id: "2I60_n-tias" },
     ],
     audios: [
@@ -304,3 +305,6 @@ export default function ResourcesPage() {
     
 
 
+
+
+    
