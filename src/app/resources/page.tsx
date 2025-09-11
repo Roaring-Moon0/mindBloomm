@@ -40,7 +40,6 @@ const categoriesData = {
     ],
     audios: [
       { title: "Uplifting Music to Boost Your Mood", id: "OesMEEalJho" },
-      { title: "Gentle ASMR for Positive Energy", id: "sjkrrmBnpZ8"},
     ],
     pdfs: [
     ],
@@ -305,6 +304,8 @@ export default function ResourcesPage() {
 
 
 
+
+    
 
     
 
