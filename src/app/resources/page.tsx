@@ -25,8 +25,8 @@ const categoriesData = {
       { title: "ASMR for Anxiety Relief", id: "X4qJpE3y_4w" },
     ],
     pdfs: [
-      { title: "Understanding Your Anxiety Workbook", source: "#" },
-      { title: "Cognitive Behavioral Therapy Techniques", source: "#" },
+      { title: "Understanding Your Anxiety Workbook", source: "/pdf/understanding-your-anxiety-workbook.pdf" },
+      { title: "Cognitive Behavioral Therapy Techniques", source: "/pdf/cbt-techniques.pdf" },
     ],
   },
   depression: {
@@ -43,8 +43,8 @@ const categoriesData = {
       { title: "Gentle ASMR for Positive Energy", id: "sjkrrmBnpZ8"},
     ],
     pdfs: [
-      { title: "A Guide to Self-Compassion", source: "#" },
-      { title: "Building a Routine When Depressed", source: "#" },
+      { title: "A Guide to Self-Compassion", source: "/pdf/guide-to-self-compassion.pdf" },
+      { title: "Building a Routine When Depressed", source: "/pdf/building-a-routine-when-depressed.pdf" },
     ],
   },
   sleep: {
@@ -61,8 +61,8 @@ const categoriesData = {
       { title: "Rain Sounds for Sleeping", id: "j4dwyAPg8eA" },
     ],
     pdfs: [
-      { title: "The Ultimate Guide to a Better Sleep Routine", source: "#" },
-      { title: "Journal Prompts for Bedtime", source: "#" },
+      { title: "The Ultimate Guide to a Better Sleep Routine", source: "/pdf/better-sleep-routine-guide.pdf" },
+      { title: "Journal Prompts for Bedtime", source: "/pdf/bedtime-journal-prompts.pdf" },
     ],
   },
   stress: {
@@ -79,8 +79,8 @@ const categoriesData = {
       { title: "Gentle ASMR to Melt Your Stress Away", id:"pPHeP_S6d34" },
     ],
     pdfs: [
-      { title: "The Stress Management Handbook", source: "#" },
-      { title: "Identifying Your Stress Triggers", source: "#" },
+      { title: "The Stress Management Handbook", source: "/pdf/stress-management-handbook.pdf" },
+      { title: "Identifying Your Stress Triggers", source: "/pdf/identifying-stress-triggers.pdf" },
     ],
   },
 };
