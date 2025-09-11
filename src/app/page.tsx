@@ -46,9 +46,9 @@ const resourceCategories = [
 ];
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: 'https://placehold.co/100x100/53c599/1a6e4a?text=G', dataAiHint: 'person face' },
-  { name: 'Kartik', role: 'Tester', avatar: 'https://placehold.co/100x100/f9a84a/1a6e4a?text=K', dataAiHint: 'person face' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face' },
+  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face' },
 ];
 
 export default function Home() {
