@@ -257,7 +257,7 @@ export default function ResourcesPage() {
                                                 {filteredData.audios.map(audio => (
                                                     <VideoCard key={audio.id} {...audio} />
                                                 ))}
-                                            </div>
+             '                               </div>
                                         </div>
                                     )}
 
@@ -291,3 +291,4 @@ export default function ResourcesPage() {
     );
 }
 
+    
