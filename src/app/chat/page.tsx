@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Phone, ShieldAlert, Loader2 } from "lucide-react";
 import { ChatUI } from './chat-ui';
 import { useAuth } from "@/hooks/use-auth";
@@ -58,30 +58,50 @@ export default function ChatPage() {
                 <div className="hidden md:block md:w-1/3 lg:w-1/4 p-6 border-l space-y-8 bg-secondary/30 overflow-y-auto">
                      <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold tracking-tight font-headline">Meet Bloom</h1>
-                        <p className="mt-2 text-md text-muted-foreground">Your friendly AI companion for when you need a listening ear or gentle guidance.</p>
+                        <p className="mt-2 text-md text-muted-foreground">Your AI companion for when you need a listening ear or gentle guidance. Bloom is here to support you, not to replace professional help.</p>
                     </div>
                     <Card className="bg-destructive/20 border-destructive/50">
-                        <CardHeader className="flex flex-row items-center gap-2">
-                            <ShieldAlert className="w-6 h-6 text-destructive" />
-                            <CardTitle>In Crisis? Seek Help</CardTitle>
+                        <CardHeader className="flex flex-row items-center gap-3">
+                            <ShieldAlert className="w-8 h-8 text-destructive flex-shrink-0" />
+                            <CardTitle className="text-lg">This is not a substitute for professional help</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-destructive/90 font-medium">
-                            <p>Bloom is an AI assistant and cannot provide medical advice. It is not a substitute for a professional therapist.</p>
-                            <p className="mt-2">If you are in a crisis or feel you are in danger, please use the emergency numbers in the footer immediately.</p>
+                            <p>Bloom is an AI. If you are in a crisis, feeling overwhelmed, or in danger, please use one of the emergency numbers listed below immediately. They are trained to help.</p>
                         </CardContent>
                     </Card>
                     <Card>
-                        <CardHeader className="flex flex-row items-center gap-2">
+                        <CardHeader className="flex flex-row items-center gap-3">
                             <Phone className="w-6 h-6 text-primary" />
-                            <CardTitle>Indian Emergency Resources</CardTitle>
+                            <CardTitle>Emergency Helplines (India)</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 text-sm">
-                            <p><span className="font-semibold">National Emergency Number:</span> Call 112</p>
-                            <p><span className="font-semibold">KIRAN Mental Health Helpline:</span> Call 1800-599-0019 (24/7)</p>
-                            <p><span className="font-semibold">Aasra:</span> Call +91-9820466726 (24/7)</p>
-                            <p><span className="font-semibold">Vandrevala Foundation:</span> Call 1860-266-2345 (24/7)</p>
-                             <p><span className="font-semibold">Samaritans Mumbai:</span> Call +91 84229 84528 (3 PM - 9 PM)</p>
-                            <p><span className="font-semibold">iCall (TISS):</span> Call 9152987821 (Mon-Sat, 10 AM - 8 PM)</p>
+                        <CardContent className="space-y-4 text-sm">
+                           <p><span className="font-semibold">National Emergency Number:</span> Call 112</p>
+                           <p><span className="font-semibold">National Health Helpline:</span> Call 1800-180-1104</p>
+                           <div>
+                                <p className="font-semibold">KIRAN Mental Health Helpline</p>
+                                <p className="text-muted-foreground">A 24/7 national helpline for anyone experiencing anxiety, stress, depression, or other mental health concerns.</p>
+                                <p className="font-medium text-primary">Call 1800-599-0019</p>
+                           </div>
+                            <div>
+                                <p className="font-semibold">Aasra</p>
+                                <p className="text-muted-foreground">A 24/7 helpline for those who are feeling distressed, lonely, or suicidal.</p>
+                                <p className="font-medium text-primary">Call +91-9820466726</p>
+                           </div>
+                           <div>
+                                <p className="font-semibold">Vandrevala Foundation</p>
+                                <p className="text-muted-foreground">A 24/7 helpline providing counseling for mental health and emotional distress.</p>
+                                <p className="font-medium text-primary">Call 1860-266-2345</p>
+                           </div>
+                           <div>
+                                <p className="font-semibold">Samaritans Mumbai</p>
+                                <p className="text-muted-foreground">Provides emotional support for the distressed or suicidal. (3 PM - 9 PM daily)</p>
+                                <p className="font-medium text-primary">Call +91 84229 84528</p>
+                           </div>
+                            <div>
+                                <p className="font-semibold">iCall (TISS)</p>
+                                <p className="text-muted-foreground">Offers free counseling by trained professionals. (Mon-Sat, 10 AM - 8 PM)</p>
+                                <p className="font-medium text-primary">Call 9152987821</p>
+                           </div>
                         </CardContent>
                     </Card>
                 </div>
