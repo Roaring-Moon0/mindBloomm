@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileText, RefreshCw, Search, Music } from 'lucide-react';
+import { Youtube, FileText, RefreshCw, Search, Music, Download, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -104,13 +104,25 @@ const allQuotes = [
 ];
 
 
-const ResourceCard = ({ icon, title, type }: { icon: React.ReactNode, title: string, type: string }) => (
+const PdfResourceCard = ({ title, source }: { title: string, source: string }) => (
     <Card className="hover:shadow-md transition-shadow">
         <CardContent className="p-4 flex items-center gap-4">
-            {icon}
+            <FileText className="w-6 h-6 text-primary flex-shrink-0" />
             <div className="flex-1">
                 <h3 className="font-semibold">{title}</h3>
-                <p className="text-sm text-muted-foreground">{type}</p>
+                <p className="text-sm text-muted-foreground">PDF Document</p>
+            </div>
+            <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                    <a href={source} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4"/> View
+                    </a>
+                </Button>
+                <Button asChild variant="secondary" size="sm">
+                     <a href={source} download>
+                        <Download className="mr-2 h-4 w-4"/> Download
+                    </a>
+                </Button>
             </div>
         </CardContent>
     </Card>
@@ -247,11 +259,9 @@ export default function ResourcesPage() {
                                     {filteredData.pdfs.length > 0 && (
                                         <div>
                                             <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
-                                            <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="grid md:grid-cols-1 gap-4">
                                                 {filteredData.pdfs.map(pdf => (
-                                                    <a href={pdf.source} key={pdf.title} target="_blank" rel="noopener noreferrer">
-                                                        <ResourceCard icon={<FileText/>} title={pdf.title} type="PDF Document"/>
-                                                    </a>
+                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} />
                                                 ))}
                                             </div>
                                         </div>
