@@ -25,8 +25,8 @@ const categoriesData = {
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
     ],
     pdfs: [
-      { title: "Understanding Your Anxiety Workbook", source: "/pdf/understanding-your-anxiety-workbook.pdf" },
-      { title: "Cognitive Behavioral Therapy Techniques", source: "/pdf/cbt-techniques.pdf" },
+      { title: "Understanding Your Anxiety Workbook", source: "/assets/pdf/understanding-your-anxiety-workbook.pdf" },
+      { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/pdf/cbt-techniques.pdf" },
     ],
   },
   depression: {
@@ -281,3 +281,5 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
+
+    
