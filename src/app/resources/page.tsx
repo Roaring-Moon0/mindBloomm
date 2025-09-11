@@ -23,8 +23,6 @@ const categoriesData = {
     ],
     audios: [
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
-      { title: "ASMR for Anxiety Relief", id: "X4qJpE3y_4w" },
-      { title: "ASMR for Anxiety Relief", id: "CM_ZDGorTn8" },
     ],
     pdfs: [
       { title: "Understanding Your Anxiety Workbook", source: "/pdf/understanding-your-anxiety-workbook.pdf" },
@@ -298,6 +296,8 @@ export default function ResourcesPage() {
     
 
 
+
+    
 
     
 
