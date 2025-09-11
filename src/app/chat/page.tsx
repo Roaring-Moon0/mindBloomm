@@ -46,9 +46,9 @@ export default function ChatPage() {
 
     return (
         <FadeIn>
-            <div className="flex flex-col md:flex-row h-[calc(100vh-57px)]">
+            <div className="flex flex-col md:flex-row h-full">
                 {/* Main Chat Area */}
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col h-[calc(100vh-57px)]">
                     <div className="md:hidden text-center p-4 border-b">
                         <h1 className="text-xl font-bold tracking-tight font-headline">Chat with Bloom</h1>
                     </div>

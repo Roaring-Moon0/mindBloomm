@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -21,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning style={{'--header-height': '56px'} as React.CSSProperties}>
       <head />
       <body className={cn('font-body antialiased', inter.variable)}>
         <ThemeProvider
@@ -33,7 +34,7 @@ export default function RootLayout({
           <AuthProvider>
             <div className="relative flex min-h-screen flex-col bg-background">
               <Header />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 flex flex-col">{children}</main>
               <Footer />
             </div>
             <Toaster />
