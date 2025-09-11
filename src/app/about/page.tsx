@@ -8,28 +8,22 @@ import { HeartHandshake, Lightbulb, Target, Mail } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { StaticImageData } from 'next/image';
-
-import aryanPfp from '@/pfpimages/aryan.png';
-import gauravPfp from '@/pfpimages/gaurav.png';
-import dharviPfp from '@/pfpimages/dharvi.png';
-
 
 interface TeamMember {
     name: string;
     role: string;
-    avatar: string | StaticImageData;
+    avatar: string;
     dataAiHint: string;
     bio: string;
     email: string;
 }
 
 const teamMembers: TeamMember[] = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: aryanPfp, dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: gauravPfp, dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: '/pfp/aryan.png', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: '/pfp/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
   { name: 'Kartik', role: 'Tester', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
   { name: 'Anubhav', role: 'Tester', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
-  { name: 'Dharvi', role: 'Presentation Designer', avatar: dharviPfp, dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
+  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/pfp/dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
   { name: 'Garvit', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
 ];
 
@@ -59,7 +53,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
         }
     };
 
-    const avatarSrc = typeof member.avatar === 'string' ? member.avatar : member.avatar.src;
+    const avatarSrc = member.avatar;
     
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
