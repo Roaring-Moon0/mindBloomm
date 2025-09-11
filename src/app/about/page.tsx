@@ -23,7 +23,7 @@ const teamMembers: TeamMember[] = [
   { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
   { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
   { name: 'Anubhav', role: 'Tester', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
-  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
+  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com' },
   { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: '(bio)', email: 'ruhikumari2672@gmail.com' },
 ];
 
