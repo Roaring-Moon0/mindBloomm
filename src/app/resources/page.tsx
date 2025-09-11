@@ -25,8 +25,8 @@ const categoriesData = {
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
     ],
     pdfs: [
-      { title: "Understanding Your Anxiety Workbook", source: "/assets/understanding-your-anxiety-workbook.pdf" },
-      { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/cbt-techniques.pdf" },
+      { title: "How to Understand Your Anxiety Workbook", source: "/assets/How to Understand Your Anxiety Workbook By Mind Crafters.pdf" },
+      { title: "Identifying Stress Triggers", source: "/assets/Identifying Stress Triggers by Mind Crafters.pdf" },
     ],
   },
   depression: {
@@ -42,6 +42,8 @@ const categoriesData = {
       { title: "Uplifting Music to Boost Your Mood", id: "OesMEEalJho" },
     ],
     pdfs: [
+      { title: "Making A Routine When Depressed", source: "/assets/Making A Routine When Depressed By Mind Crafters.pdf"},
+      { title: "A Guide For Self Compassion", source: "/assets/A Guide For Self Compassion By Mind Crafters.pdf"}
     ],
   },
   sleep: {
@@ -58,6 +60,7 @@ const categoriesData = {
       { title: "Rain Sounds for Sleeping", id: "j4dwyAPg8eA" },
     ],
     pdfs: [
+      { title: "Journal Prompts For Bedtime", source: "/assets/Journal Prompts For Bedtime By Mind Crafters.pdf" }
     ],
   },
   stress: {
@@ -74,6 +77,8 @@ const categoriesData = {
       { title: "Gentle ASMR to Melt Your Stress Away", id:"pPHeP_S6d34" },
     ],
     pdfs: [
+        { title: "The Stress Management Handbook", source: "/assets/The Stress Management Handbook by Mind Crafters.pdf" },
+        { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/Cognitive Behavioral Therapy Techniques By Mind Crafters .pdf" }
     ],
   },
 };
@@ -281,7 +286,3 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
-
-    
-
-    
