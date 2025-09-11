@@ -118,11 +118,8 @@ export function ChatUI() {
   useEffect(() => {
     const viewport = scrollViewportRef.current;
     if (viewport) {
-      const isScrolledToBottom = viewport.scrollHeight - viewport.scrollTop <= viewport.clientHeight + 1;
-      const shouldScroll = viewport.scrollHeight > viewport.clientHeight;
-      if (shouldScroll && isScrolledToBottom) {
+        // We want to scroll to the bottom on new messages or when loading starts/stops
         viewport.scrollTo({ top: viewport.scrollHeight, behavior: 'smooth' });
-      }
     }
   }, [messages, isLoading]);
 
@@ -133,6 +130,7 @@ export function ChatUI() {
     setIsLoading(true);
     setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
     
+    form.reset();
     setMessages((prev) => [...prev, { role: 'user', content: values.userInput }]);
 
     try {
@@ -153,7 +151,6 @@ export function ChatUI() {
       setMessages((prev) => [...prev, { role: 'assistant', content: errorMessage }]);
     } finally {
       setIsLoading(false);
-      form.reset();
     }
   }
 

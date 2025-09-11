@@ -67,7 +67,7 @@ export default function ChatPage() {
                         </CardHeader>
                         <CardContent className="text-sm text-destructive/90 font-medium">
                             <p>Bloom is an AI assistant and cannot provide medical advice. It is not a substitute for a professional therapist.</p>
-                            <p className="mt-2">If you are in a crisis or feel you are in danger, please use the emergency numbers below immediately.</p>
+                            <p className="mt-2">If you are in a crisis or feel you are in danger, please use the emergency numbers in the footer immediately.</p>
                         </CardContent>
                     </Card>
                     <Card>
