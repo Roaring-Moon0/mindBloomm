@@ -158,7 +158,7 @@ export function ChatUI() {
 
   return (
     <div className="flex-1 w-full max-w-3xl mx-auto p-4 md:p-6 flex flex-col h-full">
-        <ScrollArea className="flex-1 pr-4" viewportRef={scrollViewportRef}>
+        <ScrollArea className="flex-grow pr-4" viewportRef={scrollViewportRef}>
             <div className="space-y-6">
                 {messages.map((message, index) => (
                 <div key={index} className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
@@ -193,7 +193,7 @@ export function ChatUI() {
         </ScrollArea>
         
         {showForm && (
-            <div className="mt-6 border-t pt-6">
+            <div className="mt-6 border-t pt-6 flex-shrink-0">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField

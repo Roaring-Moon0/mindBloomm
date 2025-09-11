@@ -47,15 +47,15 @@ export default function ChatPage() {
     return (
         <FadeIn>
             <div className="flex flex-col md:flex-row h-[calc(100vh-57px)]">
+                {/* Main Chat Area */}
                 <div className="flex-1 flex flex-col">
                     <div className="md:hidden text-center p-4 border-b">
                         <h1 className="text-xl font-bold tracking-tight font-headline">Chat with Bloom</h1>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
-                        <ChatUI />
-                    </div>
+                    <ChatUI />
                 </div>
-                <div className="hidden md:block md:w-1/3 lg:w-1/4 p-6 border-l space-y-8 bg-secondary/30 overflow-y-auto">
+                {/* Sidebar */}
+                <aside className="hidden md:block w-full md:w-1/3 lg:w-1/4 p-6 border-l space-y-8 bg-secondary/30 overflow-y-auto">
                      <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold tracking-tight font-headline">Meet Bloom</h1>
                         <p className="mt-2 text-md text-muted-foreground">Your AI companion for when you need a listening ear or gentle guidance. Bloom is here to support you, not to replace professional help.</p>
@@ -104,7 +104,7 @@ export default function ChatPage() {
                            </div>
                         </CardContent>
                     </Card>
-                </div>
+                </aside>
             </div>
         </FadeIn>
     )
