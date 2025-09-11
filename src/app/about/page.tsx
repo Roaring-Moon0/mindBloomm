@@ -21,10 +21,10 @@ interface TeamMember {
 const teamMembers: TeamMember[] = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
   { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
-  { name: 'Kartik', role: 'Tester', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
+  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
   { name: 'Anubhav', role: 'Tester', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
   { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
-  { name: 'Garvit', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
+  { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: '(bio)', email: 'ruhikumari2672@gmail.com' },
 ];
 
 const values = [
