@@ -14,11 +14,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', specialities: ['Web Dev', 'AI/ML', 'Product'], email: 'aryan.lead@mindbloom.app' },
-  { name: 'Gourav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gourav.content@mindbloom.app' },
-  { name: 'Kartik', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartik.tech@mindbloom.app' },
-  { name: 'Abhinav', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', specialities: ['Content Curation', 'Writing'], email: 'abhinav.research@mindbloom.app' },
-  { name: 'Dharvi', role: 'Student', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: '(bio)', specialities: ['Accessible Design', 'UX'], email: 'dharvi.design@mindbloom.app' },
-  { name: 'Member 6', role: 'Student', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=M6', dataAiHint: 'person face', bio: '(bio)', specialities: ['Community Building', 'Support'], email: 'member6.community@mindbloom.app' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', specialities: ['MBSR', 'Meditation', 'Stress Reduction'], email: 'gauravxns001@gmail.com' },
+  { name: 'Kartik', role: 'Tester', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', specialities: ['AI Ethics', 'Product Management', 'NLP'], email: 'kartiksharmaa2066@gmail.com' },
+  { name: 'Anubhav', role: 'Tester', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', specialities: ['Content Curation', 'Writing'], email: 'anubhavahluwalia02@gmail.com' },
+  { name: 'Dharvi', role: 'Presentation Designer', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: '(bio)', specialities: ['Accessible Design', 'UX'], email: 'dharvi.design@mindbloom.app' },
+  { name: 'Garvit', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', specialities: ['Community Building', 'Support'], email: 'garvitwadhawansxs000@gmail.com' },
 ];
 
 const values = [
