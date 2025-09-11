@@ -78,7 +78,7 @@ const categoriesData = {
     ],
     pdfs: [
         { title: "The Stress Management Handbook", source: "/assets/The Stress Management Handbook by Mind Crafters.pdf" },
-        { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/Cognitive Behavioral Therapy Techniques By Mind Crafters .pdf" }
+        { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/Cognitive Behavioral Therapy Techniques By Mind Crafters.pdf" }
     ],
   },
 };
