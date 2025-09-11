@@ -8,14 +8,28 @@ import { HeartHandshake, Lightbulb, Target, Mail } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
+import type { StaticImageData } from 'next/image';
+
+import aryanPfp from '@/pfpimages/aryan.png';
+import gauravPfp from '@/pfpimages/gaurav.png';
+import dharviPfp from '@/pfpimages/dharvi.png';
 
 
-const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=A', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
+interface TeamMember {
+    name: string;
+    role: string;
+    avatar: string | StaticImageData;
+    dataAiHint: string;
+    bio: string;
+    email: string;
+}
+
+const teamMembers: TeamMember[] = [
+  { name: 'Aryan', role: 'Founder & Leader', avatar: aryanPfp, dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: gauravPfp, dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
   { name: 'Kartik', role: 'Tester', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=K', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
   { name: 'Anubhav', role: 'Tester', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=A', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
-  { name: 'Dharvi', role: 'Presentation Designer', avatar: 'https://placehold.co/200x200/f9a84a/1a6e4a?text=D', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
+  { name: 'Dharvi', role: 'Presentation Designer', avatar: dharviPfp, dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
   { name: 'Garvit', role: 'Resources Provider', avatar: 'https://placehold.co/200x200/53c599/1a6e4a?text=G', dataAiHint: 'person face', bio: '(bio)', email: 'garvitwadhawansxs000@gmail.com' },
 ];
 
@@ -26,7 +40,7 @@ const values = [
 ];
 
 
-const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
+const TeamMemberCard = ({ member }: { member: TeamMember }) => {
     const [isOpen, setIsOpen] = useState(false);
     const isMobile = useIsMobile();
     let hoverTimeout: NodeJS.Timeout;
@@ -44,6 +58,8 @@ const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
             clearTimeout(hoverTimeout);
         }
     };
+
+    const avatarSrc = typeof member.avatar === 'string' ? member.avatar : member.avatar.src;
     
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -56,7 +72,7 @@ const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
                 >
                     <CardContent className="p-6 flex flex-col items-center">
                         <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
-                            <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
+                            <AvatarImage src={avatarSrc} alt={member.name} data-ai-hint={member.dataAiHint} />
                             <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
                         </Avatar>
                         <CardTitle className="text-xl">{member.name}</CardTitle>
@@ -67,7 +83,7 @@ const TeamMemberCard = ({ member }: { member: typeof teamMembers[0] }) => {
             <DialogContent className="sm:max-w-[425px]" onMouseLeave={!isMobile ? () => setIsOpen(false) : undefined}>
                 <DialogHeader className="items-center text-center">
                      <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
-                        <AvatarImage src={member.avatar} alt={member.name} data-ai-hint={member.dataAiHint} />
+                        <AvatarImage src={avatarSrc} alt={member.name} data-ai-hint={member.dataAiHint} />
                         <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <DialogTitle className="text-2xl">{member.name}</DialogTitle>
@@ -129,5 +145,3 @@ export default function AboutPage() {
         </FadeIn>
     );
 }
-
-    
