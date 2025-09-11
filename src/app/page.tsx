@@ -82,11 +82,11 @@ export default function Home() {
               </div>
               <FadeIn>
                 <Image
-                  src="https://picsum.photos/seed/calm-lake/1200/800"
+                  src="https://picsum.photos/seed/flowers/1200/800"
                   width={1200}
                   height={800}
-                  alt="A calm, serene lake at sunrise, representing peace and relaxation."
-                  data-ai-hint="calm landscape"
+                  alt="A beautiful field of flowers, representing growth and tranquility."
+                  data-ai-hint="flowers field"
                   className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
                 />
               </FadeIn>
