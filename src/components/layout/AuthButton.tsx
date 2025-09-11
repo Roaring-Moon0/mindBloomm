@@ -74,8 +74,13 @@ export function AuthButton() {
   }
 
   return (
-    <Button asChild>
-      <Link href="/login">Login</Link>
-    </Button>
+    <div className="flex items-center gap-2">
+        <Button asChild variant="outline">
+            <Link href="/signup">Sign Up</Link>
+        </Button>
+        <Button asChild>
+            <Link href="/login">Login</Link>
+        </Button>
+    </div>
   );
 }
