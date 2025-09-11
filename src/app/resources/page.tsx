@@ -97,8 +97,7 @@ const allQuotes = [
 ];
 
 
-const PdfResourceCard = ({ title, source, baseUrl }: { title: string, source: string, baseUrl: string }) => {
-    const absoluteUrl = `${baseUrl}${source}`;
+const PdfResourceCard = ({ title, source }: { title: string, source: string }) => {
     return (
         <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4 flex items-center gap-4">
@@ -109,12 +108,12 @@ const PdfResourceCard = ({ title, source, baseUrl }: { title: string, source: st
                 </div>
                 <div className="flex gap-2">
                     <Button asChild variant="outline" size="sm">
-                        <a href={absoluteUrl} target="_blank" rel="noopener noreferrer">
+                        <a href={source} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="mr-2 h-4 w-4"/> View
                         </a>
                     </Button>
                     <Button asChild variant="secondary" size="sm">
-                         <a href={absoluteUrl} download={source.split('/').pop()}>
+                         <a href={source} download>
                             <Download className="mr-2 h-4 w-4"/> Download
                         </a>
                     </Button>
@@ -175,13 +174,6 @@ const QuoteDisplay = () => {
 export default function ResourcesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('anxiety');
-    const [baseUrl, setBaseUrl] = useState('');
-
-    useEffect(() => {
-        // This ensures the origin is only read on the client side, avoiding SSR issues.
-        setBaseUrl(window.location.origin);
-    }, []);
-
 
     const filteredData = useMemo(() => {
         const categoryData = categoriesData[activeTab as keyof typeof categoriesData];
@@ -265,7 +257,7 @@ export default function ResourcesPage() {
                                             <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
                                             <div className="grid md:grid-cols-1 gap-4">
                                                 {filteredData.pdfs.map(pdf => (
-                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} baseUrl={baseUrl} />
+                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} />
                                                 ))}
                                             </div>
                                         </div>
@@ -289,26 +281,3 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
-
-    
-
-    
-
-
-
-    
-
-    
-
-    
-
-
-
-
-    
-
-    
-
-    
-
-    
