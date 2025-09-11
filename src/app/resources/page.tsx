@@ -16,7 +16,7 @@ const categoriesData = {
     description: "Techniques and resources to calm your mind and manage anxiety.",
     videos: [
       { title: "Guided Meditation for Anxiety & Stress", id: "1dbYduxIpwE" },
-      { title: "Yoga For Anxiety and Stress", id: "hJbRpHq_dO0" },
+      { title: "Yoga For Anxiety and Stress", id: "hJbRpHZr_d0" },
       { title: "Quick Anxiety Relief in 5 Minutes", id: "MR57rug8NsM" },
       { title: "How to Stop an Anxiety Attack", id: "O-6f5wQXSu8" },
     ],
@@ -290,5 +290,7 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
+
+    
 
     
