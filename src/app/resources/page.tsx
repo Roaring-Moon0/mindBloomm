@@ -37,7 +37,7 @@ const categoriesData = {
         { title: "What is depression?", id: "fWFuQR_Wt4M" },
         { title: "How to deal with depression", id: "mn6WxY4NYEA" },
         { title: "How to get stuff done when you are depressed", id: "ngvOyccUzzY" },
-        { title: "A Self-Care Action Plan for Depression", id: "2I60_n-tias" },
+        { title: "A Self-Care Action Plan for Depression", id: "5If1LFZ1CQA" },
     ],
     audios: [
       { title: "Uplifting Music to Boost Your Mood", id: "W8rJU4b_o_I" },
@@ -306,5 +306,7 @@ export default function ResourcesPage() {
 
 
 
+
+    
 
     
