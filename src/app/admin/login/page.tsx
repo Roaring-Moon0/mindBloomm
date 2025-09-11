@@ -85,11 +85,13 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="container mx-auto py-12 px-4 md:px-6 flex items-center justify-center min-h-[calc(100vh-200px)]">
-      <Card className="w-full max-w-lg">
+    <div className="flex items-center justify-center min-h-screen bg-background">
+      <Card className="w-full max-w-lg mx-4">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center">
-            <Logo className="w-10 h-10 text-primary"/>
+            <Link href="/" aria-label="Back to home">
+              <Logo className="w-10 h-10 text-primary"/>
+            </Link>
           </div>
           <CardTitle>Admin Panel</CardTitle>
           <CardDescription>Login to manage MindBloom content.</CardDescription>
