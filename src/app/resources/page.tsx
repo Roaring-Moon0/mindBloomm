@@ -98,29 +98,33 @@ const allQuotes = [
 ];
 
 
-const PdfResourceCard = ({ title, source }: { title: string, source: string }) => (
-    <Card className="hover:shadow-md transition-shadow">
-        <CardContent className="p-4 flex items-center gap-4">
-            <FileText className="w-6 h-6 text-primary flex-shrink-0" />
-            <div className="flex-1">
-                <h3 className="font-semibold">{title}</h3>
-                <p className="text-sm text-muted-foreground">PDF Document</p>
-            </div>
-            <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm">
-                    <a href={source} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2 h-4 w-4"/> View
-                    </a>
-                </Button>
-                <Button asChild variant="secondary" size="sm">
-                     <a href={source} download>
-                        <Download className="mr-2 h-4 w-4"/> Download
-                    </a>
-                </Button>
-            </div>
-        </CardContent>
-    </Card>
-);
+const PdfResourceCard = ({ title, source, baseUrl }: { title: string, source: string, baseUrl: string }) => {
+    const absoluteUrl = `${baseUrl}${source}`;
+    return (
+        <Card className="hover:shadow-md transition-shadow">
+            <CardContent className="p-4 flex items-center gap-4">
+                <FileText className="w-6 h-6 text-primary flex-shrink-0" />
+                <div className="flex-1">
+                    <h3 className="font-semibold">{title}</h3>
+                    <p className="text-sm text-muted-foreground">PDF Document</p>
+                </div>
+                <div className="flex gap-2">
+                    <Button asChild variant="outline" size="sm">
+                        <a href={absoluteUrl} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="mr-2 h-4 w-4"/> View
+                        </a>
+                    </Button>
+                    <Button asChild variant="secondary" size="sm">
+                         <a href={absoluteUrl} download={source.split('/').pop()}>
+                            <Download className="mr-2 h-4 w-4"/> Download
+                        </a>
+                    </Button>
+                </div>
+            </CardContent>
+        </Card>
+    );
+};
+
 
 const VideoCard = ({ id, title }: { id: string, title: string }) => (
     <div className="flex flex-col gap-2">
@@ -172,6 +176,13 @@ const QuoteDisplay = () => {
 export default function ResourcesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('anxiety');
+    const [baseUrl, setBaseUrl] = useState('');
+
+    useEffect(() => {
+        // This ensures the origin is only read on the client side, avoiding SSR issues.
+        setBaseUrl(window.location.origin);
+    }, []);
+
 
     const filteredData = useMemo(() => {
         const categoryData = categoriesData[activeTab as keyof typeof categoriesData];
@@ -216,7 +227,7 @@ export default function ResourcesPage() {
                 <Tabs defaultValue="anxiety" className="w-full" onValueChange={(value) => setActiveTab(value)}>
                     <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
                         {Object.entries(categoriesData).map(([key, category]) => (
-                            <TabsTrigger key={key} value={key} className="py-2">{category.name}</TabsTrigger>
+                            <TabsTrigger key={key} value={key}>{category.name}</TabsTrigger>
                         ))}
                     </TabsList>
 
@@ -255,7 +266,7 @@ export default function ResourcesPage() {
                                             <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
                                             <div className="grid md:grid-cols-1 gap-4">
                                                 {filteredData.pdfs.map(pdf => (
-                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} />
+                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} baseUrl={baseUrl} />
                                                 ))}
                                             </div>
                                         </div>
@@ -280,4 +291,3 @@ export default function ResourcesPage() {
     );
 }
 
-    
