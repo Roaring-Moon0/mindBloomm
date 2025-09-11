@@ -1,10 +1,6 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // WARNING: These rules are completely open and are NOT secure.
-    // They are intended for local development and testing only.
-    // Before deploying to production, you MUST write secure rules.
     match /{document=**} {
       allow read, write: if true;
     }
