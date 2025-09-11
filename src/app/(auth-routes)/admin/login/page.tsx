@@ -85,8 +85,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background">
-      <Card className="w-full max-w-lg mx-4">
+    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+      <Card className="w-full max-w-lg mx-auto">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center">
             <Link href="/" aria-label="Back to home">
@@ -94,15 +94,14 @@ export default function AdminLoginPage() {
             </Link>
           </div>
           <CardTitle>Admin Panel</CardTitle>
-          <CardDescription>Login to manage MindBloom content.</CardDescription>
+          <CardDescription>Use your MindBloom account credentials to log in.</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert className="mb-6">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>Admin Access</AlertTitle>
+            <AlertTitle>Admin Access Only</AlertTitle>
             <AlertDescription>
-                <p>Use your MindBloom account email and password. To gain access, your email must be on the approved admin list in the database.</p>
-                <p className="mt-2">If you don't have an account yet, please sign up through the regular <Link href="/signup" className="underline">sign-up page</Link> first.</p>
+                <p>To gain access, your account email must be on the approved admin list in the database. If you don't have an account, please <Link href="/signup" className="underline">sign up</Link> first.</p>
             </AlertDescription>
           </Alert>
 
