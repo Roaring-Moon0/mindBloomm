@@ -62,6 +62,17 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <Separator orientation="vertical" className="h-6" />
+            {adminLinks.map((link) => (
+                 <Link
+                    key={link.href}
+                    href={link.href}
+                    className="transition-colors hover:text-foreground/80 text-foreground/60"
+                    prefetch={true}
+                >
+                    {link.label}
+                </Link>
+            ))}
           </nav>
         </div>
 
