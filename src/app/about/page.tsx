@@ -4,10 +4,11 @@
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { HeartHandshake, Lightbulb, Target, Mail } from 'lucide-react';
+import { HeartHandshake, Lightbulb, Target, Mail, Linkedin } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
+import Link from 'next/link';
 
 interface TeamMember {
     name: string;
@@ -16,15 +17,16 @@ interface TeamMember {
     dataAiHint: string;
     bio: string;
     email: string;
+    linkedin?: string;
 }
 
 const teamMembers: TeamMember[] = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com', linkedin: 'https://www.linkedin.com/in/aryan-4500a7380' },
   { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
-  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com' },
+  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com', linkedin: 'https://www.linkedin.com/in/kartik-sharma-41b552336' },
   { name: 'Anubhav', role: 'Tester', avatar: '/assets/anubhav.png', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
-  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com' },
-  { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: '(bio)', email: 'ruhikumari2672@gmail.com' },
+  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
+  { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: '(bio)', email: 'ruhikumari2672@gmail.com', linkedin: 'https://www.linkedin.com/in/ruhi-kumari-774a95378' },
 ];
 
 const values = [
@@ -85,9 +87,17 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <p className="text-muted-foreground text-center">{member.bio}</p>
-                    <div className="flex items-center gap-3">
-                        <Mail className="w-5 h-5 text-primary"/>
-                        <a href={`mailto:${member.email}`} className="text-sm hover:underline">{member.email}</a>
+                    <div className="flex items-center justify-center gap-6">
+                        <Link href={`mailto:${member.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:underline text-muted-foreground hover:text-primary">
+                            <Mail className="w-5 h-5"/>
+                            <span>Email</span>
+                        </Link>
+                         {member.linkedin && (
+                            <Link href={member.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:underline text-muted-foreground hover:text-primary">
+                                <Linkedin className="w-5 h-5" />
+                                <span>LinkedIn</span>
+                            </Link>
+                        )}
                     </div>
                 </div>
             </DialogContent>
