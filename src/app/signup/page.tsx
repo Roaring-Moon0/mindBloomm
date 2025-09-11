@@ -133,7 +133,7 @@ export default function SignUpPage() {
                     <FormLabel>Email</FormLabel>
                     <FormControl><Input type="email" placeholder="your.email@example.com" {...field} /></FormControl>
                     <FormMessage />
-                  </Item>
+                  </FormItem>
                 )}
               />
               <FormField control={form.control} name="password" render={({ field }) => (
@@ -141,7 +141,7 @@ export default function SignUpPage() {
                     <FormLabel>Password</FormLabel>
                     <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                     <FormMessage />
-                  </Item>
+                  </FormItem>
                 )}
               />
               <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
