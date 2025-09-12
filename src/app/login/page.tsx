@@ -4,7 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,10 +14,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
-const formSchema = z.object({
+const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+});
+
+const resetPasswordFormSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email to send a reset link." }),
 });
 
 const GoogleIcon = () => (
@@ -29,6 +34,69 @@ const GoogleIcon = () => (
     </svg>
 );
 
+function ForgotPasswordDialog({ onOpenChange }: { onOpenChange: (open: boolean) => void }) {
+    const [isSending, setIsSending] = useState(false);
+    const form = useForm<z.infer<typeof resetPasswordFormSchema>>({
+        resolver: zodResolver(resetPasswordFormSchema),
+        defaultValues: { email: "" },
+    });
+
+    async function onSubmit(values: z.infer<typeof resetPasswordFormSchema>) {
+        setIsSending(true);
+        try {
+            await sendPasswordResetEmail(auth, values.email);
+            toast({
+                title: "Reset Email Sent",
+                description: "Check your inbox for a password reset link.",
+            });
+            onOpenChange(false); // Close the dialog on success
+        } catch (error: any) {
+            let description = "An unexpected error occurred. Please try again.";
+            if (error.code === 'auth/user-not-found') {
+                description = "No user found with this email address. Please check your email and try again.";
+            }
+            toast({
+                variant: "destructive",
+                title: "Failed to Send Email",
+                description,
+            });
+        } finally {
+            setIsSending(false);
+        }
+    }
+    
+    return (
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Reset Your Password</DialogTitle>
+                <DialogDescription>
+                    Enter your email address below. If an account exists, we'll send you a link to reset your password.
+                </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input type="email" placeholder="your.email@example.com" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full" disabled={isSending}>
+                        {isSending ? "Sending..." : "Send Reset Link"}
+                    </Button>
+                </form>
+            </Form>
+        </DialogContent>
+    );
+}
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,9 +105,10 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -72,7 +141,7 @@ export default function LoginPage() {
     }
   };
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -117,7 +186,15 @@ export default function LoginPage() {
               />
               <FormField control={form.control} name="password" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className="flex justify-between items-center">
+                        <FormLabel>Password</FormLabel>
+                         <Dialog open={isForgotPasswordOpen} onOpenChange={setIsForgotPasswordOpen}>
+                            <DialogTrigger asChild>
+                                <Button variant="link" type="button" className="p-0 h-auto text-xs">Forgot password?</Button>
+                            </DialogTrigger>
+                            <ForgotPasswordDialog onOpenChange={setIsForgotPasswordOpen} />
+                        </Dialog>
+                    </div>
                     <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,3 +237,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    
