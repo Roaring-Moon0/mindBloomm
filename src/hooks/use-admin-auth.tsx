@@ -23,70 +23,75 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading, logout: baseLogout } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false); // For the code verification process
+  const [loading, setLoading] = useState(true); // For the initial admin status check
   const router = useRouter();
 
-  const checkAdminStatus = useCallback(async (user: User) => {
+  const checkAdminStatus = useCallback(async (user: User | null) => {
+    if (!user || !user.email) {
+      setIsAdmin(false);
+      setLoading(false);
+      return;
+    }
+    
+    setLoading(true);
     // An admin is someone who is on the approved list AND has claimed a code.
     const adminConfigRef = doc(db, 'config', 'admins');
     const adminCodesRef = doc(db, 'config', 'adminCodes');
     
-    const [adminConfigDoc, adminCodesDoc] = await Promise.all([
-        getDoc(adminConfigRef),
-        getDoc(adminCodesRef)
-    ]);
+    try {
+        const [adminConfigDoc, adminCodesDoc] = await Promise.all([
+            getDoc(adminConfigRef),
+            getDoc(adminCodesRef)
+        ]);
 
-    if (!adminConfigDoc.exists() || !user.email) return false;
-    
-    const adminEmails = adminConfigDoc.data().emails as string[];
-    if (!adminEmails.includes(user.email)) return false;
-
-    // Now, check if this user has claimed any of the codes.
-    if (!adminCodesDoc.exists()) return false;
-    const codes = adminCodesDoc.data();
-    for (const code in codes) {
-        if (codes[code].claimedBy === user.uid) {
-            return true; // Found a code claimed by this user.
+        let hasClaimedCode = false;
+        if (adminConfigDoc.exists() && adminConfigDoc.data().emails?.includes(user.email)) {
+            // User is on the approved list, now check if they have claimed a code.
+            if (adminCodesDoc.exists()) {
+                const codes = adminCodesDoc.data();
+                for (const code in codes) {
+                    if (codes[code].claimedBy === user.uid) {
+                        hasClaimedCode = true;
+                        break;
+                    }
+                }
+            }
         }
+        
+        setIsAdmin(hasClaimedCode);
+    } catch (error) {
+        console.error("Error checking admin status:", error);
+        setIsAdmin(false);
+    } finally {
+        setLoading(false);
     }
-    
-    return false; // On the list, but hasn't claimed a code.
   }, []);
 
   useEffect(() => {
-    const performCheck = async () => {
-        if (authLoading) {
-            // Wait for the main auth hook to finish loading
-            return;
-        }
-
-        setLoading(true);
-        if (user) {
-            const isAdminStatus = await checkAdminStatus(user);
-            setIsAdmin(isAdminStatus);
-        } else {
-            setIsAdmin(false);
-        }
-        setLoading(false);
-    };
-    performCheck();
+    // This effect runs when the auth state changes.
+    if (!authLoading) {
+      checkAdminStatus(user);
+    }
   }, [user, authLoading, checkAdminStatus]);
 
   const verifyAdminCode = async (code: string): Promise<boolean> => {
-    if (!user || !user.email) return false;
+    if (!user || !user.email) {
+        toast({ variant: 'destructive', title: 'You must be logged in to verify a code.' });
+        return false;
+    }
 
     setIsVerifying(true);
     try {
-        // First, ensure the user's email is on the approved list.
         const adminConfigDoc = await getDoc(doc(db, 'config', 'admins'));
         if (!adminConfigDoc.exists() || !adminConfigDoc.data().emails?.includes(user.email)) {
+            toast({ variant: 'destructive', title: 'Access Denied', description: 'Your account is not on the approved list for admin access.' });
             return false;
         }
-        // Then, try to claim the code.
+
         const isCodeValid = await verifyAndClaimAdminCode(user.uid, code);
         if (isCodeValid) {
-            setIsAdmin(true); // If successful, update state immediately.
+            setIsAdmin(true); // Manually set admin status to true after successful claim.
         }
         return isCodeValid;
     } catch (error) {
@@ -97,7 +102,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-
   const logout = async () => {
     await baseLogout();
     setIsAdmin(false);
@@ -107,7 +111,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     isAdmin,
-    loading: loading || authLoading,
+    loading: authLoading || loading,
     isVerifying,
     logout,
     verifyAdminCode,

@@ -2,21 +2,52 @@
 'use server';
 
 import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc, runTransaction } from 'firebase/firestore';
+import { doc, setDoc, getDoc, runTransaction, collection, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { z } from 'zod';
+
+const surveySchema = z.object({
+  name: z.string(),
+  url: z.string().url(),
+});
 
 /**
- * Updates the survey URL in the Firestore configuration.
- * @param url The new URL for the survey form.
+ * Adds a new survey to the 'surveys' collection in Firestore.
+ * @param surveyData The data for the new survey, expecting name and url.
  */
-export async function updateSurveyUrl(url: string): Promise<void> {
+export async function addSurvey(surveyData: z.infer<typeof surveySchema>): Promise<void> {
   try {
-    const configRef = doc(db, 'config', 'survey');
-    await setDoc(configRef, { url: url }, { merge: true });
+    const validatedData = surveySchema.parse(surveyData);
+    const surveysCollectionRef = collection(db, 'surveys');
+    await addDoc(surveysCollectionRef, {
+      ...validatedData,
+      createdAt: serverTimestamp(),
+    });
   } catch (error) {
-    console.error("Error updating survey URL:", error);
-    throw new Error("Failed to update the survey URL in the database.");
+    console.error("Error adding survey:", error);
+    if (error instanceof z.ZodError) {
+      throw new Error("Invalid survey data provided.");
+    }
+    throw new Error("Failed to add the survey to the database.");
   }
 }
+
+/**
+ * Deletes a survey from the 'surveys' collection.
+ * @param surveyId The ID of the survey document to delete.
+ */
+export async function deleteSurvey(surveyId: string): Promise<void> {
+    if (!surveyId) {
+        throw new Error("Survey ID must be provided.");
+    }
+    try {
+        const surveyRef = doc(db, 'surveys', surveyId);
+        await deleteDoc(surveyRef);
+    } catch (error) {
+        console.error("Error deleting survey:", error);
+        throw new Error("Failed to delete the survey from the database.");
+    }
+}
+
 
 /**
  * Verifies an admin code and claims it for a user if it's their first time.
@@ -32,7 +63,6 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
       const adminCodesDoc = await transaction.get(adminCodesRef);
 
       if (!adminCodesDoc.exists()) {
-        // For initial setup: if the doc doesn't exist, create it with initial codes.
         const initialCodes = {
             'bl00m-adm-8c2e': { claimedBy: null, createdAt: new Date() },
             'bl00m-adm-f9b1': { claimedBy: null, createdAt: new Date() },
@@ -41,39 +71,28 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
             'bl00m-adm-9b5h': { claimedBy: null, createdAt: new Date() },
             'bl00m-adm-2k8g': { claimedBy: null, createdAt: new Date() },
         };
-        transaction.set(adminCodesRef, initialCodes);
-        // Check if the provided code is one of the initial ones
+        // Check if the provided code is one of the initial ones and claim it.
         if (initialCodes.hasOwnProperty(code)) {
-            // Claim it immediately
             const updatedCodes = { ...initialCodes, [code]: { claimedBy: userId, createdAt: new Date() } };
             transaction.set(adminCodesRef, updatedCodes);
             return true;
         }
+        // If doc doesn't exist and code isn't an initial one, fail.
+        transaction.set(adminCodesRef, initialCodes); // Create doc anyway
         return false;
       }
 
       const codes = adminCodesDoc.data();
       const codeData = codes[code];
 
-      // Case 1: Code doesn't exist.
-      if (!codeData) {
-        return false;
-      }
+      if (!codeData) return false; // Code doesn't exist.
+      if (codeData.claimedBy === userId) return true; // Already claimed by this user.
+      if (codeData.claimedBy) return false; // Claimed by someone else.
 
-      // Case 2: Code is already claimed by the current user.
-      if (codeData.claimedBy === userId) {
-        return true;
-      }
-
-      // Case 3: Code is claimed by someone else.
-      if (codeData.claimedBy) {
-        return false;
-      }
-
-      // Case 4: Code is valid and unclaimed. Claim it for the current user.
-      const updatedCodeData = { ...codeData, claimedBy: userId };
-      const updatedCodes = { ...codes, [code]: updatedCodeData };
-      transaction.set(adminCodesRef, updatedCodes);
+      // Code is valid and unclaimed. Claim it.
+      transaction.update(adminCodesRef, {
+        [`${code}.claimedBy`]: userId,
+      });
       
       return true;
     });
