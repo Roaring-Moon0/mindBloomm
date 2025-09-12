@@ -25,7 +25,7 @@ const teamMembers: TeamMember[] = [
   { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com' },
   { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com', linkedin: 'https://www.linkedin.com/in/kartik-sharma-41b552336' },
   { name: 'Anubhav', role: 'Tester', avatar: '/assets/anubhav.png', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com' },
-  { name: 'Dharvi', role: 'Presentation Designer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
+  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
   { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: '(bio)', email: 'ruhikumari2672@gmail.com', linkedin: 'https://www.linkedin.com/in/ruhi-kumari-774a95378' },
 ];
 
