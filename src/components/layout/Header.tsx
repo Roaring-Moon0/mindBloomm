@@ -47,24 +47,22 @@ export function Header() {
             <Logo className="h-6 w-6 text-primary" />
             <span className="hidden font-bold sm:inline-block">MindBloom</span>
           </Link>
+          <nav className="flex items-center gap-1 text-sm">
+            {navLinks.map((link) => (
+              <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground")}>
+                <Link
+                  href={link.href}
+                  className="transition-colors hover:text-foreground"
+                  prefetch={true}
+                >
+                  {link.label}
+                </Link>
+              </Button>
+            ))}
+          </nav>
         </div>
 
         <div className="flex flex-1 items-center justify-between md:justify-end md:gap-4">
-            <nav className="hidden md:flex items-center gap-1 text-sm">
-                {navLinks.map((link) => (
-                <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground bg-accent/50")}>
-                    <Link
-                        href={link.href}
-                        className="transition-colors hover:text-foreground"
-                        prefetch={true}
-                    >
-                        {link.icon}
-                        {link.label}
-                    </Link>
-                </Button>
-                ))}
-            </nav>
-
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
