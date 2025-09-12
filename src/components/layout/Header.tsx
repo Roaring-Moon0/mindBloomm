@@ -28,8 +28,9 @@ const navLinks = [
   { href: '/survey', label: 'Survey' },
   { href: '/about', label: 'About Us' },
   { href: '/contact', label: 'Contact' },
-  { href: '/admin', label: 'Admin' },
 ];
+
+const adminLink = { href: '/admin', label: 'Admin' };
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -44,8 +45,16 @@ export function Header() {
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
         
+        {/* Logo (Left on desktop) */}
+        <div className="hidden md:flex mr-6">
+            <Link href="/" className="flex items-center space-x-2">
+                <Logo className="h-6 w-6 text-primary" />
+                <span className="hidden font-bold sm:inline-block">MindBloom</span>
+            </Link>
+        </div>
+
         {/* Hamburger Menu (Left on mobile) */}
-        <div className="md:hidden">
+        <div className="md:hidden flex-1">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -65,7 +74,7 @@ export function Header() {
                 <span className="font-bold">MindBloom</span>
               </Link>
               <div className="flex flex-col space-y-2">
-                {navLinks.map((link) => (
+                {[...navLinks, adminLink].map((link) => (
                     <SheetClose asChild key={link.href}>
                       <Link
                         href={link.href}
@@ -80,9 +89,9 @@ export function Header() {
           </Sheet>
         </div>
 
-        {/* Logo (Left on desktop, center on mobile) */}
-        <div className="flex flex-1 md:flex-none justify-center md:justify-start">
-            <Link href="/" className="mr-6 flex items-center space-x-2">
+        {/* Logo (Center on mobile) */}
+        <div className="flex-1 flex justify-center md:hidden">
+            <Link href="/" className="flex items-center space-x-2">
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="hidden font-bold sm:inline-block">MindBloom</span>
             </Link>
@@ -103,7 +112,17 @@ export function Header() {
         </nav>
 
         {/* Right side actions */}
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex flex-shrink-0 items-center justify-end gap-2">
+            <div className="hidden md:flex items-center gap-1">
+                 <Button key={adminLink.href} variant="ghost" asChild className={cn("text-muted-foreground border-l ml-1 pl-3 rounded-none", pathname === adminLink.href && "text-foreground font-semibold")}>
+                    <Link
+                        href={adminLink.href}
+                        className="transition-colors hover:text-foreground"
+                    >
+                        {adminLink.label}
+                    </Link>
+                </Button>
+            </div>
           <ThemeToggle />
           <AuthButton />
         </div>
