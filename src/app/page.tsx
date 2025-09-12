@@ -110,7 +110,7 @@ export default function Home() {
               {features.map((feature, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)} className="flex flex-col">
                   <Link href={feature.href} className="block h-full w-full">
-                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 hover:bg-accent">
+                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 hover:bg-secondary">
                           <CardHeader className="flex flex-col items-center text-center gap-4">
                               {feature.icon}
                               <CardTitle>{feature.title}</CardTitle>

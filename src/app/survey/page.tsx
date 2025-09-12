@@ -38,7 +38,7 @@ export default function SurveyPage() {
                         <div className="space-y-4">
                             {/* Always display the hardcoded default survey */}
                             <Link href={defaultSurvey.url} target="_blank" rel="noopener noreferrer" key={defaultSurvey.id} className="block">
-                                <Card className="hover:bg-accent hover:border-primary/50 transition-colors border-2 border-primary/30">
+                                <Card className="hover:bg-secondary hover:border-primary/50 transition-colors border-2 border-primary/30">
                                     <CardHeader>
                                         <CardTitle className="text-lg">{defaultSurvey.name}</CardTitle>
                                         <CardDescription>{defaultSurvey.description}</CardDescription>
@@ -49,7 +49,7 @@ export default function SurveyPage() {
                             {/* Display surveys from Firestore */}
                             {surveys && surveys.map(survey => (
                                 <Link href={survey.url} target="_blank" rel="noopener noreferrer" key={survey.id} className="block">
-                                    <Card className="hover:bg-accent hover:border-primary/50 transition-colors">
+                                    <Card className="hover:bg-secondary hover:border-primary/50 transition-colors">
                                         <CardHeader>
                                             <CardTitle className="text-lg">{survey.name}</CardTitle>
                                             <CardDescription>Click to open the survey in a new tab.</CardDescription>
