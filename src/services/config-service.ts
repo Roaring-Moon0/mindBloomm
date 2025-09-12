@@ -70,6 +70,12 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
           'bl00m-adm-e6f3': { claimedBy: null, createdAt: new Date() },
           'bl00m-adm-9b5h': { claimedBy: null, createdAt: new Date() },
           'bl00m-adm-2k8g': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-a1b2': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-c3d4': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-e5f6': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-g7h8': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-i9j0': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-k1l2': { claimedBy: null, createdAt: new Date() },
       };
 
       if (!adminCodesDoc.exists()) {
