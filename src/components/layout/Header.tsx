@@ -46,15 +46,15 @@ export function Header() {
       <div className="container flex h-16 max-w-screen-2xl items-center">
         
         {/* Logo (Left on desktop) */}
-        <div className="hidden md:flex mr-6">
+        <div className="hidden lg:flex mr-6">
             <Link href="/" className="flex items-center space-x-2">
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="hidden font-bold sm:inline-block">MindBloom</span>
             </Link>
         </div>
 
-        {/* Hamburger Menu (Left on mobile) */}
-        <div className="md:hidden flex-1">
+        {/* Hamburger Menu (Left on mobile/tablet) */}
+        <div className="lg:hidden flex-1">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -89,8 +89,8 @@ export function Header() {
           </Sheet>
         </div>
 
-        {/* Logo (Center on mobile) */}
-        <div className="flex-1 flex justify-center md:hidden">
+        {/* Logo (Center on mobile/tablet) */}
+        <div className="flex-1 flex justify-center lg:hidden">
             <Link href="/" className="flex items-center space-x-2">
                 <Logo className="h-6 w-6 text-primary" />
                 <span className="hidden font-bold sm:inline-block">MindBloom</span>
@@ -98,7 +98,7 @@ export function Header() {
         </div>
         
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex flex-1 items-center gap-1 text-sm">
+        <nav className="hidden lg:flex flex-1 items-center gap-1 text-sm">
           {navLinks.map((link) => (
             <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground font-semibold")}>
               <Link
@@ -113,7 +113,7 @@ export function Header() {
 
         {/* Right side actions */}
         <div className="flex flex-shrink-0 items-center justify-end gap-2">
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden lg:flex items-center gap-1">
                  <Button key={adminLink.href} variant="ghost" asChild className={cn("text-muted-foreground border-l ml-1 pl-3 rounded-none", pathname === adminLink.href && "text-foreground font-semibold")}>
                     <Link
                         href={adminLink.href}
