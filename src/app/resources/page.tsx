@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileText, RefreshCw, Search, Music, Download, ExternalLink } from 'lucide-react';
+import { Youtube, FileText, RefreshCw, Search, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,10 +24,6 @@ const categoriesData = {
     audios: [
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
     ],
-    pdfs: [
-      { title: "How to Understand Your Anxiety Workbook", source: "/assets/How to Understand Your Anxiety Workbook By Mind Crafters.pdf" },
-      { title: "Identifying Stress Triggers", source: "/assets/Identifying Stress Triggers by Mind Crafters.pdf" },
-    ],
   },
   depression: {
     name: "Overcoming Depression",
@@ -40,10 +36,6 @@ const categoriesData = {
     ],
     audios: [
       { title: "Uplifting Music to Boost Your Mood", id: "OesMEEalJho" },
-    ],
-    pdfs: [
-      { title: "Making A Routine When Depressed", source: "/assets/Making A Routine When Depressed By Mind Crafters.pdf"},
-      { title: "A Guide For Self Compassion", source: "/assets/A Guide For Self Compassion By Mind Crafters.pdf"}
     ],
   },
   sleep: {
@@ -59,9 +51,6 @@ const categoriesData = {
       { title: "Deep Sleep Music, Insomnia, Relaxing Music", id: "aIq_HqVSlqA" },
       { title: "Rain Sounds for Sleeping", id: "j4dwyAPg8eA" },
     ],
-    pdfs: [
-      { title: "Journal Prompts For Bedtime", source: "/assets/Journal Prompts For Bedtime By Mind Crafters.pdf" }
-    ],
   },
   stress: {
     name: "Understanding Stress",
@@ -75,10 +64,6 @@ const categoriesData = {
     audios: [
       { title: "3 Hours of Relaxing Music for Stress Relief", id: "calI9aV_eWc" },
       { title: "Gentle ASMR to Melt Your Stress Away", id:"pPHeP_S6d34" },
-    ],
-    pdfs: [
-        { title: "The Stress Management Handbook", source: "/assets/The Stress Management Handbook by Mind Crafters.pdf" },
-        { title: "Cognitive Behavioral Therapy Techniques", source: "/assets/Cognitive Behavioral Therapy Techniques By Mind Crafters.pdf" }
     ],
   },
 };
@@ -100,33 +85,6 @@ const allQuotes = [
     { quote: "Success doesn’t just find you. You have to go out and get it.", author: "Unknown" },
     { quote: "The harder you work for something, the greater you’ll feel when you achieve it.", author: "Unknown" }
 ];
-
-
-const PdfResourceCard = ({ title, source }: { title: string, source: string }) => {
-    return (
-        <Card className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4 flex items-center gap-4">
-                <FileText className="w-6 h-6 text-primary flex-shrink-0" />
-                <div className="flex-1">
-                    <h3 className="font-semibold">{title}</h3>
-                    <p className="text-sm text-muted-foreground">PDF Document</p>
-                </div>
-                <div className="flex gap-2">
-                    <Button asChild variant="outline" size="sm">
-                        <a href={source} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4"/> View
-                        </a>
-                    </Button>
-                    <Button asChild variant="secondary" size="sm">
-                         <a href={source} download>
-                            <Download className="mr-2 h-4 w-4"/> Download
-                        </a>
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-    );
-};
 
 
 const VideoCard = ({ id, title }: { id: string, title: string }) => (
@@ -195,7 +153,6 @@ export default function ResourcesPage() {
             ...categoryData,
             videos: filterItems(categoryData.videos),
             audios: filterItems(categoryData.audios),
-            pdfs: filterItems(categoryData.pdfs),
         };
     }, [searchTerm, activeTab]);
 
@@ -257,18 +214,8 @@ export default function ResourcesPage() {
                                         </div>
                                     )}
 
-                                    {filteredData.pdfs.length > 0 && (
-                                        <div>
-                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles & PDFs</h3>
-                                            <div className="grid md:grid-cols-1 gap-4">
-                                                {filteredData.pdfs.map(pdf => (
-                                                   <PdfResourceCard key={pdf.title} title={pdf.title} source={pdf.source} />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
                                     
-                                    {filteredData.videos.length === 0 && filteredData.audios.length === 0 && filteredData.pdfs.length === 0 && (
+                                    {filteredData.videos.length === 0 && filteredData.audios.length === 0 && (
                                         <div className="text-center py-12">
                                             <p className="text-muted-foreground font-semibold">No resources found for "{searchTerm}".</p>
                                             <p className="text-muted-foreground text-sm">Try a different search term or check other categories.</p>
@@ -286,3 +233,5 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
+
+    
