@@ -4,6 +4,7 @@
 import { db } from '@/lib/firebase';
 import { doc, setDoc, getDoc, runTransaction, collection, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { z } from 'zod';
+import { toast } from '@/hooks/use-toast';
 
 const surveySchema = z.object({
   name: z.string(),
@@ -62,24 +63,30 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
     return await runTransaction(db, async (transaction) => {
       const adminCodesDoc = await transaction.get(adminCodesRef);
 
+      const initialCodes = {
+          'bl00m-adm-8c2e': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-f9b1': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-4a7d': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-e6f3': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-9b5h': { claimedBy: null, createdAt: new Date() },
+          'bl00m-adm-2k8g': { claimedBy: null, createdAt: new Date() },
+      };
+
       if (!adminCodesDoc.exists()) {
-        const initialCodes = {
-            'bl00m-adm-8c2e': { claimedBy: null, createdAt: new Date() },
-            'bl00m-adm-f9b1': { claimedBy: null, createdAt: new Date() },
-            'bl00m-adm-4a7d': { claimedBy: null, createdAt: new Date() },
-            'bl00m-adm-e6f3': { claimedBy: null, createdAt: new Date() },
-            'bl00m-adm-9b5h': { claimedBy: null, createdAt: new Date() },
-            'bl00m-adm-2k8g': { claimedBy: null, createdAt: new Date() },
-        };
-        // Check if the provided code is one of the initial ones and claim it.
-        if (initialCodes.hasOwnProperty(code)) {
-            const updatedCodes = { ...initialCodes, [code]: { claimedBy: userId, createdAt: new Date() } };
-            transaction.set(adminCodesRef, updatedCodes);
-            return true;
-        }
-        // If doc doesn't exist and code isn't an initial one, fail.
-        transaction.set(adminCodesRef, initialCodes); // Create doc anyway
-        return false;
+          // If the document doesn't exist, check if the code is one of the initial ones.
+          if (Object.keys(initialCodes).includes(code)) {
+              // It's a valid initial code, claim it and create the document.
+              const newCodeData = initialCodes[code as keyof typeof initialCodes];
+              newCodeData.claimedBy = userId;
+              const allCodes = {...initialCodes, [code]: newCodeData };
+              transaction.set(adminCodesRef, allCodes);
+              return true;
+          } else {
+              // Doc doesn't exist and the code is not a valid initial code.
+              // Create the doc with unclaimed codes and fail verification.
+              transaction.set(adminCodesRef, initialCodes);
+              return false;
+          }
       }
 
       const codes = adminCodesDoc.data();
@@ -100,4 +107,26 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
     console.error("Error in verifyAndClaimAdminCode transaction:", error);
     return false;
   }
+}
+
+/**
+ * Checks if a user is an approved admin based on their email.
+ * This is the first step before they can claim a code.
+ * @param email The user's email.
+ * @returns boolean
+ */
+export async function isApprovedAdmin(email: string): Promise<boolean> {
+    try {
+        const adminConfigRef = doc(db, 'config', 'admins');
+        const adminConfigDoc = await getDoc(adminConfigRef);
+        
+        if (adminConfigDoc.exists()) {
+            const approvedEmails = adminConfigDoc.data().emails || [];
+            return approvedEmails.includes(email);
+        }
+        return false;
+    } catch (error) {
+        console.error("Error checking approved admin list:", error);
+        return false;
+    }
 }

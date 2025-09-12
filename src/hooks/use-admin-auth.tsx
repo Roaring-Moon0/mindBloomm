@@ -7,7 +7,8 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useAuth } from './use-auth';
-import { verifyAndClaimAdminCode } from '@/services/config-service';
+import { verifyAndClaimAdminCode, isApprovedAdmin } from '@/services/config-service';
+import { toast } from './use-toast';
 
 interface AdminAuthContextType {
   user: User | null;
@@ -35,31 +36,29 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     }
     
     setLoading(true);
-    // An admin is someone who is on the approved list AND has claimed a code.
-    const adminConfigRef = doc(db, 'config', 'admins');
-    const adminCodesRef = doc(db, 'config', 'adminCodes');
-    
     try {
-        const [adminConfigDoc, adminCodesDoc] = await Promise.all([
-            getDoc(adminConfigRef),
-            getDoc(adminCodesRef)
-        ]);
-
-        let hasClaimedCode = false;
-        if (adminConfigDoc.exists() && adminConfigDoc.data().emails?.includes(user.email)) {
-            // User is on the approved list, now check if they have claimed a code.
-            if (adminCodesDoc.exists()) {
-                const codes = adminCodesDoc.data();
-                for (const code in codes) {
-                    if (codes[code].claimedBy === user.uid) {
-                        hasClaimedCode = true;
-                        break;
-                    }
-                }
-            }
-        }
-        
-        setIsAdmin(hasClaimedCode);
+      const isApproved = await isApprovedAdmin(user.email);
+      if (!isApproved) {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+      
+      // User is on the approved list, now check if they have a claimed code.
+      const adminCodesRef = doc(db, 'config', 'adminCodes');
+      const adminCodesDoc = await getDoc(adminCodesRef);
+      
+      let hasClaimedCode = false;
+      if (adminCodesDoc.exists()) {
+          const codes = adminCodesDoc.data();
+          for (const code in codes) {
+              if (codes[code].claimedBy === user.uid) {
+                  hasClaimedCode = true;
+                  break;
+              }
+          }
+      }
+      setIsAdmin(hasClaimedCode);
     } catch (error) {
         console.error("Error checking admin status:", error);
         setIsAdmin(false);
@@ -83,17 +82,17 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     setIsVerifying(true);
     try {
-        const adminConfigDoc = await getDoc(doc(db, 'config', 'admins'));
-        if (!adminConfigDoc.exists() || !adminConfigDoc.data().emails?.includes(user.email)) {
+        const isUserApproved = await isApprovedAdmin(user.email);
+        if (!isUserApproved) {
             toast({ variant: 'destructive', title: 'Access Denied', description: 'Your account is not on the approved list for admin access.' });
             return false;
         }
 
-        const isCodeValid = await verifyAndClaimAdminCode(user.uid, code);
-        if (isCodeValid) {
-            setIsAdmin(true); // Manually set admin status to true after successful claim.
+        const isCodeValidAndClaimed = await verifyAndClaimAdminCode(user.uid, code);
+        if (isCodeValidAndClaimed) {
+            setIsAdmin(true);
         }
-        return isCodeValid;
+        return isCodeValidAndClaimed;
     } catch (error) {
         console.error("Error verifying admin code:", error);
         return false;
