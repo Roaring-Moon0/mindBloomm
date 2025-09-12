@@ -62,12 +62,12 @@ export default function Home() {
               </div>
               <FadeIn className="flex items-center justify-center">
                 <Image
-                  src="/assets/treehouse.png"
-                  width={500}
-                  height={500}
-                  alt="A magical treehouse representing a safe space for mental growth"
-                  data-ai-hint="treehouse illustration"
-                  className="mx-auto"
+                  src="https://picsum.photos/seed/mindbloom-hero/600/600"
+                  width={600}
+                  height={600}
+                  alt="A flourishing tree with glowing leaves, symbolizing mental growth and peace"
+                  data-ai-hint="flourishing tree"
+                  className="mx-auto rounded-full aspect-square object-cover"
                 />
               </FadeIn>
             </div>
