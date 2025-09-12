@@ -58,10 +58,14 @@ export default function LoginPage() {
         });
     } catch (error: any) {
         console.error("Google Sign-in error:", error);
+        let description = "Could not complete the sign-in process. Please try again.";
+        if (error.code === 'auth/popup-closed-by-user') {
+            description = "Sign-in was canceled. Please try again when you're ready.";
+        }
         toast({
             variant: "destructive",
             title: "Google Sign-In Failed",
-            description: "Could not complete the sign-in process. Please try again.",
+            description: description,
         });
     } finally {
         setIsGoogleLoading(false);
