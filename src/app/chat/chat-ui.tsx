@@ -100,7 +100,7 @@ export function ChatUI() {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({
         behavior: isFirstLoad ? 'auto' : 'smooth',
-        block: 'end',
+        block: 'nearest', // 👈 ensures input area is visible
       });
       if (isFirstLoad) setIsFirstLoad(false);
     }
@@ -202,14 +202,14 @@ export function ChatUI() {
             </div>
           )}
 
-          {/* 👇 Always keep latest message in view */}
+          {/* 👇 Keep this BEFORE input area */}
           <div ref={bottomRef} />
         </div>
         <ScrollBar orientation="vertical" />
       </ScrollArea>
 
-      {/* Input area */}
-      <div className="mt-auto pt-6 border-t flex-shrink-0">
+      {/* Input area stays visible */}
+      <div className="mt-auto pt-6 border-t flex-shrink-0 bg-background">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
