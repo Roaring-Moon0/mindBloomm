@@ -16,7 +16,7 @@ export default function ChatPage() {
 
     if (loading) {
         return (
-            <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center">
+            <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center h-[calc(100vh-var(--header-height))]">
                 <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary"/>
                 <h1 className="text-2xl font-bold">Checking authentication...</h1>
                 <p className="text-muted-foreground">Please wait a moment.</p>
@@ -45,10 +45,10 @@ export default function ChatPage() {
     }
 
     return (
-        <FadeIn>
-            <div className="flex flex-col md:flex-row h-full">
+        <FadeIn className="h-full">
+            <div className="flex flex-col md:flex-row h-[calc(100vh-var(--header-height))]">
                 {/* Main Chat Area */}
-                <div className="flex-1 flex flex-col h-[calc(100vh-57px)]">
+                <div className="flex-1 flex flex-col h-full overflow-hidden">
                     <div className="md:hidden text-center p-4 border-b">
                         <h1 className="text-xl font-bold tracking-tight font-headline">Chat with Bloom</h1>
                     </div>

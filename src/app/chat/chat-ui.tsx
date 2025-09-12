@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,9 +16,8 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Loader2, Send } from 'lucide-react';
+import { Loader2, Send, ArrowDown } from 'lucide-react';
 import Logo from '@/components/icons/Logo';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
@@ -58,9 +57,12 @@ export function ChatUI() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
 
-  // For autoscroll
-  const bottomRef = useRef<HTMLDivElement>(null);
+  // scroll refs & state
+  const scrollRef = useRef<HTMLDivElement | null>(null); // the scrollable container
+  const bottomRef = useRef<HTMLDivElement | null>(null); // dummy at end of messages
   const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const lastSeenRef = useRef<number>(0); // index of last seen message
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -76,17 +78,21 @@ export function ChatUI() {
     return email.substring(0, 2).toUpperCase();
   };
 
-  // Load messages from localStorage
+  // Load messages from localStorage (or default)
   useEffect(() => {
-    const savedMessages = localStorage.getItem('chatHistory');
-    if (savedMessages) {
+    const saved = localStorage.getItem('chatHistory');
+    if (saved) {
       try {
-        setMessages(JSON.parse(savedMessages));
+        const parsed = JSON.parse(saved) as Message[];
+        setMessages(parsed);
+        lastSeenRef.current = parsed.length;
       } catch {
         setMessages([defaultInitialMessage]);
+        lastSeenRef.current = 1;
       }
     } else {
       setMessages([defaultInitialMessage]);
+      lastSeenRef.current = 1;
     }
   }, []);
 
@@ -95,16 +101,53 @@ export function ChatUI() {
     localStorage.setItem('chatHistory', JSON.stringify(messages));
   }, [messages]);
 
-  // ✅ Auto-scroll to bottom whenever messages change
+  // Scroll listener -> determine if user scrolled up
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({
+    const el = scrollRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      // threshold in px to consider "at bottom"
+      const threshold = 80;
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
+      setIsAtBottom(atBottom);
+      if (atBottom) {
+        lastSeenRef.current = messages.length;
+      }
+    };
+    el.addEventListener('scroll', onScroll, { passive: true });
+    // call once to initialize
+    onScroll();
+    return () => el.removeEventListener('scroll', onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length]);
+
+  // Auto-scroll when new messages arrive ONLY if user is at bottom
+  useEffect(() => {
+    // if user is at bottom -> scroll to bottom
+    if (isAtBottom) {
+      // scroll using the bottom ref (smooth after first load)
+      bottomRef.current?.scrollIntoView({
         behavior: isFirstLoad ? 'auto' : 'smooth',
-        block: 'nearest', // 👈 ensures input area is visible
+        block: 'nearest',
       });
-      if (isFirstLoad) setIsFirstLoad(false);
+      lastSeenRef.current = messages.length;
     }
+    if (isFirstLoad) setIsFirstLoad(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, isLoading]);
+
+  // helper to force-scroll to bottom (used by button and after sending)
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    // prefer scrolling the container itself if available (more reliable)
+    const el = scrollRef.current;
+    if (el) {
+      el.scrollTo({ top: el.scrollHeight, behavior });
+    } else {
+      bottomRef.current?.scrollIntoView({ behavior, block: 'nearest' });
+    }
+    setIsAtBottom(true);
+    lastSeenRef.current = messages.length;
+  };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!values.userInput.trim()) return;
@@ -116,7 +159,16 @@ export function ChatUI() {
     form.reset();
 
     const userMessage: Message = { role: 'user', content: values.userInput };
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages((prev) => {
+      const next = [...prev, userMessage];
+      return next;
+    });
+
+    // if user was at bottom when sending, keep them at bottom
+    if (isAtBottom) {
+      // wait a tick then scroll to bottom so new message is visible
+      requestAnimationFrame(() => scrollToBottom('smooth'));
+    }
 
     try {
       const result = await generatePersonalizedRecommendations({
@@ -127,34 +179,37 @@ export function ChatUI() {
         content: result.recommendations,
       };
       setMessages((prev) => [...prev, assistantMessage]);
+      // after assistant message, scroll if user was at bottom
+      if (isAtBottom) requestAnimationFrame(() => scrollToBottom('smooth'));
     } catch (error: any) {
-      let errorMessage =
-        'Sorry, I encountered an error. Please try again later.';
-      if (error.message?.includes('503')) {
-        errorMessage =
-          "I'm experiencing high demand right now. Please wait a moment and try again.";
+      let errorMessage = 'Sorry, I encountered an error. Please try again later.';
+      if (error?.message?.includes?.('503')) {
+        errorMessage = "I'm experiencing high demand right now. Please wait a moment and try again.";
       }
-      const assistantMessage: Message = {
-        role: 'assistant',
-        content: errorMessage,
-      };
+      const assistantMessage: Message = { role: 'assistant', content: errorMessage };
       setMessages((prev) => [...prev, assistantMessage]);
+      if (isAtBottom) requestAnimationFrame(() => scrollToBottom('smooth'));
     } finally {
       setIsLoading(false);
     }
   }
 
+  // whether to show the "new messages" button:
+  const showNewMessagesButton = !isAtBottom && messages.length > lastSeenRef.current;
+
   return (
-    <div className="flex flex-col flex-1 w-full max-w-3xl mx-auto p-4 md:p-6">
+    <div className="relative flex flex-col w-full max-w-3xl mx-auto p-4 md:p-6 h-full">
       {/* Scrollable message area */}
-      <ScrollArea className="flex-grow pr-4 -mr-4">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto min-h-0 pr-4 -mr-4"
+        aria-live="polite"
+      >
         <div className="space-y-6 pb-4">
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-start gap-4 ${
-                message.role === 'user' ? 'justify-end' : ''
-              }`}
+              className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}
             >
               {message.role === 'assistant' && (
                 <Avatar className="w-8 h-8 border-2 border-primary/50">
@@ -163,25 +218,12 @@ export function ChatUI() {
                   </AvatarFallback>
                 </Avatar>
               )}
-              <div
-                className={`rounded-lg p-3 max-w-lg text-sm ${
-                  message.role === 'user'
-                    ? 'bg-primary/20'
-                    : 'bg-secondary'
-                }`}
-              >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: formatMarkdown(message.content),
-                  }}
-                />
+              <div className={`rounded-lg p-3 max-w-lg text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
+                <div dangerouslySetInnerHTML={{ __html: formatMarkdown(message.content) }} />
               </div>
               {message.role === 'user' && user && (
                 <Avatar className="w-8 h-8">
-                  <AvatarImage
-                    src={user.photoURL || undefined}
-                    alt={user.displayName || 'User'}
-                  />
+                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
                   <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
                 </Avatar>
               )}
@@ -202,14 +244,27 @@ export function ChatUI() {
             </div>
           )}
 
-          {/* 👇 Keep this BEFORE input area */}
+          {/* bottom anchor (inside scroll area) */}
           <div ref={bottomRef} />
         </div>
-        <ScrollBar orientation="vertical" />
-      </ScrollArea>
+      </div>
 
-      {/* Input area stays visible */}
-      <div className="mt-auto pt-6 border-t flex-shrink-0 bg-background">
+      {/* floating "New messages" button */}
+      {showNewMessagesButton && (
+        <div className="absolute right-10 bottom-28 z-40">
+          <Button
+            onClick={() => scrollToBottom('smooth')}
+            title="Scroll to latest"
+            className="flex items-center gap-2 rounded-full h-10"
+          >
+            <ArrowDown className="w-4 h-4" />
+            <span className="text-sm">New messages</span>
+          </Button>
+        </div>
+      )}
+
+      {/* Input area (outside the scroll container so it stays visible) */}
+      <div className="mt-4 pt-4 border-t flex-shrink-0 bg-background">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
