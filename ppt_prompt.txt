@@ -1,6 +1,7 @@
+
 **Presentation Generation Prompt for MindBloom**
 
-**Objective:** Create a professional and engaging 10-12 slide presentation for the MindBloom web application.
+**Objective:** Create a professional and engaging 10-slide presentation for the MindBloom web application.
 
 **Target Audience:** University faculty, student wellness committees, and potential student users.
 
@@ -9,10 +10,12 @@
 ---
 
 **Slide 1: Title Slide**
-*   **Title:** MindBloom: Your Digital Sanctuary for Mental Wellness
-*   **Subtitle:** Accessible, Stigma-Free Support for Students in Higher Education.
-*   **Visual:** A calming, modern image related to nature, growth, or technology (e.g., a lotus flower made of digital circuits, a peaceful nature scene).
-*   **Include:** Our Team Logo/Name: "MindCrafters"
+*   **Title:** MindBloom: A Digital Mental Health and Psychological Support System for Students in Higher Education
+*   **Subtitle:** An innovative solution for PS ID: 25092
+*   **Details:** 
+    *   Organisation: Government of Jammu and Kashmir
+    *   Theme: MedTech/BioTech/HealthTech
+*   **Team Logo/Name:** "MindCrafters"
 
 ---
 
@@ -25,20 +28,14 @@
 
 ---
 
-**Slide 3: Our Mission**
-*   **Title:** Our Mission
-*   **Content:** "To empower students in higher education with accessible, compassionate, and stigma-free tools to navigate their mental health journey."
-*   **Visual:** An icon or image representing empowerment and support (e.g., hands holding a glowing plant).
+**Slide 3: Our Mission & Solution**
+*   **Title:** Our Mission: Accessible, Stigma-Free Support
+*   **Mission Content:** "To empower students in higher education with accessible, compassionate, and stigma-free tools to navigate their mental health journey."
+*   **Solution Intro:** Introducing MindBloom, a comprehensive web application designed as a personal sanctuary for mental wellness.
 
 ---
 
-**Slide 4: Introducing MindBloom**
-*   **Title:** What is MindBloom?
-*   **Content:** A comprehensive web application designed as a personal sanctuary for mental wellness. It provides a suite of tools to help students manage stress, anxiety, and their overall mental well-being in a supportive environment.
-
----
-
-**Slide 5: Core Features (Part 1)**
+**Slide 4: Core Features (Part 1)**
 *   **Title:** A Toolbox for Your Well-being
 *   **Feature 1: Resource Library**
     *   Icon: Book or Library icon.
@@ -49,18 +46,18 @@
 
 ---
 
-**Slide 6: Core Features (Part 2)**
+**Slide 5: Core Features (Part 2)**
 *   **Title:** Interactive & Engaging Support
 *   **Feature 3: Calming Games**
     *   Icon: Gamepad or puzzle piece icon.
     *   Description: A selection of mini-games (Breathing Visualizer, Color Match, Memory Game) designed to reduce anxiety and promote mindfulness.
-*   **Feature 4: Personalized Dashboard**
+*   **Feature 4: Personalized Dashboard & Surveys**
     *   Icon: Dashboard or user icon.
-    *   Description: A user-specific space with quick access to features and a daily inspirational quote.
+    *   Description: A user-specific space with quick access to features and a daily quote, plus community surveys for feedback.
 
 ---
 
-**Slide 7: Why MindBloom? (Our Best Points)**
+**Slide 6: Why MindBloom? (Our Best Points)**
 *   **Title:** Our Unique Approach
 *   **Point 1: Holistic & Integrated:** We combine passive resources (articles), active engagement (games), and interactive support (AI chat) in one platform.
 *   **Point 2: AI-Powered Empathy:** "Bloom" isn't just a chatbot; it's trained to be a supportive, non-judgmental companion, guiding users gently.
@@ -68,7 +65,7 @@
 
 ---
 
-**Slide 8: Tech Stack**
+**Slide 7: Tech Stack**
 *   **Title:** The Technology Behind the Calm
 *   **Key Technologies:**
     *   **Next.js & React:** For a fast, modern, and responsive user interface.
@@ -78,27 +75,27 @@
 
 ---
 
-**Slide 9: Emergency Resources**
+**Slide 8: Safety & Emergency Resources**
 *   **Title:** Safety is Our Priority
 *   **Content:** The app provides prominent and immediate access to real-world emergency contacts and crisis hotlines for users in distress.
 *   **Disclaimer:** Clearly state that MindBloom is a supportive tool, not a substitute for professional medical help.
 
 ---
 
-**Slide 10: Meet the Team**
+**Slide 9: Meet the Team**
 *   **Title:** The MindCrafters Team
 *   **Layout:** Grid or row of team member profiles.
 *   **Team Information:**
-    *   **Aryan:** Founder & Leader (Email: watervolt69@gmail.com, LinkedIn: linkedin.com/in/aryan-4500a7380)
-    *   **Gaurav Sharma:** Resources Provider (Email: gauravxns001@gmail.com, LinkedIn: linkedin.com/in/gaurav-sharma-a44435378)
-    *   **Kartik Sharma:** Tester (Email: kartiksharmaa2066@gmail.com, LinkedIn: linkedin.com/in/kartik-sharma-41b552336)
-    *   **Anubhav Ahluwalia:** Tester (Email: anubhavahluwalia02@gmail.com, LinkedIn: linkedin.com/in/anubhav-ahluwalia-55a459384)
-    *   **Dharvi Mehta:** Presentation Designer & Co-developer (Email: shivimehta2008@gmail.com, LinkedIn: linkedin.com/in/dharvi-mehta-b44952239)
-    *   **Ruhi Kumari:** Resources Provider (Email: ruhikumari2672@gmail.com, LinkedIn: linkedin.com/in/ruhi-kumari-774a95378)
+    *   **Aryan:** Founder & Leader (watervolt69@gmail.com)
+    *   **Gaurav Sharma:** Resources Provider (gauravxns001@gmail.com)
+    *   **Kartik Sharma:** Tester (kartiksharmaa2066@gmail.com)
+    *   **Anubhav Ahluwalia:** Tester (anubhavahluwalia02@gmail.com)
+    *   **Dharvi Mehta:** Presentation Designer & Co-developer (shivimehta2008@gmail.com)
+    *   **Ruhi Kumari:** Resources Provider (ruhikumari2672@gmail.com)
 
 ---
 
-**Slide 11: Q&A / Thank You**
+**Slide 10: Q&A / Thank You**
 *   **Title:** Thank You
 *   **Content:** "Questions?"
 *   **Contact Info:** mindcrafters417@gmail.com
