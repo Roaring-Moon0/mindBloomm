@@ -93,16 +93,18 @@ export const toggleFeature = async (key: string, value: boolean) => {
     await setDoc(featureRef, { [key]: value, updatedAt: serverTimestamp() }, { merge: true });
 };
 
-
-// --- Admin Access ---
+// This function is kept for reference but is no longer the primary method for admin checks.
+// The primary logic is now in the useAdminAuth hook for better client-side state management.
 export async function isApprovedAdmin(email: string): Promise<boolean> {
-    const approvedEmails = [
-        'watervolt69@gmail.com',
-        'gauravxns001@gmail.com',
-        'kartiksharmaa2066@gmail.com',
-        'anubhavahluwalia02@gmail.com',
-        'shivimehta2008@gmail.com',
-        'ruhikumari2672@gmail.com',
-    ];
-    return approvedEmails.includes(email);
+    try {
+        const adminConfigDoc = await getDoc(doc(db, "config", "admins"));
+        if (adminConfigDoc.exists()) {
+            const adminEmails = adminConfigDoc.data().emails || [];
+            return adminEmails.includes(email);
+        }
+        return false;
+    } catch (error) {
+        console.error("Error checking admin status:", error);
+        return false;
+    }
 }
