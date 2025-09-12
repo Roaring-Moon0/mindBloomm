@@ -1,5 +1,4 @@
 
-
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -96,62 +95,6 @@ export const toggleFeature = async (key: string, value: boolean) => {
 
 
 // --- Admin Access ---
-
-const ADMIN_CODES = {
-    'bl00m-adm-8c2e': { claimedBy: null },
-    'bl00m-adm-f9b1': { claimedBy: null },
-    'bl00m-adm-4a7d': { claimedBy: null },
-    'bl00m-adm-e6f3': { claimedBy: null },
-    'bl00m-adm-9b5h': { claimedBy: null },
-    'bl00m-adm-2k8g': { claimedBy: null },
-};
-
-export async function verifyAndClaimAdminCode(userId: string, code: string): Promise<boolean> {
-  const adminCodesRef = doc(db, 'config', 'adminCodes');
-  
-  try {
-    return await runTransaction(db, async (transaction) => {
-      const adminCodesDoc = await transaction.get(adminCodesRef);
-
-      if (!adminCodesDoc.exists()) {
-        // If the document doesn't exist, create it with the first claim
-        if (Object.keys(ADMIN_CODES).includes(code)) {
-            const newCodeData = { ...ADMIN_CODES, [code]: { claimedBy: userId } };
-            transaction.set(adminCodesRef, newCodeData);
-            return true;
-        }
-        return false;
-      }
-
-      const codes = adminCodesDoc.data();
-      
-      // Check if any code has been claimed by this user already
-      for (const key in codes) {
-        if (codes[key].claimedBy === userId) {
-            // User is already a verified admin.
-            // If the code they entered is the one they claimed, it's valid.
-            return key === code;
-        }
-      }
-      
-      const codeData = codes[code];
-
-      if (!codeData) return false; // Code doesn't exist in our system
-      if (codeData.claimedBy) return false; // Code is valid, but already claimed by someone else
-
-      // This is a valid, unclaimed code. Claim it for the user.
-      transaction.update(adminCodesRef, {
-        [`${code}.claimedBy`]: userId,
-      });
-      
-      return true;
-    });
-  } catch (error) {
-    console.error("Error in verifyAndClaimAdminCode transaction:", error);
-    return false;
-  }
-}
-
 export async function isApprovedAdmin(email: string): Promise<boolean> {
     const approvedEmails = [
         'watervolt69@gmail.com',
@@ -163,4 +106,3 @@ export async function isApprovedAdmin(email: string): Promise<boolean> {
     ];
     return approvedEmails.includes(email);
 }
-

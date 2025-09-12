@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useAdminAuth } from '@/hooks/use-admin-auth';
@@ -29,7 +28,7 @@ const codeFormSchema = z.object({
 
 
 function AdminVerificationGate() {
-    const { verifyAdminCode, isVerifying } = useAdminAuth();
+    const { verifyAdmin, isVerifying } = useAdminAuth();
 
     const form = useForm<z.infer<typeof codeFormSchema>>({
         resolver: zodResolver(codeFormSchema),
@@ -37,7 +36,7 @@ function AdminVerificationGate() {
     });
 
     async function onSubmit(values: z.infer<typeof codeFormSchema>) {
-        const success = await verifyAdminCode(values.adminCode);
+        const success = await verifyAdmin(values.adminCode);
         if (success) {
              toast({
                 title: "Access Granted!",
@@ -47,7 +46,7 @@ function AdminVerificationGate() {
              toast({
                 variant: "destructive",
                 title: "Verification Failed",
-                description: "The admin code is invalid or has already been claimed by another user.",
+                description: "The admin code is invalid, or your account is not approved for admin access.",
             });
         }
     }
@@ -156,4 +155,3 @@ export default function AdminDashboardPage() {
 
   return <AdminDashboardContent />;
 }
-
