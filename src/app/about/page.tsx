@@ -22,7 +22,7 @@ interface TeamMember {
 
 const teamMembers: TeamMember[] = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man', bio: 'A young and passionate student who wants to learn more about development (including web and AI development).', email: 'watervolt69@gmail.com', linkedin: 'https://www.linkedin.com/in/aryan-4500a7380' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: '(bio)', email: 'gauravxns001@gmail.com', linkedin: 'https://www.linkedin.com/in/gaurav-sharma-a44435378' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: 'I’m Gaurav Sharma, currently pursuing B.Tech in Computer Science Engineering and contributing as a resource provider for this group project. Our website offers articles, games, videos, music, and AI-powered tools to help improve mental health in an accessible and engaging way.\n\nI’m passionate about combining technology and care to support mental well-being and provide useful resources for everyone.', email: 'gauravxns001@gmail.com', linkedin: 'https://www.linkedin.com/in/gaurav-sharma-a44435378' },
   { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: '(bio)', email: 'kartiksharmaa2066@gmail.com', linkedin: 'https://www.linkedin.com/in/kartik-sharma-41b552336' },
   { name: 'Anubhav', role: 'Tester', avatar: '/assets/anubhav.png', dataAiHint: 'person face', bio: '(bio)', email: 'anubhavahluwalia02@gmail.com', linkedin: 'https://www.linkedin.com/in/anubhav-ahluwalia-55a459384' },
   { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: '(bio)', email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
@@ -86,7 +86,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
                     <DialogDescription>{member.role}</DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                    <p className="text-muted-foreground text-center">{member.bio}</p>
+                    <p className="text-muted-foreground text-center whitespace-pre-line">{member.bio}</p>
                     <div className="flex items-center justify-center gap-6">
                         <Link href={`mailto:${member.email}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm hover:underline text-muted-foreground hover:text-primary">
                             <Mail className="w-5 h-5"/>
