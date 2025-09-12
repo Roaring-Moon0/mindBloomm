@@ -13,12 +13,12 @@ import {
   SheetTrigger,
   SheetTitle,
   SheetDescription,
+  SheetClose
 } from '@/components/ui/sheet';
 import Logo from '@/components/icons/Logo';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { AuthButton } from './AuthButton';
-import { Separator } from '../ui/separator';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -35,35 +35,34 @@ export function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (open) {
-      setOpen(false);
-    }
+    // Close the mobile menu on route change
+    setOpen(false);
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <div className="mr-4 hidden flex-1 md:flex">
-          <Link href="/" className="mr-6 flex items-center space-x-2">
-            <Logo className="h-6 w-6 text-primary" />
-            <span className="hidden font-bold sm:inline-block">MindBloom</span>
-          </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            {navLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground font-semibold")}>
-                <Link
-                  href={link.href}
-                  className="transition-colors hover:text-foreground"
-                  prefetch={true}
-                >
-                  {link.label}
-                </Link>
-              </Button>
-            ))}
-          </nav>
-        </div>
+        <Link href="/" className="mr-6 flex items-center space-x-2">
+          <Logo className="h-6 w-6 text-primary" />
+          <span className="hidden font-bold sm:inline-block">MindBloom</span>
+        </Link>
+        <nav className="hidden md:flex flex-1 items-center gap-1 text-sm">
+          {navLinks.map((link) => (
+            <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground font-semibold")}>
+              <Link
+                href={link.href}
+                className="transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            </Button>
+          ))}
+        </nav>
 
-        <div className="flex flex-1 items-center justify-between md:justify-end md:gap-4">
+        <div className="flex flex-1 md:flex-none items-center justify-end gap-2">
+          <ThemeToggle />
+          <AuthButton />
+          
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
@@ -79,32 +78,24 @@ export function Header() {
                     A list of links to navigate the MindBloom website.
                   </SheetDescription>
                 </VisuallyHidden>
-                <Link href="/" className="flex items-center space-x-2">
+                 <Link href="/" className="flex items-center space-x-2 mb-6">
                   <Logo className="h-6 w-6 text-primary" />
                   <span className="font-bold">MindBloom</span>
                 </Link>
-                <div className="my-4 flex flex-col space-y-2 pl-6">
+                <div className="flex flex-col space-y-2">
                   {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={cn("font-medium", pathname === link.href ? "text-primary" : "text-foreground")}
-                    >
-                      {link.label}
-                    </Link>
+                     <SheetClose asChild key={link.href}>
+                        <Link
+                          href={link.href}
+                          className={cn("font-medium text-lg p-2 rounded-md", pathname === link.href ? "bg-primary/10 text-primary" : "text-muted-foreground")}
+                        >
+                          {link.label}
+                        </Link>
+                      </SheetClose>
                   ))}
                 </div>
               </SheetContent>
             </Sheet>
-          </div>
-          <Link href="/" className="flex items-center space-x-2 md:hidden">
-            <Logo className="h-6 w-6 text-primary" />
-            <span className="font-bold">MindBloom</span>
-          </Link>
-          
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <AuthButton />
           </div>
         </div>
       </div>

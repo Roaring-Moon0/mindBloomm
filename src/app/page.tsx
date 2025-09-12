@@ -1,7 +1,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, HeartHandshake, FileQuestion } from 'lucide-react';
+import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,21 +56,21 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary/10 overflow-hidden">
+        <section className="relative w-full py-20 md:py-32 lg:py-48 bg-primary/10 overflow-hidden">
           <FloatingPetals />
           <div className="container px-4 md:px-6 z-10 relative">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
+              <div className="flex flex-col justify-center space-y-4 text-center lg:text-left">
                 <FadeIn>
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
+                  <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline">
                     A Digital Support System for Students in Higher Education
                   </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                  <p className="max-w-[600px] mx-auto lg:mx-0 text-muted-foreground md:text-xl">
                     MindBloom is a digital sanctuary for mental wellness, providing accessible, and stigma-free support to help students navigate life's challenges.
                   </p>
                 </FadeIn>
                 <FadeIn delay={0.1}>
-                  <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <div className="flex flex-col gap-2 min-[400px]:flex-row justify-center lg:justify-start">
                     <Button asChild size="lg">
                       <Link href="/resources">Explore Resources</Link>
                     </Button>
@@ -87,7 +87,7 @@ export default function Home() {
                   height={800}
                   alt="A beautiful field of vibrant flowers, representing growth and tranquility."
                   data-ai-hint="vibrant flowers"
-                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
                 />
               </FadeIn>
             </div>
@@ -106,7 +106,7 @@ export default function Home() {
                 </p>
               </div>
             </FadeIn>
-            <div className="mx-auto grid max-w-5xl items-stretch gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
+            <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 lg:grid-cols-4 mt-12">
               {features.map((feature, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)} className="flex flex-col">
                   <Link href={feature.href} className="block h-full w-full">
@@ -135,7 +135,7 @@ export default function Home() {
                 Find helpful content across a wide range of mental health topics.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
+            <div className="flex flex-wrap justify-center gap-2 md:gap-4 mt-4">
               {resourceCategories.map((category) => (
                 <Button asChild variant="outline" size="lg" key={category.name}>
                     <Link href={category.href}>{category.name}</Link>
@@ -164,7 +164,7 @@ export default function Home() {
                 </p>
               </div>
             </FadeIn>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
+            <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 md:gap-12 lg:grid-cols-3 mt-12">
               {teamMembers.slice(0,3).map((member, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)}>
                   <Card className="text-center flex flex-col items-center p-6 h-full">
@@ -215,7 +215,7 @@ export default function Home() {
                     </p>
                 </div>
                 <div className="mx-auto w-full max-w-sm space-y-2">
-                    <form className="flex space-x-2">
+                    <form className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                         <Input type="email" placeholder="Enter your email" className="max-w-lg flex-1" />
                         <Button type="submit">Subscribe</Button>
                     </form>
@@ -230,5 +230,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

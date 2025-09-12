@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
@@ -57,12 +58,11 @@ export function ChatUI() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
 
-  // scroll refs & state
-  const scrollRef = useRef<HTMLDivElement | null>(null); // the scrollable container
-  const bottomRef = useRef<HTMLDivElement | null>(null); // dummy at end of messages
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [isAtBottom, setIsAtBottom] = useState(true);
-  const lastSeenRef = useRef<number>(0); // index of last seen message
+  const lastSeenRef = useRef<number>(0);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -78,7 +78,6 @@ export function ChatUI() {
     return email.substring(0, 2).toUpperCase();
   };
 
-  // Load messages from localStorage (or default)
   useEffect(() => {
     const saved = localStorage.getItem('chatHistory');
     if (saved) {
@@ -96,17 +95,14 @@ export function ChatUI() {
     }
   }, []);
 
-  // Save to localStorage
   useEffect(() => {
     localStorage.setItem('chatHistory', JSON.stringify(messages));
   }, [messages]);
 
-  // Scroll listener -> determine if user scrolled up
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const onScroll = () => {
-      // threshold in px to consider "at bottom"
       const threshold = 80;
       const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= threshold;
       setIsAtBottom(atBottom);
@@ -115,17 +111,12 @@ export function ChatUI() {
       }
     };
     el.addEventListener('scroll', onScroll, { passive: true });
-    // call once to initialize
     onScroll();
     return () => el.removeEventListener('scroll', onScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length]);
 
-  // Auto-scroll when new messages arrive ONLY if user is at bottom
   useEffect(() => {
-    // if user is at bottom -> scroll to bottom
     if (isAtBottom) {
-      // scroll using the bottom ref (smooth after first load)
       bottomRef.current?.scrollIntoView({
         behavior: isFirstLoad ? 'auto' : 'smooth',
         block: 'nearest',
@@ -133,12 +124,9 @@ export function ChatUI() {
       lastSeenRef.current = messages.length;
     }
     if (isFirstLoad) setIsFirstLoad(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages, isLoading]);
+  }, [messages, isLoading, isAtBottom, isFirstLoad]);
 
-  // helper to force-scroll to bottom (used by button and after sending)
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    // prefer scrolling the container itself if available (more reliable)
     const el = scrollRef.current;
     if (el) {
       el.scrollTo({ top: el.scrollHeight, behavior });
@@ -159,14 +147,9 @@ export function ChatUI() {
     form.reset();
 
     const userMessage: Message = { role: 'user', content: values.userInput };
-    setMessages((prev) => {
-      const next = [...prev, userMessage];
-      return next;
-    });
+    setMessages((prev) => [...prev, userMessage]);
 
-    // if user was at bottom when sending, keep them at bottom
     if (isAtBottom) {
-      // wait a tick then scroll to bottom so new message is visible
       requestAnimationFrame(() => scrollToBottom('smooth'));
     }
 
@@ -179,8 +162,6 @@ export function ChatUI() {
         content: result.recommendations,
       };
       setMessages((prev) => [...prev, assistantMessage]);
-      // after assistant message, scroll if user was at bottom
-      if (isAtBottom) requestAnimationFrame(() => scrollToBottom('smooth'));
     } catch (error: any) {
       let errorMessage = 'Sorry, I encountered an error. Please try again later.';
       if (error?.message?.includes?.('503')) {
@@ -188,18 +169,15 @@ export function ChatUI() {
       }
       const assistantMessage: Message = { role: 'assistant', content: errorMessage };
       setMessages((prev) => [...prev, assistantMessage]);
-      if (isAtBottom) requestAnimationFrame(() => scrollToBottom('smooth'));
     } finally {
       setIsLoading(false);
     }
   }
 
-  // whether to show the "new messages" button:
   const showNewMessagesButton = !isAtBottom && messages.length > lastSeenRef.current;
 
   return (
     <div className="relative flex flex-col w-full max-w-3xl mx-auto p-4 md:p-6 h-full">
-      {/* Scrollable message area */}
       <div
         ref={scrollRef}
         className="flex-1 overflow-y-auto min-h-0 pr-4 -mr-4"
@@ -218,7 +196,7 @@ export function ChatUI() {
                   </AvatarFallback>
                 </Avatar>
               )}
-              <div className={`rounded-lg p-3 max-w-lg text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
+              <div className={`rounded-lg p-3 max-w-md text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
                 <div dangerouslySetInnerHTML={{ __html: formatMarkdown(message.content) }} />
               </div>
               {message.role === 'user' && user && (
@@ -244,18 +222,16 @@ export function ChatUI() {
             </div>
           )}
 
-          {/* bottom anchor (inside scroll area) */}
           <div ref={bottomRef} />
         </div>
       </div>
 
-      {/* floating "New messages" button */}
       {showNewMessagesButton && (
-        <div className="absolute right-10 bottom-28 z-40">
+        <div className="absolute right-10 bottom-28 z-10">
           <Button
             onClick={() => scrollToBottom('smooth')}
             title="Scroll to latest"
-            className="flex items-center gap-2 rounded-full h-10"
+            className="flex items-center gap-2 rounded-full h-10 shadow-lg"
           >
             <ArrowDown className="w-4 h-4" />
             <span className="text-sm">New messages</span>
@@ -263,8 +239,7 @@ export function ChatUI() {
         </div>
       )}
 
-      {/* Input area (outside the scroll container so it stays visible) */}
-      <div className="mt-4 pt-4 border-t flex-shrink-0 bg-background">
+      <div className="mt-auto pt-4 border-t flex-shrink-0 bg-background">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -277,7 +252,7 @@ export function ChatUI() {
                     <div className="relative">
                       <Textarea
                         placeholder="Tell me what's on your mind..."
-                        className="min-h-[80px] pr-20"
+                        className="min-h-[60px] md:min-h-[80px] pr-20 resize-none"
                         {...field}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {

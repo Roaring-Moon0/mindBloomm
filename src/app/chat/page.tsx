@@ -16,7 +16,7 @@ export default function ChatPage() {
 
     if (loading) {
         return (
-            <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center h-[calc(100vh-var(--header-height))]">
+            <div className="container mx-auto py-12 px-4 md:px-6 flex flex-col items-center justify-center text-center min-h-screen">
                 <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary"/>
                 <h1 className="text-2xl font-bold">Checking authentication...</h1>
                 <p className="text-muted-foreground">Please wait a moment.</p>
@@ -27,7 +27,7 @@ export default function ChatPage() {
     if (!user) {
         return (
             <FadeIn>
-                <div className="container mx-auto py-12 px-4 md:px-6 text-center">
+                <div className="container mx-auto py-12 px-4 md:px-6 text-center min-h-screen flex items-center justify-center">
                     <Card className="max-w-lg mx-auto">
                         <CardHeader>
                             <CardTitle>Access Denied</CardTitle>
@@ -46,7 +46,7 @@ export default function ChatPage() {
 
     return (
         <FadeIn className="h-full">
-            <div className="flex flex-col md:flex-row h-[calc(100vh-var(--header-height))]">
+            <div className="flex flex-col md:flex-row h-screen">
                 {/* Main Chat Area */}
                 <div className="flex-1 flex flex-col h-full overflow-hidden">
                     <div className="md:hidden text-center p-4 border-b">
@@ -55,7 +55,7 @@ export default function ChatPage() {
                     <ChatUI />
                 </div>
                 {/* Sidebar */}
-                <aside className="hidden md:block w-full md:w-1/3 lg:w-1/4 p-6 border-l space-y-8 bg-secondary/30 overflow-y-auto">
+                <aside className="hidden md:block w-full md:w-80 lg:w-96 p-6 border-l space-y-8 bg-secondary/30 overflow-y-auto">
                      <div className="text-center mb-8">
                         <h1 className="text-2xl font-bold tracking-tight font-headline">Meet Bloom</h1>
                         <p className="mt-2 text-md text-muted-foreground">Your AI companion for when you need a listening ear or gentle guidance. Bloom is here to support you, not to replace professional help.</p>
