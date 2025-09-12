@@ -73,20 +73,13 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
       };
 
       if (!adminCodesDoc.exists()) {
-          // If the document doesn't exist, check if the code is one of the initial ones.
-          if (Object.keys(initialCodes).includes(code)) {
-              // It's a valid initial code, claim it and create the document.
-              const newCodeData = initialCodes[code as keyof typeof initialCodes];
-              newCodeData.claimedBy = userId;
-              const allCodes = {...initialCodes, [code]: newCodeData };
-              transaction.set(adminCodesRef, allCodes);
-              return true;
-          } else {
-              // Doc doesn't exist and the code is not a valid initial code.
-              // Create the doc with unclaimed codes and fail verification.
-              transaction.set(adminCodesRef, initialCodes);
-              return false;
-          }
+        transaction.set(adminCodesRef, initialCodes);
+        if (Object.keys(initialCodes).includes(code)) {
+            const newCodeData = { ...initialCodes, [code]: { claimedBy: userId, createdAt: new Date() } };
+            transaction.set(adminCodesRef, newCodeData);
+            return true;
+        }
+        return false;
       }
 
       const codes = adminCodesDoc.data();
