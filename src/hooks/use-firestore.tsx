@@ -22,7 +22,6 @@ export function useFirestoreDocument<T>(path: string) {
             if (docSnap.exists()) {
                 setData({ id: docSnap.id, ...docSnap.data() } as T);
             } else {
-                console.warn(`Document not found at path: ${path}.`);
                 setData(null);
             }
             setLoading(false);

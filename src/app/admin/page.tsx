@@ -4,7 +4,7 @@
 import { useAdminAuth } from '@/hooks/use-admin-auth';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, KeyRound, PlusCircle, Trash2, AlertTriangle } from 'lucide-react';
+import { Loader2, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -13,27 +13,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useState, useEffect } from 'react';
-import { useFirestoreCollection } from '@/hooks/use-firestore';
-import { addSurvey, deleteSurvey } from '@/services/config-service';
 import { FadeIn } from '@/components/ui/fade-in';
-import Link from 'next/link';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const addSurveyFormSchema = z.object({
-  name: z.string().min(3, { message: "Survey name must be at least 3 characters." }),
-  url: z.string().url({ message: "Please enter a valid URL." }),
-});
+import SurveyManager from './components/SurveyManager';
+import VideoManager from './components/VideoManager';
+import UserManager from './components/UserManager';
+import ConfigManager from './components/ConfigManager';
+
 
 const codeFormSchema = z.object({
     adminCode: z.string().min(4, { message: "Please enter your unique admin code." }),
 });
-
-export interface SurveyConfig {
-    id: string;
-    name: string;
-    url: string;
-    createdAt: any;
-}
 
 
 function AdminVerificationGate() {
@@ -103,59 +94,10 @@ function AdminVerificationGate() {
 
 function AdminDashboardContent() {
     const { user, logout } = useAdminAuth();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    const { data: surveys, loading: surveysLoading } = useFirestoreCollection<SurveyConfig>('surveys');
-
-    const form = useForm<z.infer<typeof addSurveyFormSchema>>({
-        resolver: zodResolver(addSurveyFormSchema),
-        defaultValues: { name: '', url: '' },
-    });
-
-    async function onAddSurveySubmit(values: z.infer<typeof addSurveyFormSchema>) {
-        setIsSubmitting(true);
-        try {
-            await addSurvey(values);
-            toast({
-                title: "Success!",
-                description: "The new survey has been added.",
-            });
-            form.reset();
-        } catch (error) {
-            console.error("Failed to add survey:", error);
-            toast({
-                variant: "destructive",
-                title: "Update Failed",
-                description: "Could not save the new survey. Please try again.",
-            });
-        } finally {
-            setIsSubmitting(false);
-        }
-    }
-
-    const handleDeleteSurvey = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
-            return;
-        }
-        try {
-            await deleteSurvey(id);
-             toast({
-                title: "Survey Deleted",
-                description: "The survey has been successfully removed.",
-            });
-        } catch (error) {
-            console.error("Failed to delete survey:", error);
-             toast({
-                variant: "destructive",
-                title: "Deletion Failed",
-                description: "Could not delete the survey. Please try again.",
-            });
-        }
-    }
     
     return (
         <FadeIn>
-            <div className="container mx-auto py-12 px-4 md:px-6">
+            <div className="container mx-auto py-12 px-4 md:px-6 min-h-screen">
                 <div className="flex justify-between items-center mb-8">
                     <div>
                         <h1 className="text-4xl font-bold tracking-tight font-headline">Admin Dashboard</h1>
@@ -164,82 +106,19 @@ function AdminDashboardContent() {
                     <Button variant="outline" onClick={logout}>Log Out</Button>
                 </div>
             
-                <div className="grid gap-12 lg:grid-cols-2">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Add New Survey</CardTitle>
-                            <CardDescription>Add a new survey to be displayed on the /survey page.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onAddSurveySubmit)} className="space-y-6">
-                                    <FormField control={form.control} name="name" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Survey Name</FormLabel>
-                                            <FormControl><Input placeholder="e.g., 'Campus Mental Health Check'" {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}/>
-                                    <FormField control={form.control} name="url" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Survey Form URL</FormLabel>
-                                            <FormControl><Input placeholder="https://docs.google.com/forms/..." {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}/>
-                                    <Button type="submit" disabled={isSubmitting}>
-                                        {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Adding...</> : <><PlusCircle className="mr-2 h-4 w-4" /> Add Survey</>}
-                                    </Button>
-                                </form>
-                            </Form>
-                        </CardContent>
-                    </Card>
+                 <Tabs defaultValue="surveys" className="w-full">
+                    <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto">
+                        <TabsTrigger value="surveys">Surveys</TabsTrigger>
+                        <TabsTrigger value="videos">Videos</TabsTrigger>
+                        <TabsTrigger value="users">Users</TabsTrigger>
+                        <TabsTrigger value="config">Config</TabsTrigger>
+                    </TabsList>
 
-                     <Card>
-                        <CardHeader>
-                            <CardTitle>Manage Existing Surveys</CardTitle>
-                            <CardDescription>View and remove current surveys.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                           {surveysLoading ? (
-                                 <div className="flex items-center gap-2 text-muted-foreground justify-center py-10">
-                                    <Loader2 className="w-5 h-5 animate-spin" />
-                                    <span>Loading surveys...</span>
-                                </div>
-                            ) : (surveys && surveys.length > 0) ? (
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Name</TableHead>
-                                            <TableHead>Actions</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {surveys.map((survey) => (
-                                            <TableRow key={survey.id}>
-                                                <TableCell className="font-medium">
-                                                    <Link href={survey.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                                        {survey.name}
-                                                    </Link>
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteSurvey(survey.id)}>
-                                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                                        <span className="sr-only">Delete</span>
-                                                    </Button>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            ) : (
-                                <div className="text-center py-10 text-muted-foreground">
-                                    <p>No surveys found.</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </div>
+                    <TabsContent value="surveys" className="mt-6"><SurveyManager /></TabsContent>
+                    <TabsContent value="videos" className="mt-6"><VideoManager /></TabsContent>
+                    <TabsContent value="users" className="mt-6"><UserManager /></TabsContent>
+                    <TabsContent value="config" className="mt-6"><ConfigManager /></TabsContent>
+                </Tabs>
             </div>
         </FadeIn>
     );
@@ -252,8 +131,6 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-        // If not loading and not logged in, redirect to login page.
-        // Pass a redirect parameter to come back here after login.
         router.push('/login?redirect=/admin');
     }
   }, [loading, user, router]);
@@ -269,15 +146,12 @@ export default function AdminDashboardPage() {
   }
 
   if (!user) {
-    // This is a fallback state while redirecting, should not be visible for long.
     return null;
   }
 
-  // If the user is logged in, but not an admin, show the verification gate to enter a code.
   if (!isAdmin) {
     return <AdminVerificationGate />;
   }
 
-  // If all checks pass (user is logged in and is an admin), show the dashboard.
   return <AdminDashboardContent />;
 }

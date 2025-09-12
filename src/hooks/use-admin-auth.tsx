@@ -21,11 +21,20 @@ interface AdminAuthContextType {
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
 
+const ADMIN_EMAIL_ALLOWLIST = [
+  'watervolt69@gmail.com',
+  'gauravxns001@gmail.com',
+  'kartiksharmaa2066@gmail.com',
+  'anubhavahluwalia02@gmail.com',
+  'shivimehta2008@gmail.com',
+  'ruhikumari2672@gmail.com',
+];
+
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading, logout: baseLogout } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false); // For the code verification process
-  const [loading, setLoading] = useState(true); // For the initial admin status check
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const checkAdminStatus = useCallback(async (user: User | null) => {
@@ -37,14 +46,13 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     
     setLoading(true);
     try {
-      const isApproved = await isApprovedAdmin(user.email);
+      const isApproved = ADMIN_EMAIL_ALLOWLIST.includes(user.email);
       if (!isApproved) {
         setIsAdmin(false);
         setLoading(false);
         return;
       }
       
-      // User is on the approved list, now check if they have a claimed code.
       const adminCodesRef = doc(db, 'config', 'adminCodes');
       const adminCodesDoc = await getDoc(adminCodesRef);
       
@@ -68,7 +76,6 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // This effect runs when the auth state changes.
     if (!authLoading) {
       checkAdminStatus(user);
     }
@@ -82,7 +89,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
 
     setIsVerifying(true);
     try {
-        const isUserApproved = await isApprovedAdmin(user.email);
+        const isUserApproved = ADMIN_EMAIL_ALLOWLIST.includes(user.email);
         if (!isUserApproved) {
             toast({ variant: 'destructive', title: 'Access Denied', description: 'Your account is not on the approved list for admin access.' });
             return false;
