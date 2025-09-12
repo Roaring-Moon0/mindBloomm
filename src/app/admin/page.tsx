@@ -42,13 +42,8 @@ function AdminVerificationGate() {
                 title: "Access Granted!",
                 description: "Welcome to the admin dashboard.",
             });
-        } else {
-             toast({
-                variant: "destructive",
-                title: "Verification Failed",
-                description: "The admin code is invalid, or your account is not approved for admin access.",
-            });
         }
+        // Specific failure toasts are handled inside the verifyAdmin function now
     }
 
     return (
