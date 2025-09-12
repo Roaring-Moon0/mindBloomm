@@ -12,7 +12,7 @@ import type { SurveyConfig } from '@/app/admin/page';
 const defaultSurvey = {
     id: 'default-google-form-survey',
     name: 'Student Mental Health & Well-being Survey',
-    url: 'https://docs.google.com/forms/d/e/1FAIpQLSccIKUZAvYOKoOssL3VpYJxwBP_uayhjxmF1BboqbPve6yIkw/viewform?pli=1',
+    url: 'https://docs.google.com/forms/d/e/1FAIpQLSfHwHG02pVrP1GvHdK6KsSfmptedR6KZpmadCdbh9QLrJJkrw/viewform',
     description: 'Your feedback will help us understand the key challenges students face. This survey is anonymous and takes about 5-10 minutes.'
 }
 
