@@ -57,7 +57,10 @@ export function ChatUI() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
+
+  // For autoscroll
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,9 +95,15 @@ export function ChatUI() {
     localStorage.setItem('chatHistory', JSON.stringify(messages));
   }, [messages]);
 
-  // Auto-scroll to bottom whenever messages change
+  // ✅ Auto-scroll to bottom whenever messages change
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({
+        behavior: isFirstLoad ? 'auto' : 'smooth',
+        block: 'end',
+      });
+      if (isFirstLoad) setIsFirstLoad(false);
+    }
   }, [messages, isLoading]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -178,6 +187,7 @@ export function ChatUI() {
               )}
             </div>
           ))}
+
           {isLoading && (
             <div className="flex items-start gap-4">
               <Avatar className="w-8 h-8 border-2 border-primary/50">
@@ -191,7 +201,8 @@ export function ChatUI() {
               </div>
             </div>
           )}
-          {/* Dummy div to scroll into view */}
+
+          {/* 👇 Always keep latest message in view */}
           <div ref={bottomRef} />
         </div>
         <ScrollBar orientation="vertical" />
