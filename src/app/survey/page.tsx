@@ -35,51 +35,49 @@ export default function SurveyPage() {
                         <CardDescription>All responses are completely anonymous. Select a survey below to participate.</CardDescription>
                     </CardHeader>
                     <CardContent>
+                        <div className="space-y-4">
+                            {/* Always display the hardcoded default survey */}
+                            <Link href={defaultSurvey.url} target="_blank" rel="noopener noreferrer" key={defaultSurvey.id} className="block">
+                                <Card className="hover:bg-accent hover:border-primary/50 transition-colors border-2 border-primary/30">
+                                    <CardHeader>
+                                        <CardTitle className="text-lg">{defaultSurvey.name}</CardTitle>
+                                        <CardDescription>{defaultSurvey.description}</CardDescription>
+                                    </CardHeader>
+                                </Card>
+                            </Link>
+
+                            {/* Display surveys from Firestore */}
+                            {surveys && surveys.map(survey => (
+                                <Link href={survey.url} target="_blank" rel="noopener noreferrer" key={survey.id} className="block">
+                                    <Card className="hover:bg-accent hover:border-primary/50 transition-colors">
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">{survey.name}</CardTitle>
+                                            <CardDescription>Click to open the survey in a new tab.</CardDescription>
+                                        </CardHeader>
+                                    </Card>
+                                </Link>
+                            ))}
+                        </div>
+
                         {loading && (
-                            <div className="flex flex-col items-center justify-center h-60 gap-4">
-                                <Loader2 className="w-12 h-12 animate-spin text-primary" />
-                                <p className="text-muted-foreground font-medium">Loading surveys...</p>
+                            <div className="flex flex-col items-center justify-center h-40 gap-4 mt-6">
+                                <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                                <p className="text-muted-foreground font-medium">Loading additional surveys...</p>
                             </div>
                         )}
                         
-                        {!loading && error && (
-                            <div className="flex flex-col items-center justify-center h-60 text-center gap-4 bg-secondary/50 rounded-lg">
-                                <AlertTriangle className="w-12 h-12 text-destructive"/>
-                                <p className="text-destructive font-semibold text-lg">Could not load surveys.</p>
+                        {error && (
+                            <div className="flex flex-col items-center justify-center h-40 text-center gap-4 mt-6 bg-destructive/10 rounded-lg p-4">
+                                <AlertTriangle className="w-10 h-10 text-destructive"/>
+                                <p className="text-destructive font-semibold">Could not load additional surveys.</p>
                                 <p className="text-muted-foreground text-sm max-w-sm">
-                                    There was an error connecting to our database. Please try again later or contact support.
+                                    There was an error connecting to the database. The default survey above is still available.
                                 </p>
                             </div>
                         )}
 
-                        {!loading && !error && (
-                            <div className="space-y-4">
-                                {/* Display the hardcoded default survey */}
-                                <Link href={defaultSurvey.url} target="_blank" rel="noopener noreferrer" key={defaultSurvey.id} className="block">
-                                    <Card className="hover:bg-accent hover:border-primary/50 transition-colors border-2 border-primary/30">
-                                        <CardHeader>
-                                            <CardTitle className="text-lg">{defaultSurvey.name}</CardTitle>
-                                            <CardDescription>{defaultSurvey.description}</CardDescription>
-                                        </CardHeader>
-                                    </Card>
-                                </Link>
-
-                                {/* Display surveys from Firestore */}
-                                {surveys && surveys.map(survey => (
-                                    <Link href={survey.url} target="_blank" rel="noopener noreferrer" key={survey.id} className="block">
-                                        <Card className="hover:bg-accent hover:border-primary/50 transition-colors">
-                                            <CardHeader>
-                                                <CardTitle className="text-lg">{survey.name}</CardTitle>
-                                                <CardDescription>Click to open the survey in a new tab.</CardDescription>
-                                            </CardHeader>
-                                        </Card>
-                                    </Link>
-                                ))}
-
-                                {(!surveys || surveys.length === 0) && (
-                                    <p className="text-center text-sm text-muted-foreground pt-4">You can add more surveys from the admin dashboard.</p>
-                                )}
-                            </div>
+                        {!loading && !error && (!surveys || surveys.length === 0) && (
+                            <p className="text-center text-sm text-muted-foreground pt-6">You can add more surveys from the admin dashboard.</p>
                         )}
                     </CardContent>
                 </Card>
