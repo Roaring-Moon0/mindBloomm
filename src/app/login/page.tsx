@@ -47,14 +47,15 @@ function ForgotPasswordDialog({ onOpenChange }: { onOpenChange: (open: boolean) 
             await sendPasswordResetEmail(auth, values.email);
             toast({
                 title: "Reset Email Sent",
-                description: "Check your inbox for a password reset link.",
+                description: "If an account exists for this email, you will receive a password reset link. Please check your inbox (and spam folder).",
             });
             onOpenChange(false); // Close the dialog on success
         } catch (error: any) {
             let description = "An unexpected error occurred. Please try again.";
-            if (error.code === 'auth/user-not-found') {
-                description = "No user found with this email address. Please check your email and try again.";
-            }
+            // For security, Firebase's sendPasswordResetEmail might not throw 'auth/user-not-found' on the client.
+            // The success message is phrased to handle both cases (user exists or not).
+            // We only show a detailed error for other, unexpected issues.
+            console.error("Password Reset Error:", error.code);
             toast({
                 variant: "destructive",
                 title: "Failed to Send Email",
@@ -230,12 +231,13 @@ export default function LoginPage() {
               Don't have an account?{" "}
               <Link href="/signup" className="underline hover:text-primary">
                 Sign up
-              </Link>
+              </A>
             </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+    
 
     
