@@ -9,6 +9,13 @@ import { Loader2, AlertTriangle, FileText } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import type { SurveyConfig } from '@/app/admin/page';
 
+const defaultSurvey = {
+    id: 'default-google-form-survey',
+    name: 'Student Mental Health & Well-being Survey',
+    url: 'https://docs.google.com/forms/d/e/1FAIpQLSccIKUZAvYOKoOssL3VpYJxwBP_uayhjxmF1BboqbPve6yIkw/viewform?pli=1',
+    description: 'Your feedback will help us understand the key challenges students face. This survey is anonymous and takes about 5-10 minutes.'
+}
+
 export default function SurveyPage() {
     const { data: surveys, loading, error } = useFirestoreCollection<SurveyConfig>('surveys');
 
@@ -45,28 +52,33 @@ export default function SurveyPage() {
                             </div>
                         )}
 
-                        {!loading && !error && (!surveys || surveys.length === 0) && (
-                             <div className="flex flex-col items-center justify-center h-60 text-center gap-4 bg-secondary/50 rounded-lg">
-                                <FileText className="w-12 h-12 text-muted-foreground"/>
-                                <p className="font-semibold text-lg">No Active Surveys</p>
-                                <p className="text-muted-foreground text-sm max-w-sm">
-                                    There are currently no active surveys. Please check back later!
-                                </p>
-                            </div>
-                        )}
-
-                        {!loading && !error && surveys && surveys.length > 0 && (
+                        {!loading && !error && (
                             <div className="space-y-4">
-                                {surveys.map(survey => (
+                                {/* Display the hardcoded default survey */}
+                                <Link href={defaultSurvey.url} target="_blank" rel="noopener noreferrer" key={defaultSurvey.id} className="block">
+                                    <Card className="hover:bg-accent hover:border-primary/50 transition-colors border-2 border-primary/30">
+                                        <CardHeader>
+                                            <CardTitle className="text-lg">{defaultSurvey.name}</CardTitle>
+                                            <CardDescription>{defaultSurvey.description}</CardDescription>
+                                        </CardHeader>
+                                    </Card>
+                                </Link>
+
+                                {/* Display surveys from Firestore */}
+                                {surveys && surveys.map(survey => (
                                     <Link href={survey.url} target="_blank" rel="noopener noreferrer" key={survey.id} className="block">
                                         <Card className="hover:bg-accent hover:border-primary/50 transition-colors">
                                             <CardHeader>
                                                 <CardTitle className="text-lg">{survey.name}</CardTitle>
-                                                <CardDescription>Click to open the survey in a new tab. It will take approximately 5-10 minutes.</CardDescription>
+                                                <CardDescription>Click to open the survey in a new tab.</CardDescription>
                                             </CardHeader>
                                         </Card>
                                     </Link>
                                 ))}
+
+                                {(!surveys || surveys.length === 0) && (
+                                    <p className="text-center text-sm text-muted-foreground pt-4">You can add more surveys from the admin dashboard.</p>
+                                )}
                             </div>
                         )}
                     </CardContent>
