@@ -106,9 +106,9 @@ export default function Home() {
                 </p>
               </div>
             </FadeIn>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
+            <div className="mx-auto grid max-w-5xl items-stretch gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
               {features.map((feature, index) => (
-                <FadeIn key={index} delay={0.1 * (index + 1)} className="flex">
+                <FadeIn key={index} delay={0.1 * (index + 1)} className="flex flex-col">
                   <Link href={feature.href} className="block h-full w-full">
                       <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
                           <CardHeader className="flex flex-col items-center text-center gap-4">
@@ -230,5 +230,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
