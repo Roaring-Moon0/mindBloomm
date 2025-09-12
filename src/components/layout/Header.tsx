@@ -42,10 +42,52 @@ export function Header() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link href="/" className="mr-6 flex items-center space-x-2">
-          <Logo className="h-6 w-6 text-primary" />
-          <span className="hidden font-bold sm:inline-block">MindBloom</span>
-        </Link>
+        
+        {/* Hamburger Menu (Left on mobile) */}
+        <div className="md:hidden">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="pr-0">
+              <VisuallyHidden>
+                <SheetTitle>Mobile Navigation Menu</SheetTitle>
+                <SheetDescription>
+                  A list of links to navigate the MindBloom website.
+                </SheetDescription>
+              </VisuallyHidden>
+                <Link href="/" className="flex items-center space-x-2 mb-6">
+                <Logo className="h-6 w-6 text-primary" />
+                <span className="font-bold">MindBloom</span>
+              </Link>
+              <div className="flex flex-col space-y-2">
+                {navLinks.map((link) => (
+                    <SheetClose asChild key={link.href}>
+                      <Link
+                        href={link.href}
+                        className={cn("font-medium text-lg p-2 rounded-md", pathname === link.href ? "bg-primary/10 text-primary" : "text-muted-foreground")}
+                      >
+                        {link.label}
+                      </Link>
+                    </SheetClose>
+                ))}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+
+        {/* Logo (Left on desktop, center on mobile) */}
+        <div className="flex flex-1 md:flex-none justify-center md:justify-start">
+            <Link href="/" className="mr-6 flex items-center space-x-2">
+                <Logo className="h-6 w-6 text-primary" />
+                <span className="hidden font-bold sm:inline-block">MindBloom</span>
+            </Link>
+        </div>
+        
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex flex-1 items-center gap-1 text-sm">
           {navLinks.map((link) => (
             <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground font-semibold")}>
@@ -59,44 +101,10 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex flex-1 md:flex-none items-center justify-end gap-2">
+        {/* Right side actions */}
+        <div className="flex items-center justify-end gap-2">
           <ThemeToggle />
           <AuthButton />
-          
-          <div className="md:hidden">
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="pr-0">
-                <VisuallyHidden>
-                  <SheetTitle>Mobile Navigation Menu</SheetTitle>
-                  <SheetDescription>
-                    A list of links to navigate the MindBloom website.
-                  </SheetDescription>
-                </VisuallyHidden>
-                 <Link href="/" className="flex items-center space-x-2 mb-6">
-                  <Logo className="h-6 w-6 text-primary" />
-                  <span className="font-bold">MindBloom</span>
-                </Link>
-                <div className="flex flex-col space-y-2">
-                  {navLinks.map((link) => (
-                     <SheetClose asChild key={link.href}>
-                        <Link
-                          href={link.href}
-                          className={cn("font-medium text-lg p-2 rounded-md", pathname === link.href ? "bg-primary/10 text-primary" : "text-muted-foreground")}
-                        >
-                          {link.label}
-                        </Link>
-                      </SheetClose>
-                  ))}
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
         </div>
       </div>
     </header>
