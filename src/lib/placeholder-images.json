@@ -1,0 +1,26 @@
+{
+    "aryan": {
+        "src": "https://picsum.photos/seed/aryan/400/400",
+        "hint": "man face"
+    },
+    "gaurav": {
+        "src": "https://picsum.photos/seed/gaurav/400/400",
+        "hint": "man face"
+    },
+    "kartik": {
+        "src": "https://picsum.photos/seed/kartik/400/400",
+        "hint": "man face"
+    },
+    "anubhav": {
+        "src": "https://picsum.photos/seed/anubhav/400/400",
+        "hint": "man face"
+    },
+    "dharvi": {
+        "src": "https://picsum.photos/seed/dharvi/400/400",
+        "hint": "woman face"
+    },
+    "ruhi": {
+        "src": "https://picsum.photos/seed/ruhi/400/400",
+        "hint": "woman face"
+    }
+}

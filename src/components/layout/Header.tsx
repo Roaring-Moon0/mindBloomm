@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu, Home, Library, Gamepad2, MessageSquare, User } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
@@ -22,11 +22,12 @@ import { Separator } from '../ui/separator';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
-  { href: '/', label: 'Home', icon: <Home className="w-4 h-4" /> },
-  { href: '/resources', label: 'Library', icon: <Library className="w-4 h-4" /> },
-  { href: '/games', label: 'Games', icon: <Gamepad2 className="w-4 h-4" /> },
-  { href: '/chat', label: 'Chat', icon: <MessageSquare className="w-4 h-4" /> },
-  { href: '/dashboard', label: 'Profile', icon: <User className="w-4 h-4" /> },
+  { href: '/resources', label: 'Resources' },
+  { href: '/games', label: 'Games' },
+  { href: '/chat', label: 'Bloom AI' },
+  { href: '/survey', label: 'Survey' },
+  { href: '/about', label: 'About Us' },
+  { href: '/contact', label: 'Contact' },
 ];
 
 export function Header() {
@@ -49,7 +50,7 @@ export function Header() {
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             {navLinks.map((link) => (
-              <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground")}>
+              <Button key={link.href} variant="ghost" asChild className={cn("text-muted-foreground", pathname === link.href && "text-foreground font-semibold")}>
                 <Link
                   href={link.href}
                   className="transition-colors hover:text-foreground"
@@ -87,9 +88,8 @@ export function Header() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="text-foreground flex items-center gap-2"
+                      className={cn("font-medium", pathname === link.href ? "text-primary" : "text-foreground")}
                     >
-                      {link.icon}
                       {link.label}
                     </Link>
                   ))}
@@ -103,7 +103,6 @@ export function Header() {
           </Link>
           
           <div className="flex items-center gap-2">
-            <Separator orientation="vertical" className="h-6 hidden md:block" />
             <ThemeToggle />
             <AuthButton />
           </div>
