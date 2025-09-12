@@ -110,12 +110,12 @@ export default function Home() {
               {features.map((feature, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)}>
                   <Link href={feature.href} className="block h-full">
-                      <Card className="h-full hover:shadow-lg transition-shadow duration-300">
+                      <Card className="flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
                           <CardHeader className="flex flex-col items-center text-center gap-4">
                               {feature.icon}
                               <CardTitle>{feature.title}</CardTitle>
                           </CardHeader>
-                          <CardContent className="text-center text-muted-foreground">
+                          <CardContent className="text-center text-muted-foreground flex-grow">
                               {feature.description}
                           </CardContent>
                       </Card>
