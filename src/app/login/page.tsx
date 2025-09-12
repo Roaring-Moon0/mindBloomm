@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +32,9 @@ const GoogleIcon = () => (
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/dashboard';
+
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
@@ -48,7 +51,7 @@ export default function LoginPage() {
     const provider = new GoogleAuthProvider();
     try {
         await signInWithPopup(auth, provider);
-        router.push("/dashboard");
+        router.push(redirectUrl);
         toast({
             title: "Login Successful!",
             description: "Welcome back.",
@@ -73,7 +76,7 @@ export default function LoginPage() {
         title: "Login Successful!",
         description: "Welcome back.",
       });
-      router.push("/dashboard");
+      router.push(redirectUrl);
     } catch (error: any) {
       console.error("Login error:", error);
       let errorMessage = "An unknown error occurred. Please try again.";
