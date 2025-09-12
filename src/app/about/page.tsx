@@ -61,7 +61,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Card 
-                    className="overflow-hidden text-center hover:shadow-lg transition-shadow cursor-pointer"
+                    className="overflow-hidden text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     onClick={isMobile ? () => setIsOpen(true) : undefined}

@@ -115,7 +115,7 @@ export default function DashboardPage() {
                         <div className="grid gap-6 md:grid-cols-2">
                             {quickLinks.map((link) => (
                                 <Link href={link.href} key={link.title}>
-                                    <Card className="h-full hover:shadow-lg transition-shadow hover:border-primary/50">
+                                    <Card className="h-full hover:shadow-lg transition-shadow hover:border-primary/50 hover:bg-secondary">
                                         <CardHeader className="flex flex-row items-center gap-4">
                                             {link.icon}
                                             <CardTitle className="text-xl">{link.title}</CardTitle>
