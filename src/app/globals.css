@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,7 +17,7 @@
     --secondary-foreground: 158 64% 20%;
     --muted: 158 50% 94%;
     --muted-foreground: 20 14% 40%;
-    --accent: 30 90% 60%; /* #f9a84a - Bright SIH Orange */
+    --accent: 24 95% 65%; /* #f9a84a -> A slightly softer, warmer orange */
     --accent-foreground: 20 14% 4%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -43,7 +44,7 @@
     --secondary-foreground: 20 20% 95%;
     --muted: 158 20% 20%;
     --muted-foreground: 20 20% 65%;
-    --accent: 30 90% 60%; /* #f9a84a - Bright SIH Orange */
+    --accent: 24 95% 65%; /* #f9a84a -> A slightly softer, warmer orange */
     --accent-foreground: 20 14% 4%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
