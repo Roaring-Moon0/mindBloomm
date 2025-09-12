@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useAdminAuth } from '@/hooks/use-admin-auth';
@@ -46,7 +47,7 @@ function AdminVerificationGate() {
              toast({
                 variant: "destructive",
                 title: "Verification Failed",
-                description: "The admin code is invalid or has already been claimed.",
+                description: "The admin code is invalid or has already been claimed by another user.",
             });
         }
     }
@@ -61,7 +62,7 @@ function AdminVerificationGate() {
                         </div>
                         <CardTitle>Admin Verification Required</CardTitle>
                         <CardDescription>
-                           To access the dashboard, first sign up or log in, then enter your unique admin code here.
+                           To access the dashboard, first sign in with an approved account, then enter your unique admin code here.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -155,3 +156,4 @@ export default function AdminDashboardPage() {
 
   return <AdminDashboardContent />;
 }
+

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -114,9 +115,12 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
 
       if (!adminCodesDoc.exists()) {
         // If the document doesn't exist, create it with the first claim
-        const newCodeData = { ...ADMIN_CODES, [code]: { claimedBy: userId } };
-        transaction.set(adminCodesRef, newCodeData);
-        return Object.keys(ADMIN_CODES).includes(code);
+        if (Object.keys(ADMIN_CODES).includes(code)) {
+            const newCodeData = { ...ADMIN_CODES, [code]: { claimedBy: userId } };
+            transaction.set(adminCodesRef, newCodeData);
+            return true;
+        }
+        return false;
       }
 
       const codes = adminCodesDoc.data();
@@ -124,17 +128,18 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
       // Check if any code has been claimed by this user already
       for (const key in codes) {
         if (codes[key].claimedBy === userId) {
-            // If the code they entered is the one they claimed, it's valid
-            if (key === code) return true;
+            // User is already a verified admin.
+            // If the code they entered is the one they claimed, it's valid.
+            return key === code;
         }
       }
-
+      
       const codeData = codes[code];
 
-      if (!codeData) return false; // Code doesn't exist
-      if (codeData.claimedBy && codeData.claimedBy !== userId) return false; // Code claimed by someone else
+      if (!codeData) return false; // Code doesn't exist in our system
+      if (codeData.claimedBy) return false; // Code is valid, but already claimed by someone else
 
-      // Claim the code
+      // This is a valid, unclaimed code. Claim it for the user.
       transaction.update(adminCodesRef, {
         [`${code}.claimedBy`]: userId,
       });
@@ -158,3 +163,4 @@ export async function isApprovedAdmin(email: string): Promise<boolean> {
     ];
     return approvedEmails.includes(email);
 }
+
