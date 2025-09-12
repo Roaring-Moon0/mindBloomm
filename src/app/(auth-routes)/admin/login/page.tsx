@@ -18,11 +18,13 @@ import Logo from "@/components/icons/Logo";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import Link from "next/link";
+import { verifyAndClaimAdminCode } from "@/services/config-service";
 
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid admin email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
+  adminCode: z.string().min(4, { message: "Please enter your unique admin code." }),
 });
 
 export default function AdminLoginPage() {
@@ -34,6 +36,7 @@ export default function AdminLoginPage() {
     defaultValues: {
       email: "",
       password: "",
+      adminCode: "",
     },
   });
 
@@ -41,27 +44,30 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     try {
+      // 1. Authenticate with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       const user = userCredential.user;
 
-      // Check if user is an admin
+      // 2. Check if user's email is on the admin list
       const adminConfigDoc = await getDoc(doc(db, 'config', 'admins'));
-      if (adminConfigDoc.exists()) {
-        const adminEmails = adminConfigDoc.data().emails as string[];
-        if (user.email && adminEmails.includes(user.email)) {
-          toast({
-            title: "Admin Login Successful!",
-            description: "Welcome to the dashboard.",
-          });
-          router.push("/admin");
-        } else {
-          await auth.signOut();
-          throw new Error("You are not authorized to access this page.");
-        }
-      } else {
+      if (!adminConfigDoc.exists() || !adminConfigDoc.data().emails?.includes(user.email)) {
          await auth.signOut();
-         throw new Error("Admin configuration not found.");
+         throw new Error("You are not authorized to access this page.");
       }
+      
+      // 3. Verify the admin code and claim it if it's the first time
+      const isCodeValid = await verifyAndClaimAdminCode(user.uid, values.adminCode);
+      if (!isCodeValid) {
+        await auth.signOut();
+        throw new Error("The admin code is invalid, has expired, or is already in use.");
+      }
+
+      // All checks passed
+      toast({
+        title: "Admin Login Successful!",
+        description: "Welcome to the dashboard.",
+      });
+      router.push("/admin");
 
     } catch (error: any) {
       console.error("Admin login error:", error);
@@ -70,8 +76,8 @@ export default function AdminLoginPage() {
         errorMessage = "Invalid email or password. Please try again.";
       } else if (error.message.includes("not authorized")) {
         errorMessage = "You do not have permission to access the admin dashboard.";
-      } else if (error.message.includes("Admin configuration not found")) {
-        errorMessage = "The admin system is not configured. Please contact support.";
+      } else if (error.message.includes("admin code")) {
+        errorMessage = error.message;
       }
       
       toast({
@@ -94,14 +100,14 @@ export default function AdminLoginPage() {
             </Link>
           </div>
           <CardTitle>Admin Panel</CardTitle>
-          <CardDescription>Use your MindBloom account credentials to log in.</CardDescription>
+          <CardDescription>Use your credentials and unique admin code to log in.</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert className="mb-6">
             <Terminal className="h-4 w-4" />
-            <AlertTitle>Admin Access Only</AlertTitle>
+            <AlertTitle>Secure Admin Access</AlertTitle>
             <AlertDescription>
-                <p>To gain access, your account email must be on the approved admin list in the database. If you don't have an account, please <Link href="/signup" className="underline">sign up</Link> first.</p>
+                <p>Your email must be on the approved admin list, and you must provide a valid, unclaimed admin code. If you don't have an account, please <Link href="/signup" className="underline">sign up</Link> first.</p>
             </AlertDescription>
           </Alert>
 
@@ -123,8 +129,16 @@ export default function AdminLoginPage() {
                   </FormItem>
                 )}
               />
+              <FormField control={form.control} name="adminCode" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Admin Code</FormLabel>
+                    <FormControl><Input placeholder="bl00m-adm-xxxx" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Log In as Admin"}
+                {isLoading ? "Verifying..." : "Log In as Admin"}
               </Button>
             </form>
           </Form>
