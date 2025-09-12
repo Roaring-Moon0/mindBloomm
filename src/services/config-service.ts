@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase';
-import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, query, where, getDocs, writeBatch } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, query, where, getDocs, writeBatch, setDoc } from 'firebase/firestore';
 import { z } from 'zod';
 
 const surveySchema = z.object({
@@ -56,12 +56,14 @@ export const toggleVideoVisibility = async (id: string, visible: boolean) => {
 // --- User Management ---
 
 export const banUser = async (email: string) => {
-  // Add user's email to a 'banned' collection
-  await addDoc(collection(db, 'bannedUsers'), { email, createdAt: serverTimestamp() });
+  const q = query(collection(db, 'bannedUsers'), where("email", "==", email));
+  const querySnapshot = await getDocs(q);
+  if (querySnapshot.empty) {
+    await addDoc(collection(db, 'bannedUsers'), { email, createdAt: serverTimestamp() });
+  }
 };
 
 export const unbanUser = async (email: string) => {
-  // Find and delete the user's record from the 'banned' collection
   const q = query(collection(db, 'bannedUsers'), where("email", "==", email));
   const querySnapshot = await getDocs(q);
   const batch = writeBatch(db);
@@ -111,22 +113,28 @@ export async function verifyAndClaimAdminCode(userId: string, code: string): Pro
       const adminCodesDoc = await transaction.get(adminCodesRef);
 
       if (!adminCodesDoc.exists()) {
-        transaction.set(adminCodesRef, ADMIN_CODES);
-        if (Object.keys(ADMIN_CODES).includes(code)) {
-            const newCodeData = { ...ADMIN_CODES, [code]: { claimedBy: userId } };
-            transaction.set(adminCodesRef, newCodeData);
-            return true;
-        }
-        return false;
+        // If the document doesn't exist, create it with the first claim
+        const newCodeData = { ...ADMIN_CODES, [code]: { claimedBy: userId } };
+        transaction.set(adminCodesRef, newCodeData);
+        return Object.keys(ADMIN_CODES).includes(code);
       }
 
       const codes = adminCodesDoc.data();
+      
+      // Check if any code has been claimed by this user already
+      for (const key in codes) {
+        if (codes[key].claimedBy === userId) {
+            // If the code they entered is the one they claimed, it's valid
+            if (key === code) return true;
+        }
+      }
+
       const codeData = codes[code];
 
-      if (!codeData) return false;
-      if (codeData.claimedBy === userId) return true;
-      if (codeData.claimedBy) return false;
+      if (!codeData) return false; // Code doesn't exist
+      if (codeData.claimedBy && codeData.claimedBy !== userId) return false; // Code claimed by someone else
 
+      // Claim the code
       transaction.update(adminCodesRef, {
         [`${code}.claimedBy`]: userId,
       });
