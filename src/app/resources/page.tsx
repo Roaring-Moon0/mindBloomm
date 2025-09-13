@@ -98,7 +98,7 @@ const categoriesData: Record<
     description: "Inspiring talks and content to lift your spirits.",
     videos: [
       { id: "Cw6xuzosn4s", title: "The Psychology of a Winner - Motivational Speech", url: "https://www.youtube.com/embed/Cw6xuzosn4s" },
-      { id: "Qcxj1RM6-u0", title: "How to Stop Procrastinating", url: "https://www.youtube.com/embed/Qcxj1RM6-u0" },
+      { id: "4x7MkLDGnu8", title: "How to Stop Procrastinating", url: "https://www.youtube.com/embed/4x7MkLDGnu8" },
     ],
     audios: [
       { id: "3sK3wJAxGfs", title: "Inspirational Talk on Resilience", url: "https://www.youtube.com/embed/3sK3wJAxGfs" },
