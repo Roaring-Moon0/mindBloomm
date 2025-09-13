@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/summarize-resource.ts';
 import '@/ai/flows/generate-personalized-recommendations.ts';
+import '@/ai/flows/search-youtube-videos.ts';

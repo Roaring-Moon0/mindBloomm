@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useTransition } from "react";
 import {
   Card,
   CardContent,
@@ -28,6 +28,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FadeIn } from "@/components/ui/fade-in";
 import { useFirestoreCollection } from "@/hooks/use-firestore";
+import { searchYoutubeVideos, YoutubeSearchOutput } from "@/ai/flows/search-youtube-videos";
+import { useDebounce } from "@/hooks/use-debounce";
 
 // 🌟 Categories
 const categoriesData: Record<
@@ -36,7 +38,7 @@ const categoriesData: Record<
     name: string;
     description: string;
     videos?: { id: string; title: string; url: string }[];
-    audios?: { id: string; title: string; url: string }[];
+    audios?: { id:string; title: string; url: string }[];
     articles?: { id: string; title: string; url: string }[];
   }
 > = {
@@ -134,10 +136,11 @@ const allQuotes = [
 ];
 
 // 🌟 Video Card
-function VideoCard({ title, url }: { title: string; url: string }) {
-  const embedUrl = url.includes('youtube.com/watch?v=')
-    ? url.replace('watch?v=', 'embed/')
-    : url;
+function VideoCard({ title, videoId, url }: { title: string; videoId?: string; url?: string; }) {
+  const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}` :
+    (url && url.includes('youtube.com/watch?v=')) ? url.replace('watch?v=', 'embed/') : url;
+
+  if (!embedUrl) return null;
 
   return (
     <Card className="bg-gradient-to-br from-pink-200/60 via-purple-200/60 to-blue-200/60 rounded-2xl shadow-lg hover:scale-[1.03] hover:shadow-2xl transition-all">
@@ -206,11 +209,11 @@ function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: st
 
     const allVideos = useMemo(() => {
         // Combine hardcoded and firestore videos
-        const combined = [...hardcodedVideos];
+        const combined = [...hardcodedVideos.map(v => ({...v, title: v.name}))];
         
         const firestoreFormatted = (firestoreVideos || []).map((v: any) => ({
             id: v.id,
-            name: v.name,
+            title: v.name,
             url: v.url,
             visible: v.visible,
         }));
@@ -229,7 +232,7 @@ function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: st
         if (!searchTerm) return allVideos;
         
         return allVideos.filter(video => 
-            video.name.toLowerCase().includes(searchTerm.toLowerCase())
+            video.title.toLowerCase().includes(searchTerm.toLowerCase())
         );
     }, [allVideos, searchTerm]);
 
@@ -245,7 +248,7 @@ function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: st
                 ) : filteredVideos && filteredVideos.length > 0 ? (
                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredVideos.map((video) => (
-                            <VideoCard key={video.id} title={video.name} url={video.url} />
+                            <VideoCard key={video.id} title={video.title} url={video.url} />
                         ))}
                     </div>
                 ) : (
@@ -261,6 +264,96 @@ function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: st
             </CardContent>
         </Card>
     )
+}
+
+function YouTubeSearchSection() {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState<YoutubeSearchOutput | null>(null);
+    const [isSearching, startSearchTransition] = useTransition();
+    const [error, setError] = useState<string | null>(null);
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    useEffect(() => {
+        if (debouncedSearchTerm) {
+            startSearchTransition(async () => {
+                setError(null);
+                try {
+                    const results = await searchYoutubeVideos({ query: debouncedSearchTerm });
+                    setSearchResults(results);
+                } catch (e: any) {
+                    console.error("YouTube search error:", e);
+                    setError(e.message || "Failed to search YouTube. Check API key and permissions.");
+                }
+            });
+        } else {
+            setSearchResults(null);
+            setError(null);
+        }
+    }, [debouncedSearchTerm]);
+
+
+    return (
+        <Card className="bg-card/70 rounded-2xl shadow-lg">
+            <CardHeader>
+                <CardTitle className="text-2xl font-headline text-primary">Search YouTube</CardTitle>
+                <CardDescription>Find mental wellness videos from across YouTube.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="w-full max-w-md mx-auto mb-8">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                            placeholder="Search for topics like 'mindfulness', 'stress relief'..."
+                            className="pl-10"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {isSearching && (
+                    <div className="flex items-center justify-center py-10 text-muted-foreground gap-2"><Loader2 className="animate-spin h-5 w-5"/>Searching YouTube...</div>
+                )}
+
+                {!isSearching && error && (
+                     <div className="text-center py-16 text-destructive">
+                        <p className="font-semibold">
+                           {error.includes("API key") ? "API Key Error" : "Search Failed"}
+                        </p>
+                        <p className="text-sm mt-2">
+                           {error.includes("API key") 
+                           ? "Please ensure a valid YouTube API key is in your .env file."
+                           : "Could not retrieve video results. Please try again later."
+                           }
+                        </p>
+                    </div>
+                )}
+
+                {!isSearching && !error && searchResults && searchResults.videos.length > 0 && (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {searchResults.videos.map((video) => (
+                           <VideoCard key={video.id} title={video.title} videoId={video.id} />
+                        ))}
+                    </div>
+                )}
+
+                {!isSearching && !error && debouncedSearchTerm && searchResults && searchResults.videos.length === 0 && (
+                     <div className="text-center py-16">
+                        <p className="text-muted-foreground font-semibold">
+                           No YouTube videos found for "{debouncedSearchTerm}".
+                        </p>
+                    </div>
+                )}
+                 {!isSearching && !debouncedSearchTerm && (
+                     <div className="text-center py-16">
+                        <p className="text-muted-foreground font-semibold">
+                           Enter a term above to search YouTube.
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    );
 }
 
 
@@ -287,7 +380,7 @@ export default function ResourcesPage() {
   }, []);
 
   const filteredData = useMemo(() => {
-    if (activeTab === 'all-videos') return null;
+    if (activeTab === 'all-videos' || activeTab === 'youtube-search') return null;
 
     const categoryData =
       categoriesData[activeTab as keyof typeof categoriesData];
@@ -326,20 +419,23 @@ export default function ResourcesPage() {
           </div>
 
           {/* Search */}
-          <div className="w-full max-w-md mx-auto mb-12">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search resources in this category..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          {activeTab !== 'youtube-search' && (
+            <div className="w-full max-w-md mx-auto mb-12">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  placeholder="Search resources in this category..."
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                e.g., "meditation", "sleep", "stress"
+              </p>
             </div>
-            <p className="text-xs text-center text-muted-foreground mt-2">
-              e.g., "meditation", "sleep", "stress"
-            </p>
-          </div>
+          )}
+
 
           {/* Tabs */}
           <Tabs
@@ -350,9 +446,12 @@ export default function ResourcesPage() {
               setSearchTerm("");
             }}
           >
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
                <TabsTrigger key="all-videos" value="all-videos">
                   <Video className="mr-2 h-4 w-4"/> All Videos
+               </TabsTrigger>
+               <TabsTrigger key="youtube-search" value="youtube-search">
+                  <Youtube className="mr-2 h-4 w-4"/> YouTube
                </TabsTrigger>
               {Object.entries(categoriesData).map(([key, category]) => (
                 <TabsTrigger key={key} value={key}>
@@ -363,6 +462,10 @@ export default function ResourcesPage() {
 
             <TabsContent key="all-videos" value="all-videos" className="mt-10">
                 <FirestoreVideoSection searchTerm={searchTerm} hardcodedVideos={hardcodedVideos} />
+            </TabsContent>
+
+            <TabsContent key="youtube-search" value="youtube-search" className="mt-10">
+                <YouTubeSearchSection />
             </TabsContent>
 
             {Object.entries(categoriesData).map(([key]) => (
@@ -446,5 +549,3 @@ export default function ResourcesPage() {
     </FadeIn>
   );
 }
-
-    
