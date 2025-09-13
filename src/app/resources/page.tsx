@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
@@ -88,7 +89,7 @@ const categoriesData: Record<
         { id: "z6X5oEIg6Ak", title: "10-Minute Meditation For Stress", url: "https://www.youtube.com/embed/z6X5oEIg6Ak" },
     ],
     audios: [
-      { id: "calI9aV_eWc", title: "3 Hours of Relaxing Music for Stress Relief", url: "https://www.youtube.com/embed/calI9aV_eWc" },
+      { id: "rCSCPujLs14", title: "3 Hours of Relaxing Music for Stress Relief", url: "https://www.youtube.com/embed/rCSCPujLs14" },
     ],
     articles: [],
   },
