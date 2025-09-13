@@ -15,7 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 
@@ -36,6 +36,7 @@ const reauthSchema = z.object({
 export default function AccountSettings() {
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [reauthAction, setReauthAction] = useState<(() => Promise<void>) | null>(null);
 
     const profileForm = useForm<z.infer<typeof profileSchema>>({
@@ -206,7 +207,19 @@ export default function AccountSettings() {
                              <FormField name="password" control={reauthForm.control} render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Current Password</FormLabel>
-                                    <FormControl><Input type="password" {...field} /></FormControl>
+                                    <FormControl>
+                                        <div className="relative">
+                                            <Input type={showPassword ? "text" : "password"} {...field} />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                                            >
+                                                {showPassword ? <EyeOff className="w-5 h-5"/> : <Eye className="w-5 h-5"/>}
+                                                <span className="sr-only">Toggle password visibility</span>
+                                            </button>
+                                        </div>
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />

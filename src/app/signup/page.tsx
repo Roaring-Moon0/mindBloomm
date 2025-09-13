@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff } from "lucide-react";
 
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -34,6 +35,7 @@ export default function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -123,17 +125,25 @@ export default function SignupPage() {
         </div>
 
         {/* Password input */}
-        <div className="mb-6">
+        <div className="mb-6 relative">
             <label htmlFor="password-signup" className="block text-sm font-medium text-muted-foreground mb-1">Password</label>
             <input
             id="password-signup"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="At least 6 characters"
-            className="w-full border p-2 rounded bg-background text-foreground"
+            className="w-full border p-2 rounded bg-background text-foreground pr-10"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             />
+            <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[34px] text-muted-foreground"
+            >
+                {showPassword ? <EyeOff className="w-5 h-5"/> : <Eye className="w-5 h-5"/>}
+                <span className="sr-only">Toggle password visibility</span>
+            </button>
         </div>
 
         {/* Submit button */}

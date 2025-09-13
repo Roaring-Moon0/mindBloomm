@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Eye, EyeOff } from "lucide-react";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -31,6 +32,7 @@ export default function LoginPage() {
   // form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -105,7 +107,7 @@ export default function LoginPage() {
         </div>
 
         {/* Password input */}
-        <div className="mb-6">
+        <div className="mb-6 relative">
              <div className="flex justify-between items-center mb-1">
                 <label htmlFor="password-login" className="block text-sm font-medium text-muted-foreground">Password</label>
                 <Link href="/forgot-password" passHref className="text-xs text-primary hover:underline">
@@ -114,13 +116,21 @@ export default function LoginPage() {
             </div>
             <input
             id="password-login"
-            type="password"
+            type={showPassword ? "text" : "password"}
             placeholder="••••••••"
-            className="w-full border p-2 rounded bg-background text-foreground"
+            className="w-full border p-2 rounded bg-background text-foreground pr-10"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             />
+            <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-[34px] text-muted-foreground"
+            >
+                {showPassword ? <EyeOff className="w-5 h-5"/> : <Eye className="w-5 h-5"/>}
+                <span className="sr-only">Toggle password visibility</span>
+            </button>
         </div>
 
         {/* Submit button */}
