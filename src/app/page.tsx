@@ -81,10 +81,18 @@ export default function Home() {
                   </div>
                 </FadeIn>
               </div>
-              <FadeIn>
-                <div className="mx-auto aspect-video overflow-hidden rounded-xl">
-                  <HomeSpline />
-                </div>
+              <FadeIn className="relative min-h-[300px] lg:min-h-0">
+                  <div 
+                    aria-hidden="true" 
+                    className="absolute inset-0 flex items-center justify-center z-0"
+                  >
+                      <span className="text-[10vw] lg:text-[80px] font-extrabold text-foreground/5 whitespace-nowrap select-none">
+                          Mind Bloom
+                      </span>
+                  </div>
+                  <div className="relative mx-auto aspect-video overflow-hidden rounded-xl z-10">
+                    <HomeSpline />
+                  </div>
               </FadeIn>
             </div>
           </div>
