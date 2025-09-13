@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Youtube, Music, FileText, Search } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,11 +8,24 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Youtube,
+  FileText,
+  RefreshCw,
+  Search,
+  Music,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { FadeIn } from "@/components/ui/fade-in";
-import QuoteDisplay from "@/components/quote-display";
 
+// 🌟 Categories
 const categoriesData: Record<
   string,
   {
@@ -91,19 +103,59 @@ const categoriesData: Record<
       { id: "3sK3wJAxGfs", title: "Inspirational Talk on Resilience", url: "https://www.youtube.com/embed/3sK3wJAxGfs" },
     ],
     articles: [],
-  }
+  },
+  animated: {
+    name: "Animated Therapy 🌈",
+    description: "Fun, colorful animated videos that bring light to your day.",
+    videos: [
+      {
+        title: "Animated Guide to Beating Depression",
+        url: "https://www.youtube.com/embed/2k4C0mNJGdM",
+      },
+      {
+        title: "Fun Stress Relief Animation",
+        url: "https://www.youtube.com/embed/fD7xJp8tp2U",
+      },
+    ],
+    audios: [],
+    articles: [],
+  },
 };
 
 
-// ---------------- VideoCard Component ----------------
+// 🌟 Quotes
+const allQuotes = [
+  {
+    quote: "The best way to predict the future is to create it.",
+    author: "Peter Drucker",
+  },
+  {
+    quote:
+      "You are never too old to set another goal or to dream a new dream.",
+    author: "C.S. Lewis",
+  },
+  {
+    quote: "The journey of a thousand miles begins with a single step.",
+    author: "Lao Tzu",
+  },
+  {
+    quote:
+      "What you get by achieving your goals is not as important as what you become by achieving your goals.",
+    author: "Zig Ziglar",
+  },
+];
+
+// 🌟 Video Card
 function VideoCard({ title, url }: { title: string; url: string }) {
   return (
-    <Card className="bg-card/80 rounded-2xl shadow-md hover:shadow-xl hover:scale-[1.02] transition-transform">
+    <Card className="bg-gradient-to-br from-pink-200/60 via-purple-200/60 to-blue-200/60 rounded-2xl shadow-lg hover:scale-[1.03] hover:shadow-2xl transition-all">
       <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardTitle className="text-lg font-semibold text-foreground text-center">
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="aspect-video rounded-lg overflow-hidden">
+        <div className="aspect-video rounded-xl overflow-hidden shadow-inner">
           <iframe
             src={url}
             title={title}
@@ -117,129 +169,194 @@ function VideoCard({ title, url }: { title: string; url: string }) {
   );
 }
 
-// ---------------- Page ----------------
+// 🌟 Quote Display
+function QuoteDisplay() {
+  const [quoteIndex, setQuoteIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    setQuoteIndex(Math.floor(Math.random() * allQuotes.length));
+  }, []);
+
+  const handleChangeQuote = () => {
+    setQuoteIndex((prev) =>
+      prev !== null ? (prev + 1) % allQuotes.length : 0
+    );
+  };
+
+  const currentQuote = quoteIndex !== null ? allQuotes[quoteIndex] : null;
+
+  return (
+    <div className="bg-gradient-to-r from-teal-200 via-pink-200 to-purple-200 rounded-xl p-6 shadow-lg">
+      <h3 className="font-semibold text-xl mb-4 text-center">
+        Inspirational Quote ✨
+      </h3>
+      <blockquote className="italic text-center text-muted-foreground">
+        {currentQuote ? `"${currentQuote.quote}"` : "Loading..."}
+        {currentQuote && (
+          <cite className="block font-semibold mt-2">
+            - {currentQuote.author}
+          </cite>
+        )}
+      </blockquote>
+      <div className="text-center mt-4">
+        <Button onClick={handleChangeQuote} variant="outline" size="sm">
+          <RefreshCw className="mr-2 h-4 w-4" /> New Quote
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// 🌟 Page
 export default function ResourcesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("anxiety");
 
+  const filteredData = useMemo(() => {
+    const categoryData =
+      categoriesData[activeTab as keyof typeof categoriesData];
+    if (!searchTerm) return categoryData;
+
+    const lower = searchTerm.toLowerCase();
+    const filterItems = (items: { title: string, url: string }[] | undefined) =>
+      items?.filter((item) =>
+        item.title.toLowerCase().includes(lower)
+      ) ?? [];
+
+    return {
+      ...categoryData,
+      videos: filterItems(categoryData.videos),
+      audios: filterItems(categoryData.audios),
+      articles: filterItems(categoryData.articles),
+    };
+  }, [searchTerm, activeTab]);
+
   return (
     <FadeIn>
-      <div className="container mx-auto py-12 px-4 md:px-8">
-        {/* Hero */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Resource Library
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            A curated collection of videos, music, and wisdom to help you find
-            calm, clarity, and balance.
-          </p>
-        </div>
+      <div className="relative overflow-hidden">
+        {/* Floating colorful background */}
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-pink-300 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-60 h-60 bg-purple-300 rounded-full opacity-30 animate-bounce"></div>
 
-        {/* Search */}
-        <div className="w-full max-w-lg mx-auto mb-12">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              placeholder="Search resources..."
-              className="pl-10 rounded-full shadow-sm"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="container mx-auto py-12 px-4 md:px-6 relative z-10">
+          <div className="text-center mb-10">
+            <h1 className="text-5xl font-bold tracking-tight font-headline text-primary">
+              Resource Library 🌸
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+              A colorful, curated collection of videos, music, and articles to
+              brighten your journey toward mental well-being.
+            </p>
           </div>
-        </div>
 
-        {/* Tabs */}
-        <Tabs
-          defaultValue="anxiety"
-          className="w-full"
-          onValueChange={(value) => {
-            setActiveTab(value);
-            setSearchTerm("");
-          }}
-        >
-          {/* Tab List */}
-          <TabsList className="flex flex-wrap justify-center gap-2 p-2 rounded-lg bg-muted/40">
-            {Object.entries(categoriesData).map(([key, category]) => (
-              <TabsTrigger
-                key={key}
-                value={key}
-                className="px-4 py-2 rounded-full font-medium data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition"
-              >
-                {category.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          {/* Search */}
+          <div className="w-full max-w-md mx-auto mb-12">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Search resources in this category..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              e.g., "meditation", "sleep", "stress"
+            </p>
+          </div>
 
-          {/* Tab Content */}
-          {Object.entries(categoriesData).map(([key, category]) => {
-            const filteredVideos = category.videos?.filter((v) =>
-              v.title.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            const filteredAudios = category.audios?.filter((a) =>
-              a.title.toLowerCase().includes(searchTerm.toLowerCase())
-            );
+          {/* Tabs */}
+          <Tabs
+            defaultValue="anxiety"
+            className="w-full"
+            onValueChange={(value) => {
+              setActiveTab(value);
+              setSearchTerm("");
+            }}
+          >
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
+              {Object.entries(categoriesData).map(([key, category]) => (
+                <TabsTrigger key={key} value={key}>
+                  {category.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-            return (
+            {Object.entries(categoriesData).map(([key]) => (
               <TabsContent key={key} value={key} className="mt-10">
-                <Card className="bg-card/80 shadow-lg rounded-2xl p-6">
+                <Card className="bg-card/70 rounded-2xl shadow-lg">
                   <CardHeader>
-                    <CardTitle className="text-2xl">{category.name}</CardTitle>
-                    <CardDescription>{category.description}</CardDescription>
+                    <CardTitle className="text-2xl font-headline text-primary">
+                      {filteredData.name}
+                    </CardTitle>
+                    <CardDescription>
+                      {filteredData.description}
+                    </CardDescription>
                   </CardHeader>
-
-                  <CardContent className="space-y-12">
+                  <CardContent className="space-y-10">
                     {/* Videos */}
-                    {filteredVideos && filteredVideos.length > 0 && (
-                      <section>
+                    {(filteredData.videos?.length ?? 0) > 0 && (
+                      <div>
                         <h3 className="font-semibold text-xl mb-6 flex items-center gap-2">
                           <Youtube className="text-primary" /> Videos
                         </h3>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {filteredVideos.map((video) => (
-                            <VideoCard key={video.id} {...video} />
+                          {filteredData.videos?.map((video) => (
+                            <VideoCard key={video.url} {...video} />
                           ))}
                         </div>
-                      </section>
+                      </div>
                     )}
 
                     {/* Audios */}
-                    {filteredAudios && filteredAudios.length > 0 && (
-                      <section>
+                    {(filteredData.audios?.length ?? 0) > 0 && (
+                      <div>
                         <h3 className="font-semibold text-xl mb-6 flex items-center gap-2">
                           <Music className="text-primary" /> Audio & Music
                         </h3>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {filteredAudios.map((audio) => (
-                            <VideoCard key={audio.id} {...audio} />
+                        <div className="grid sm:grid-cols-2 gap-6">
+                          {filteredData.audios?.map((audio) => (
+                            <VideoCard key={audio.url} {...audio} />
                           ))}
                         </div>
-                      </section>
+                      </div>
                     )}
 
-                    {/* Empty state */}
-                    {!filteredVideos?.length && !filteredAudios?.length && (
-                      <div className="text-center py-12">
-                        <p className="text-muted-foreground font-semibold">
-                          No resources found for "{searchTerm}".
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                          Try a different search term or explore other
-                          categories.
+                    {/* Articles */}
+                    {(filteredData.articles?.length ?? 0) > 0 && (
+                      <div>
+                        <h3 className="font-semibold text-xl mb-6 flex items-center gap-2">
+                          <FileText className="text-primary" /> Articles
+                        </h3>
+                        <p className="text-muted-foreground">
+                          (Coming soon...)
                         </p>
                       </div>
                     )}
 
-                    {/* Quote Section */}
-                    <div className="bg-muted/40 rounded-xl p-6 shadow-inner mt-12">
-                      <QuoteDisplay />
-                    </div>
+                    {/* No Results */}
+                    {(filteredData.videos?.length ?? 0) === 0 &&
+                      (filteredData.audios?.length ?? 0) === 0 &&
+                      (filteredData.articles?.length ?? 0) === 0 && (
+                        <div className="text-center py-16">
+                          <p className="text-muted-foreground font-semibold">
+                            No resources found for "{searchTerm}".
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            Try a different search term or check other
+                            categories.
+                          </p>
+                        </div>
+                      )}
+
+                    {/* Quote */}
+                    <QuoteDisplay />
                   </CardContent>
                 </Card>
               </TabsContent>
-            );
-          })}
-        </Tabs>
+            ))}
+          </Tabs>
+        </div>
       </div>
     </FadeIn>
   );
