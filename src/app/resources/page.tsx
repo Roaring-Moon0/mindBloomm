@@ -69,11 +69,12 @@ const categoriesData: Record<
     name: "Better Sleep",
     description: "Improve your sleep hygiene and get the rest you deserve.",
     videos: [
-        { id: "_2_gP4LMW2s", title: "Sleep Hypnosis for a Deep Sleep", url: "https://www.youtube.com/embed/_2_gP4LMW2s" },
-        { id: "BiG4Q2-r5Co", title: "Bedtime Yoga", url: "https://www.youtube.com/embed/BiG4Q2-r5Co" },
-        { id: "Zq2j3gIuD3Q", title: "The Perfect Sleep Routine", url: "https://www.youtube.com/embed/Zq2j3gIuD3Q" },
+        { id: "gBHLMkBnWB8", title: "Sleep Hypnosis to Fall Asleep Easily", url: "https://www.youtube.com/embed/gBHLMkBnWB8" },
+        { id: "8S4WOgXyQMo", title: "Bedtime Yoga", url: "https://www.youtube.com/embed/8S4WOgXyQMo" },
+        { id: "4WASgOyGjjQ", title: "Unlock Better Sleep", url: "https://www.youtube.com/embed/4WASgOyGjjQ" },
     ],
     audios: [
+      { id: "GGj4eSixfJk", title: "Deep Sleep Music", url: "https://www.youtube.com/embed/GGj4eSixfJk" },
       { id: "aIq_HqVSlqA", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/aIq_HqVSlqA" },
       { id: "j4dwyAPg8eA", title: "Rain Sounds for Sleeping", url: "https://www.youtube.com/embed/j4dwyAPg8eA" },
     ],
@@ -109,10 +110,12 @@ const categoriesData: Record<
     description: "Fun, colorful animated videos that bring light to your day.",
     videos: [
       {
+        id: '2k4C0mNJGdM',
         title: "Animated Guide to Beating Depression",
         url: "https://www.youtube.com/embed/2k4C0mNJGdM",
       },
       {
+        id: 'fD7xJp8tp2U',
         title: "Fun Stress Relief Animation",
         url: "https://www.youtube.com/embed/fD7xJp8tp2U",
       },
