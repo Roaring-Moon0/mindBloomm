@@ -75,7 +75,7 @@ const categoriesData: Record<
         { id: "4WASgOyGjjQ", title: "Unlock Better Sleep", url: "https://www.youtube.com/embed/4WASgOyGjjQ" },
     ],
     audios: [
-      { id: "GGj4eSixfJk", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/GGj4eSixfJk" },
+      { id: "GGj4eSixfJk", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/rCSCPujLs14" },
       { id: "eTeD8DAta4c", title: "Rain Sounds for Sleeping", url: "https://www.youtube.com/embed/eTeD8DAta4c" },
     ],
     articles: [],
@@ -110,9 +110,9 @@ const categoriesData: Record<
     description: "Fun, colorful animated videos that bring light to your day.",
     videos: [
       {
-        id: '2k4C0mNJGdM',
+        id: 'Y9A5wuTtblw',
         title: "Animated Guide to Beating Depression",
-        url: "https://www.youtube.com/embed/2k4C0mNJGdM",
+        url: "https://www.youtube.com/embed/Y9A5wuTtblw",
       },
       {
         id: 'fD7xJp8tp2U',
