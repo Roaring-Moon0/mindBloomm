@@ -3,7 +3,7 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, setDoc, query, where, getDocs } from "firebase/firestore";
 
 type AdminAuthContextType = {
   user: User | null;
@@ -62,7 +62,6 @@ function useProvideAdminAuth() {
     return () => unsubscribe();
   }, []);
 
-  // 🔑 FIXED verifyCode logic
   const verifyCode = async (code: string) => {
     if (!user) {
       setError("You must be logged in.");
@@ -70,24 +69,33 @@ function useProvideAdminAuth() {
     }
 
     try {
-      // look for code in Firestore
-      const codeRef = doc(db, "adminCodes", code);
-      const codeSnap = await getDoc(codeRef);
+      setError(""); // reset previous error
 
-      if (!codeSnap.exists()) {
+      // 🔍 Search in adminCodes where "code" field matches
+      const codesRef = collection(db, "adminCodes");
+      const q = query(codesRef, where("code", "==", code.trim()));
+      const querySnap = await getDocs(q);
+
+      if (querySnap.empty) {
         setError("Invalid code.");
         return false;
       }
 
-      const data = codeSnap.data();
+      const matchDoc = querySnap.docs[0];
+      const data = matchDoc.data();
 
-      // OPTIONAL: If you want to lock code to one email
+      // ✅ check email if you want per-user restriction
       if (data.email && data.email !== user.email) {
         setError("This code is not linked to your account.");
         return false;
       }
 
-      // ✅ mark user as admin (so they won’t need to re-enter next login)
+      if (data.active === false) {
+        setError("This code is not active.");
+        return false;
+      }
+
+      // ✅ mark user as admin
       const adminRef = doc(db, "admins", user.uid);
       await setDoc(adminRef, { email: user.email }, { merge: true });
 
