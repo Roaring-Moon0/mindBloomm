@@ -5,7 +5,7 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   verifyBeforeUpdateEmail,
-  updatePassword as firebaseUpdatePassword
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 
@@ -51,9 +51,9 @@ export const updateUserEmail = async (newEmail: string) => {
 };
 
 
-export const updateUserPassword = async (newPassword: string) => {
+export const sendPasswordReset = async () => {
     const user = auth.currentUser;
-    if (!user) throw new Error("User not found.");
+    if (!user || !user.email) throw new Error("User not found or email is missing.");
 
-    await firebaseUpdatePassword(user, newPassword);
+    await sendPasswordResetEmail(auth, user.email);
 };

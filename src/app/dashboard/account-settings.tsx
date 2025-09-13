@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '@/hooks/use-auth';
 import { toast } from '@/hooks/use-toast';
-import { reauthenticateWithPassword, updateUserEmail, updateUserPassword, updateUserProfile } from '@/services/auth-service';
+import { reauthenticateWithPassword, updateUserEmail, sendPasswordReset, updateUserProfile } from '@/services/auth-service';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -25,14 +25,6 @@ const profileSchema = z.object({
 
 const emailSchema = z.object({
   newEmail: z.string().email("Please enter a valid email address."),
-});
-
-const passwordSchema = z.object({
-    newPassword: z.string().min(6, "Password must be at least 6 characters."),
-    confirmPassword: z.string()
-}).refine(data => data.newPassword === data.confirmPassword, {
-    message: "Passwords do not match.",
-    path: ["confirmPassword"],
 });
 
 const reauthSchema = z.object({
@@ -55,11 +47,6 @@ export default function AccountSettings() {
     const emailForm = useForm<z.infer<typeof emailSchema>>({
         resolver: zodResolver(emailSchema),
         defaultValues: { newEmail: '' }
-    });
-
-    const passwordForm = useForm<z.infer<typeof passwordSchema>>({
-        resolver: zodResolver(passwordSchema),
-        defaultValues: { newPassword: '', confirmPassword: '' }
     });
 
     const reauthForm = useForm<z.infer<typeof reauthSchema>>({
@@ -92,21 +79,20 @@ export default function AccountSettings() {
                 toast({ variant: 'destructive', title: "Error", description: error.message });
             }
         };
-        setReauthAction(() => action); // Use function form to ensure latest state
+        setReauthAction(() => action);
     };
     
-    const initiatePasswordChange = (values: z.infer<typeof passwordSchema>) => {
+    const initiatePasswordChange = () => {
         "use client";
         const action = async () => {
             try {
-                await updateUserPassword(values.newPassword);
-                toast({ title: "Success", description: "Your password has been updated." });
-                passwordForm.reset();
+                await sendPasswordReset();
+                toast({ title: "Password Reset Email Sent", description: "Please check your inbox to create a new password." });
             } catch (error: any) {
                 toast({ variant: 'destructive', title: "Error", description: error.message });
             }
         };
-        setReauthAction(() => action); // Use function form
+        setReauthAction(() => action);
     };
 
     const handleReauthentication = async (values: z.infer<typeof reauthSchema>) => {
@@ -129,7 +115,7 @@ export default function AccountSettings() {
     const getInitials = (name: string | null | undefined) => {
         if (!name) return "U";
         const nameParts = name.split(' ');
-        if (nameParts.length > 1) return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
+        if (nameParts.length > 1 && nameParts[0] && nameParts[1]) return (nameParts[0][0] + nameParts[1][0]).toUpperCase();
         return name.substring(0, 2).toUpperCase();
     }
 
@@ -197,28 +183,10 @@ export default function AccountSettings() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Change Password</CardTitle>
-                        <CardDescription>Set a new password for your account.</CardDescription>
+                        <CardDescription>You will be sent an email to securely change your password.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Form {...passwordForm}>
-                            <form onSubmit={passwordForm.handleSubmit(initiatePasswordChange)} className="space-y-4">
-                                 <FormField name="newPassword" control={passwordForm.control} render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>New Password</FormLabel>
-                                        <FormControl><Input type="password" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <FormField name="confirmPassword" control={passwordForm.control} render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Confirm New Password</FormLabel>
-                                        <FormControl><Input type="password" {...field} /></FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <Button type="submit">Update Password</Button>
-                            </form>
-                        </Form>
+                        <Button onClick={initiatePasswordChange}>Send Password Reset Email</Button>
                     </CardContent>
                 </Card>
             </div>
