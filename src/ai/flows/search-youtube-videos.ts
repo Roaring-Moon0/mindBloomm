@@ -7,30 +7,12 @@
  * It uses a custom tool to interact with the YouTube Data API.
  *
  * @exports searchYoutubeVideos - The main function to trigger the YouTube search flow.
- * @exports YoutubeSearchInputSchema - The Zod schema for the input.
- * @exports YoutubeSearchOutputSchema - The Zod schema for the output.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
 import { youtubeSearchTool } from '../tools/youtube-search';
+import { YoutubeSearchInputSchema, YoutubeSearchOutputSchema, YoutubeSearchInput, YoutubeSearchOutput } from '@/ai/schemas/youtube-search';
 
-export const YoutubeSearchInputSchema = z.object({
-  query: z.string().describe('The search query for YouTube videos.'),
-});
-
-export const YoutubeSearchOutputSchema = z.object({
-  videos: z.array(
-    z.object({
-      id: z.string(),
-      title: z.string(),
-      thumbnail: z.string(),
-    })
-  ).describe('A list of YouTube video search results.'),
-});
-
-export type YoutubeSearchInput = z.infer<typeof YoutubeSearchInputSchema>;
-export type YoutubeSearchOutput = z.infer<typeof YoutubeSearchOutputSchema>;
 
 export async function searchYoutubeVideos(input: YoutubeSearchInput): Promise<YoutubeSearchOutput> {
     return searchYoutubeVideosFlow(input);
