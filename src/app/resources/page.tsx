@@ -266,8 +266,7 @@ function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: st
     )
 }
 
-function YouTubeSearchSection() {
-    const [searchTerm, setSearchTerm] = useState("");
+function YouTubeSearchSection({ searchTerm }: { searchTerm: string }) {
     const [searchResults, setSearchResults] = useState<YoutubeSearchOutput | null>(null);
     const [isSearching, startSearchTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
@@ -299,18 +298,6 @@ function YouTubeSearchSection() {
                 <CardDescription>Find mental wellness videos from across YouTube.</CardDescription>
             </CardHeader>
             <CardContent>
-                <div className="w-full max-w-md mx-auto mb-8">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                            placeholder="Search for topics like 'mindfulness', 'stress relief'..."
-                            className="pl-10"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                </div>
-
                 {isSearching && (
                     <div className="flex items-center justify-center py-10 text-muted-foreground gap-2"><Loader2 className="animate-spin h-5 w-5"/>Searching YouTube...</div>
                 )}
@@ -347,7 +334,7 @@ function YouTubeSearchSection() {
                  {!isSearching && !debouncedSearchTerm && (
                      <div className="text-center py-16">
                         <p className="text-muted-foreground font-semibold">
-                           Enter a term above to search YouTube.
+                           Enter a term in the search bar above to search YouTube.
                         </p>
                     </div>
                 )}
@@ -419,31 +406,30 @@ export default function ResourcesPage() {
           </div>
 
           {/* Search */}
-          {activeTab !== 'youtube-search' && (
-            <div className="w-full max-w-md mx-auto mb-12">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                  placeholder="Search resources in this category..."
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <p className="text-xs text-center text-muted-foreground mt-2">
-                e.g., "meditation", "sleep", "stress"
-              </p>
+          <div className="w-full max-w-md mx-auto mb-12">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                placeholder="Search resources..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          )}
+            <p className="text-xs text-center text-muted-foreground mt-2">
+              e.g., "meditation", "sleep", "stress"
+            </p>
+          </div>
 
 
           {/* Tabs */}
           <Tabs
             defaultValue="all-videos"
             className="w-full"
+            value={activeTab}
             onValueChange={(value) => {
               setActiveTab(value);
-              setSearchTerm("");
+              // Do not reset search term to allow searching across tabs
             }}
           >
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
@@ -465,7 +451,7 @@ export default function ResourcesPage() {
             </TabsContent>
 
             <TabsContent key="youtube-search" value="youtube-search" className="mt-10">
-                <YouTubeSearchSection />
+                <YouTubeSearchSection searchTerm={searchTerm} />
             </TabsContent>
 
             {Object.entries(categoriesData).map(([key]) => (
