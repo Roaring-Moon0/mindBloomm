@@ -1,5 +1,4 @@
 
-
 import { auth, db } from '@/lib/firebase';
 import { 
   updateProfile as firebaseUpdateProfile,
@@ -24,7 +23,6 @@ export const reauthenticateWithPassword = async (password: string) => {
 // --- Profile Updates ---
 interface ProfileData {
   displayName: string;
-  photoURL?: string;
 }
 
 export const updateUserProfile = async (data: ProfileData) => {
@@ -33,14 +31,12 @@ export const updateUserProfile = async (data: ProfileData) => {
 
     await firebaseUpdateProfile(user, {
         displayName: data.displayName,
-        photoURL: data.photoURL,
     });
     
     // Also update the user's document in Firestore
     const userDocRef = doc(db, 'users', user.uid);
     await updateDoc(userDocRef, {
         displayName: data.displayName,
-        photoURL: data.photoURL,
     });
 };
 

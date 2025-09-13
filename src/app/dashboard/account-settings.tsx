@@ -21,7 +21,6 @@ import { Loader2 } from 'lucide-react';
 // Schemas
 const profileSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters."),
-  photoURL: z.string().url("Please enter a valid URL.").or(z.literal('')),
 });
 
 const emailSchema = z.object({
@@ -50,7 +49,6 @@ export default function AccountSettings() {
         resolver: zodResolver(profileSchema),
         defaultValues: {
             displayName: user?.displayName ?? '',
-            photoURL: user?.photoURL ?? '',
         }
     });
 
@@ -142,7 +140,7 @@ export default function AccountSettings() {
             <Card>
                 <CardHeader>
                     <CardTitle>Profile Information</CardTitle>
-                    <CardDescription>Update your display name and profile picture.</CardDescription>
+                    <CardDescription>Update your display name.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                      <div className="flex items-center gap-4">
@@ -161,13 +159,6 @@ export default function AccountSettings() {
                                 <FormItem>
                                     <FormLabel>Display Name</FormLabel>
                                     <FormControl><Input {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
-                             <FormField name="photoURL" control={profileForm.control} render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Profile Picture URL</FormLabel>
-                                    <FormControl><Input placeholder="https://example.com/image.png" {...field} /></FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
