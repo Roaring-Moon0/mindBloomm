@@ -1,5 +1,4 @@
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
-import Spline from '@splinetool/react-spline/next';
+import { HomeSpline } from './home-spline';
+
 
 const features = [
   {
@@ -83,7 +83,7 @@ export default function Home() {
               </div>
               <FadeIn>
                 <div className="mx-auto aspect-video overflow-hidden rounded-xl">
-                  <Spline scene="https://prod.spline.design/twsk8lf1VsNkjC80/scene.splinecode" />
+                  <HomeSpline />
                 </div>
               </FadeIn>
             </div>
