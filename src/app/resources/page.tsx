@@ -115,9 +115,9 @@ const categoriesData: Record<
         url: "https://www.youtube.com/embed/Y9A5wuTtblw",
       },
       {
-        id: 'fD7xJp8tp2U',
+        id: 'Gn5NaUnScHk',
         title: "Fun Stress Relief Animation",
-        url: "https://www.youtube.com/embed/fD7xJp8tp2U",
+        url: "https://www.youtube.com/embed/Gn5NaUnScHk",
       },
     ],
     audios: [],
@@ -364,3 +364,5 @@ export default function ResourcesPage() {
     </FadeIn>
   );
 }
+
+    
