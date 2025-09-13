@@ -8,6 +8,7 @@ import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
 import Image from 'next/image';
 import HomeSpline from './home-spline';
+import { ParallaxSection } from '@/components/ui/parallax-section';
 
 
 const features = [
@@ -99,7 +100,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full py-12 md:py-24 lg:py-32">
+        <ParallaxSection className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -114,7 +115,7 @@ export default function Home() {
               {features.map((feature, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)} className="flex flex-col">
                   <Link href={feature.href} className="block h-full w-full">
-                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 hover:bg-secondary">
+                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 bg-card/80 backdrop-blur-sm">
                           <CardHeader className="flex flex-col items-center text-center gap-4">
                               {feature.icon}
                               <CardTitle>{feature.title}</CardTitle>
@@ -128,7 +129,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
+        </ParallaxSection>
 
         {/* Resources Preview */}
         <section id="resources-preview" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
@@ -210,7 +211,7 @@ export default function Home() {
         </section>
 
         {/* Newsletter Signup */}
-        <section id="newsletter" className="w-full py-12 md:py-24 lg:py-32">
+        <section id="newsletter" className="w-full py-12 md:py-24 lg_py-32">
             <FadeIn className="container grid items-center justify-center gap-4 px-4 text-center md:px-6">
                 <div className="space-y-3">
                     <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Stay in Touch</h2>
