@@ -1,105 +1,62 @@
+"use client";
 
-'use client';
+import { useState } from "react";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 
-import { useAdminAuth } from '@/hooks/use-admin-auth';
-import { useRouter } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, ShieldAlert } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useEffect } from 'react';
-import { FadeIn } from '@/components/ui/fade-in';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+export default function AdminPage() {
+  const { user, isAdmin, loading, error, verifyCode, logout } = useAdminAuth();
+  const [code, setCode] = useState("");
+  const [verifying, setVerifying] = useState(false);
 
-import SurveyManager from './components/SurveyManager';
-import VideoManager from './components/VideoManager';
-import UserManager from './components/UserManager';
-import ConfigManager from './components/ConfigManager';
+  if (loading) return <p>Loading...</p>;
+  if (!user) return <p>Please log in first.</p>;
 
-
-function AdminAccessDenied() {
-    const router = useRouter();
+  // Case 2: user logged in but not admin yet → show code input
+  if (user && !isAdmin) {
     return (
-        <FadeIn>
-            <div className="container mx-auto py-12 px-4 md:px-6 text-center">
-                <Card className="max-w-lg mx-auto">
-                    <CardHeader>
-                        <div className="flex justify-center mb-4">
-                            <ShieldAlert className="w-12 h-12 text-destructive"/>
-                        </div>
-                        <CardTitle>Admin Access Required</CardTitle>
-                        <CardDescription>
-                           Your account is not authorized to view this page. Please contact the site administrator if you believe this is an error.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Button onClick={() => router.push('/')}>Return to Home</Button>
-                    </CardContent>
-                </Card>
-            </div>
-        </FadeIn>
-    )
-}
-
-function AdminDashboardContent() {
-    const { user, logout } = useAdminAuth();
-    
-    return (
-        <FadeIn>
-            <div className="container mx-auto py-12 px-4 md:px-6 min-h-screen">
-                <div className="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 className="text-4xl font-bold tracking-tight font-headline">Admin Dashboard</h1>
-                        <p className="mt-2 text-lg text-muted-foreground">Welcome, {user?.email}.</p>
-                    </div>
-                    <Button variant="outline" onClick={logout}>Log Out</Button>
-                </div>
-            
-                 <Tabs defaultValue="surveys" className="w-full">
-                    <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto">
-                        <TabsTrigger value="surveys">Surveys</TabsTrigger>
-                        <TabsTrigger value="videos">Videos</TabsTrigger>
-                        <TabsTrigger value="users">Users</TabsTrigger>
-                        <TabsTrigger value="config">Config</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="surveys" className="mt-6"><SurveyManager /></TabsContent>
-                    <TabsContent value="videos" className="mt-6"><VideoManager /></TabsContent>
-                    <TabsContent value="users" className="mt-6"><UserManager /></TabsContent>
-                    <TabsContent value="config" className="mt-6"><ConfigManager /></TabsContent>
-                </Tabs>
-            </div>
-        </FadeIn>
-    );
-}
-
-
-export default function AdminDashboardPage() {
-  const { user, isAdmin, loading } = useAdminAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-        router.push('/login?redirect=/admin');
-    }
-  }, [loading, user, router]);
-
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
-        <Loader2 className="w-12 h-12 animate-spin mb-4 text-primary" />
-        <h1 className="text-2xl font-bold">Verifying access...</h1>
-        <p className="text-muted-foreground">Please wait a moment.</p>
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold">Enter Admin Code</h1>
+        <input
+          type="text"
+          placeholder="Enter admin code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          className="border p-2 rounded mt-4"
+        />
+        <button
+          onClick={async () => {
+            setVerifying(true);
+            const success = await verifyCode(code);
+            setVerifying(false);
+            if (!success) alert("Invalid code, try again.");
+          }}
+          className="bg-blue-600 text-white px-4 py-2 rounded mt-4"
+        >
+          {verifying ? "Verifying..." : "Verify"}
+        </button>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+        <button onClick={logout} className="mt-4 text-sm underline">
+          Logout
+        </button>
       </div>
     );
   }
 
-  if (!user) {
-    return null;
-  }
-  
-  if (!isAdmin) {
-    return <AdminAccessDenied />;
+  // Case 3: admin verified
+  if (user && isAdmin) {
+    return (
+      <div className="p-6">
+        <h1 className="text-2xl font-bold">Welcome Admin {user.email}</h1>
+        <button
+          onClick={logout}
+          className="bg-red-600 text-white px-4 py-2 rounded mt-4"
+        >
+          Logout
+        </button>
+        {/* your admin dashboard goes here */}
+      </div>
+    );
   }
 
-  return <AdminDashboardContent />;
+  return null;
 }
