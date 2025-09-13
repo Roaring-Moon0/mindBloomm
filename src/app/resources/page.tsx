@@ -75,7 +75,7 @@ const categoriesData: Record<
         { id: "4WASgOyGjjQ", title: "Unlock Better Sleep", url: "https://www.youtube.com/embed/4WASgOyGjjQ" },
     ],
     audios: [
-      { id: "rCSCPujLs14", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/rCSCPujLs14" },
+      { id: "GGj4eSixfJk", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/GGj4eSixfJk" },
       { id: "eTeD8DAta4c", title: "Rain Sounds for Sleeping", url: "https://www.youtube.com/embed/eTeD8DAta4c" },
     ],
     articles: [],
@@ -97,7 +97,7 @@ const categoriesData: Record<
     name: "Motivational",
     description: "Inspiring talks and content to lift your spirits.",
     videos: [
-      { id: "Lp7-V89R2sM", title: "The Psychology of a Winner - Motivational Speech", url: "https://www.youtube.com/embed/Lp7-V89R2sM" },
+      { id: "Cw6xuzosn4s", title: "The Psychology of a Winner - Motivational Speech", url: "https://www.youtube.com/embed/Cw6xuzosn4s" },
       { id: "Qcxj1RM6-u0", title: "How to Stop Procrastinating", url: "https://www.youtube.com/embed/Qcxj1RM6-u0" },
     ],
     audios: [
