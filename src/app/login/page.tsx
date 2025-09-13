@@ -106,7 +106,12 @@ export default function LoginPage() {
 
         {/* Password input */}
         <div className="mb-6">
-            <label htmlFor="password-login" className="block text-sm font-medium text-muted-foreground mb-1">Password</label>
+             <div className="flex justify-between items-center mb-1">
+                <label htmlFor="password-login" className="block text-sm font-medium text-muted-foreground">Password</label>
+                <Link href="/forgot-password" passHref className="text-xs text-primary hover:underline">
+                    Forgot Password?
+                </Link>
+            </div>
             <input
             id="password-login"
             type="password"
@@ -149,4 +154,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

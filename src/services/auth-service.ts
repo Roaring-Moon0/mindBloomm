@@ -57,3 +57,7 @@ export const sendPasswordReset = async () => {
 
     await sendPasswordResetEmail(auth, user.email);
 };
+
+export const sendPasswordResetLink = async (email: string) => {
+    await sendPasswordResetEmail(auth, email);
+};

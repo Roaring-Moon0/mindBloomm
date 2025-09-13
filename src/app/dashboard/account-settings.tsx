@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 
 // Schemas
@@ -211,6 +212,11 @@ export default function AccountSettings() {
                             )} />
                         </form>
                     </Form>
+                     <div className="text-sm">
+                        <Link href="/forgot-password" onClick={() => setReauthAction(null)} className="text-primary hover:underline">
+                            Forgot your password?
+                        </Link>
+                    </div>
                     <DialogFooter>
                         <DialogClose asChild>
                             <Button type="button" variant="outline">Cancel</Button>
