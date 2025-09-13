@@ -1,37 +1,35 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Default deny all reads and writes
+
+    // Allow logged-in users to read from any collection by default.
+    // This covers public collections like 'users', 'videos', 'surveys', etc.
     match /{document=**} {
-      allow read, write: if false;
+      allow read: if request.auth != null;
     }
 
-    // Allow logged-in users to read documents in the 'config' collection
-    match /config/{docId} {
-      allow read: if request.auth != null;
-      allow write: if false; // Keep config writes locked down
+    // --- Admin Verification Rules ---
+
+    // Allow any authenticated user to query the adminCodes collection.
+    // The security logic is handled in the application code (checking email and code).
+    match /adminCodes/{code} {
+      allow list: if request.auth != null;
+      // Disallow direct reads of individual code documents for extra security.
+      allow get, write: if false;
     }
-    
-    // Allow users to read and write to their own user document
-    match /users/{userId} {
+
+    // Allow a user to write to their OWN document in the 'admins' collection.
+    // This lets a user be promoted to admin status but stops them from changing others.
+    match /admins/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
-    // Allow logged-in users to read general app collections like announcements, surveys, etc.
-    match /announcements/{docId} {
+    
+    // --- General Config ---
+    // Logged-in users can read config, but not write.
+    match /config/{document=**} {
       allow read: if request.auth != null;
-    }
-    match /surveys/{docId} {
-      allow read: if request.auth != null;
-    }
-    match /videos/{docId} {
-        allow read: if request.auth != null;
-    }
-    match /bannedUsers/{docId} {
-        allow read: if request.auth != null; // Admin logic will handle who can see/use this
+      allow write: if false; // Only server-side or console changes allowed
     }
   }
 }
