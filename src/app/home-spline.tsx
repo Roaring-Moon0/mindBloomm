@@ -12,7 +12,7 @@ const Spline = dynamic(() => import('@splinetool/react-spline'), {
 export default function HomeSpline() {
   return (
     <Spline
-      scene="https://prod.spline.design/DW27VIa45VURIOPD/scene.splinecode"
+      scene="https://prod.spline.design/ou9qOhkarz0yUI4y/scene.splinecode"
     />
   );
 }
