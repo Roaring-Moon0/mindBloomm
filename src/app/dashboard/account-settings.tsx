@@ -71,6 +71,7 @@ export default function AccountSettings() {
 
     // --- Handlers ---
     const handleProfileUpdate = async (values: z.infer<typeof profileSchema>) => {
+        "use client";
         setIsLoading(true);
         try {
             await updateUserProfile(values);
@@ -83,6 +84,7 @@ export default function AccountSettings() {
     };
     
     const initiateEmailChange = (values: z.infer<typeof emailSchema>) => {
+        "use client";
         const action = async () => {
             try {
                 await updateUserEmail(values.newEmail);
@@ -96,6 +98,7 @@ export default function AccountSettings() {
     };
     
     const initiatePasswordChange = (values: z.infer<typeof passwordSchema>) => {
+        "use client";
         const action = async () => {
             try {
                 await updateUserPassword(values.newPassword);
@@ -109,6 +112,7 @@ export default function AccountSettings() {
     };
 
     const handleReauthentication = async (values: z.infer<typeof reauthSchema>) => {
+        "use client";
         setIsLoading(true);
         try {
             const credential = await reauthenticateWithPassword(values.password);
