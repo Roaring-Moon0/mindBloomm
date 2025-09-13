@@ -201,30 +201,50 @@ function QuoteDisplay() {
 
 
 // Firestore Video Section
-function FirestoreVideoSection({ searchTerm }: { searchTerm: string }) {
-    const { data: videos, loading } = useFirestoreCollection('videos');
+function FirestoreVideoSection({ searchTerm, hardcodedVideos }: { searchTerm: string; hardcodedVideos: {id: string, name: string, url: string}[] }) {
+    const { data: firestoreVideos, loading } = useFirestoreCollection('videos');
+
+    const allVideos = useMemo(() => {
+        // Combine hardcoded and firestore videos
+        const combined = [...hardcodedVideos];
+        
+        const firestoreFormatted = (firestoreVideos || []).map((v: any) => ({
+            id: v.id,
+            name: v.name,
+            url: v.url,
+            visible: v.visible,
+        }));
+
+        firestoreFormatted.forEach(dbVideo => {
+            if (dbVideo.visible !== false && !combined.some(hVideo => hVideo.url === dbVideo.url)) {
+                combined.push(dbVideo);
+            }
+        });
+        
+        return combined;
+
+    }, [hardcodedVideos, firestoreVideos]);
 
     const filteredVideos = useMemo(() => {
-        const visibleVideos = videos?.filter((v: any) => v.visible !== false) || [];
-        if (!searchTerm) return visibleVideos;
+        if (!searchTerm) return allVideos;
         
-        return visibleVideos.filter((video: any) => 
+        return allVideos.filter(video => 
             video.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [videos, searchTerm]);
+    }, [allVideos, searchTerm]);
 
     return (
         <Card className="bg-card/70 rounded-2xl shadow-lg">
             <CardHeader>
                 <CardTitle className="text-2xl font-headline text-primary">All Videos</CardTitle>
-                <CardDescription>All user-added videos from the library. You can add more in the admin dashboard.</CardDescription>
+                <CardDescription>A comprehensive library of all videos. You can add more in the admin dashboard.</CardDescription>
             </CardHeader>
             <CardContent>
                 {loading ? (
                      <div className="flex items-center justify-center py-10 text-muted-foreground gap-2"><Loader2 className="animate-spin h-5 w-5"/>Loading videos...</div>
                 ) : filteredVideos && filteredVideos.length > 0 ? (
                      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {(filteredVideos as any[]).map((video) => (
+                        {filteredVideos.map((video) => (
                             <VideoCard key={video.id} title={video.name} url={video.url} />
                         ))}
                     </div>
@@ -248,6 +268,23 @@ function FirestoreVideoSection({ searchTerm }: { searchTerm: string }) {
 export default function ResourcesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all-videos");
+
+  const hardcodedVideos = useMemo(() => {
+    const videos: { id: string, name: string, url: string }[] = [];
+    const seenUrls = new Set<string>();
+
+    Object.values(categoriesData).forEach(category => {
+        if (category.videos) {
+            category.videos.forEach(video => {
+                if (!seenUrls.has(video.url)) {
+                    videos.push({ ...video, name: video.title });
+                    seenUrls.add(video.url);
+                }
+            });
+        }
+    });
+    return videos;
+  }, []);
 
   const filteredData = useMemo(() => {
     if (activeTab === 'all-videos') return null;
@@ -325,7 +362,7 @@ export default function ResourcesPage() {
             </TabsList>
 
             <TabsContent key="all-videos" value="all-videos" className="mt-10">
-                <FirestoreVideoSection searchTerm={searchTerm} />
+                <FirestoreVideoSection searchTerm={searchTerm} hardcodedVideos={hardcodedVideos} />
             </TabsContent>
 
             {Object.entries(categoriesData).map(([key]) => (
