@@ -74,8 +74,7 @@ const categoriesData: Record<
         { id: "4WASgOyGjjQ", title: "Unlock Better Sleep", url: "https://www.youtube.com/embed/4WASgOyGjjQ" },
     ],
     audios: [
-      { id: "GGj4eSixfJk", title: "Deep Sleep Music", url: "https://www.youtube.com/embed/GGj4eSixfJk" },
-      { id: "aIq_HqVSlqA", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/aIq_HqVSlqA" },
+      { id: "rCSCPujLs14", title: "Deep Sleep Music, Insomnia, Relaxing Music", url: "https://www.youtube.com/embed/rCSCPujLs14" },
       { id: "j4dwyAPg8eA", title: "Rain Sounds for Sleeping", url: "https://www.youtube.com/embed/j4dwyAPg8eA" },
     ],
     articles: [],
