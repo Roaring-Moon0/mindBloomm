@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
 import Image from 'next/image';
+import HomeSpline from './home-spline';
 
 
 const features = [
@@ -81,14 +82,9 @@ export default function Home() {
                 </FadeIn>
               </div>
               <FadeIn>
-                <Image
-                    src="https://picsum.photos/seed/hero-calm/600/400"
-                    alt="A calming, abstract image representing mental clarity"
-                    width={600}
-                    height={400}
-                    className="mx-auto aspect-video overflow-hidden rounded-xl object-cover"
-                    data-ai-hint="calm lake sunrise"
-                />
+                <div className="mx-auto aspect-video overflow-hidden rounded-xl">
+                  <HomeSpline />
+                </div>
               </FadeIn>
             </div>
           </div>
