@@ -14,7 +14,6 @@ interface AdminAuthContextType {
   isAdmin: boolean;
   loading: boolean;
   logout: () => Promise<void>;
-  verifyAdmin: () => Promise<boolean>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefined);
@@ -26,56 +25,51 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-
   useEffect(() => {
-    const checkSessionAndVerify = async () => {
-        if (user) {
-            const adminFlag = sessionStorage.getItem('isAdmin') === 'true';
-            if (adminFlag) {
-                setIsAdmin(true);
-            } else {
-                // If not in session, try to verify automatically
-                await verifyAdmin();
-            }
-        }
+    const verifyAdmin = async () => {
+      if (!user) {
+        setIsAdmin(false);
         setLoading(false);
-    }
-    
-    if (!authLoading) {
-      checkSessionAndVerify();
-    }
-  }, [authLoading, user]);
-
-
-  const verifyAdmin = async () => {
-    setLoading(true);
-    try {
-      const currentUser = auth.currentUser;
-      if (!currentUser?.email) {
-          return false;
-      };
-
-      const adminConfigDoc = await getDoc(doc(db, "config", "admins"));
-      const adminEmails = adminConfigDoc.exists() ? adminConfigDoc.data().emails || [] : [];
-      
-      if (!adminEmails.includes(currentUser.email)) {
-          setIsAdmin(false);
-          sessionStorage.removeItem('isAdmin');
-          return false;
+        return;
       }
 
-      setIsAdmin(true);
-      sessionStorage.setItem('isAdmin', 'true');
-      return true;
+      // Check session storage first for a quick verification
+      const sessionIsAdmin = sessionStorage.getItem('isAdmin') === 'true';
+      if (sessionIsAdmin) {
+          setIsAdmin(true);
+          setLoading(false);
+          return;
+      }
 
-    } catch (err) {
-      console.error("Admin verification failed", err);
-      toast({ variant: 'destructive', title: 'Error', description: 'An unexpected error occurred during admin verification.'})
-      return false;
-    } finally {
-      setLoading(false);
+      // If not in session, verify against Firestore
+      try {
+        if (!user.email) {
+          setIsAdmin(false);
+          return;
+        }
+        const adminConfigDoc = await getDoc(doc(db, "config", "admins"));
+        const adminEmails = adminConfigDoc.exists() ? adminConfigDoc.data().emails || [] : [];
+        
+        if (adminEmails.includes(user.email)) {
+          setIsAdmin(true);
+          sessionStorage.setItem('isAdmin', 'true');
+        } else {
+          setIsAdmin(false);
+          sessionStorage.removeItem('isAdmin');
+        }
+      } catch (err) {
+        console.error("Admin verification failed", err);
+        toast({ variant: 'destructive', title: 'Error', description: 'An unexpected error occurred during admin verification.' });
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!authLoading) {
+      verifyAdmin();
     }
-  };
+  }, [authLoading, user]);
 
   const logout = async () => {
     await baseLogout();
@@ -89,7 +83,6 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
     isAdmin,
     loading: authLoading || loading,
     logout,
-    verifyAdmin,
   };
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
@@ -100,14 +93,5 @@ export function useAdminAuth() {
   if (context === undefined) {
     throw new Error('useAdminAuth must be used within an AdminAuthProvider');
   }
-  // This is a partial hook implementation for demonstration.
-  // The full implementation would require more context from the app.
-  // For now, we return a simplified version.
-  const { user, isAdmin, loading, logout } = context;
-
-  const verifyAdmin = async () => {
-    return context.verifyAdmin();
-  }
-
-  return { user, isAdmin, verifyAdmin, loading, logout };
+  return context;
 }
