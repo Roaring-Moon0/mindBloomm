@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
-import { HomeSpline } from './home-spline';
+import Image from 'next/image';
 
 
 const features = [
@@ -83,7 +83,14 @@ export default function Home() {
               </div>
               <FadeIn>
                 <div className="mx-auto aspect-video overflow-hidden rounded-xl">
-                  <HomeSpline />
+                  <Image
+                    alt="Hero"
+                    className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
+                    height="400"
+                    src="https://picsum.photos/seed/mindbloom-hero/1200/800"
+                    data-ai-hint="peaceful lake sunrise"
+                    width="600"
+                  />
                 </div>
               </FadeIn>
             </div>
