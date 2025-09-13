@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
 import Image from 'next/image';
-import HomeSpline from './home-spline';
 import { ParallaxSection } from '@/components/ui/parallax-section';
 
 
@@ -83,16 +82,15 @@ export default function Home() {
                 </FadeIn>
               </div>
               <FadeIn className="relative min-h-[300px] lg:min-h-0">
-                  <div 
-                    aria-hidden="true" 
-                    className="absolute inset-0 flex items-center justify-center z-0"
-                  >
-                      <span className="text-[10vw] lg:text-[80px] font-extrabold text-foreground/5 whitespace-nowrap select-none">
-                          Mind Bloom
-                      </span>
-                  </div>
-                  <div className="relative mx-auto aspect-video overflow-hidden rounded-xl z-10">
-                    <HomeSpline />
+                  <div className="relative mx-auto aspect-video overflow-hidden rounded-xl z-10 shadow-xl">
+                     <Image
+                        src="https://picsum.photos/seed/pink-flowers/600/400"
+                        alt="A serene garden of pink flowers, symbolizing mental peace"
+                        fill
+                        data-ai-hint="pink flowers"
+                        className="object-cover"
+                        priority
+                     />
                   </div>
               </FadeIn>
             </div>
