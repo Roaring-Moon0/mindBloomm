@@ -4,7 +4,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Youtube, FileText, RefreshCw, Search, Music } from 'lucide-react';
+import { Youtube, FileText, RefreshCw, Search, Music, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,33 +17,34 @@ const categoriesData = {
     videos: [
       { title: "Guided Meditation for Anxiety & Stress", id: "1dbYduxIpwE" },
       { title: "Yoga For Anxiety and Stress", id: "hJbRpHZr_d0" },
-      { title: "Yoga for Anxiety and Relief", id: "CM_ZDGorTn8" },
       { title: "Quick Anxiety Relief in 5 Minutes", id: "MR57rug8NsM" },
       { title: "How to Stop an Anxiety Attack", id: "O-6f5wQXSu8" },
     ],
     audios: [
       { title: "Calming Music for Anxiety & Stress", id: "79kpoGF8KWU" },
+      { title: "Solfeggio Frequency for Anxiety", id: "1h484i3CE18" },
     ],
+    articles: [],
   },
   depression: {
     name: "Overcoming Depression",
     description: "A gentle guide to understanding and coping with depression.",
     videos: [
         { title: "What is depression?", id: "fWFuQR_Wt4M" },
-        { title: "How to deal with depression", id: "mn6WxY4NYEA" },
         { title: "How to get stuff done when you are depressed", id: "ngvOyccUzzY" },
         { title: "A Self-Care Action Plan for Depression", id: "5If1LFZ1CQA" },
+        { title: "Animated Video on Overcoming Depression", id: "XiCrniLQGYc" }
     ],
     audios: [
       { title: "Uplifting Music to Boost Your Mood", id: "OesMEEalJho" },
     ],
+    articles: [],
   },
   sleep: {
     name: "Better Sleep",
     description: "Improve your sleep hygiene and get the rest you deserve.",
     videos: [
         { title: "Sleep Hypnosis for a Deep Sleep", id: "_2_gP4LMW2s" },
-        { title: "Guided Sleep Meditation", id: "i_t_h_21-0o" },
         { title: "Bedtime Yoga", id: "BiG4Q2-r5Co" },
         { title: "The Perfect Sleep Routine", id: "Zq2j3gIuD3Q" },
     ],
@@ -51,21 +52,33 @@ const categoriesData = {
       { title: "Deep Sleep Music, Insomnia, Relaxing Music", id: "aIq_HqVSlqA" },
       { title: "Rain Sounds for Sleeping", id: "j4dwyAPg8eA" },
     ],
+    articles: [],
   },
   stress: {
     name: "Understanding Stress",
     description: "Learn about the causes of stress and effective solutions.",
     videos: [
         { title: "How stress affects your body", id: "v-t1Z5-oPtU" },
-        { title: "Managing Stress & Anxiety", id: "hJz63a0_3-k" },
         { title: "How to make stress your friend", id: "RcGyVTAoXEU" },
         { title: "10-Minute Meditation For Stress", id: "z6X5oEIg6Ak" },
     ],
     audios: [
       { title: "3 Hours of Relaxing Music for Stress Relief", id: "calI9aV_eWc" },
-      { title: "Gentle ASMR to Melt Your Stress Away", id:"pPHeP_S6d34" },
     ],
+    articles: [],
   },
+  motivational: {
+    name: "Motivational",
+    description: "Inspiring talks and content to lift your spirits.",
+    videos: [
+      { title: "The Psychology of a Winner - Motivational Speech", id: "Lp7-V89R2sM" },
+      { title: "How to Stop Procrastinating", id: "Qcxj1RM6-u0" },
+    ],
+    audios: [
+      { title: "Inspirational Talk on Resilience", id: "3sK3wJAxGfs" },
+    ],
+    articles: [],
+  }
 };
 
 const allQuotes = [
@@ -146,13 +159,14 @@ export default function ResourcesPage() {
 
         const lowercasedFilter = searchTerm.toLowerCase();
 
-        const filterItems = (items: { title: string }[]) => 
-            items.filter(item => item.title.toLowerCase().includes(lowercasedFilter));
+        const filterItems = (items: { title: string }[] | undefined) => 
+            items ? items.filter(item => item.title.toLowerCase().includes(lowercasedFilter)) : [];
 
         return {
             ...categoryData,
             videos: filterItems(categoryData.videos),
             audios: filterItems(categoryData.audios),
+            articles: filterItems(categoryData.articles),
         };
     }, [searchTerm, activeTab]);
 
@@ -177,8 +191,8 @@ export default function ResourcesPage() {
                     <p className="text-xs text-center text-muted-foreground mt-2">e.g., "meditation", "sleep", "stress"</p>
                 </div>
 
-                <Tabs defaultValue="anxiety" className="w-full" onValueChange={(value) => setActiveTab(value)}>
-                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto">
+                <Tabs defaultValue="anxiety" className="w-full" onValueChange={(value) => {setActiveTab(value); setSearchTerm('');}}>
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 h-auto">
                         {Object.entries(categoriesData).map(([key, category]) => (
                             <TabsTrigger key={key} value={key}>{category.name}</TabsTrigger>
                         ))}
@@ -186,37 +200,46 @@ export default function ResourcesPage() {
 
                     {Object.entries(categoriesData).map(([key]) => (
                         <TabsContent key={key} value={key} className="mt-8">
-                            <Card className="bg-secondary/30">
+                            <Card className="bg-card/80">
                                 <CardHeader>
                                     <CardTitle className="text-2xl font-headline">{filteredData.name}</CardTitle>
                                     <CardDescription>{filteredData.description}</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-8">
-                                    {filteredData.videos.length > 0 && (
+                                <CardContent className="space-y-10">
+                                    
+                                    {(filteredData.videos?.length ?? 0) > 0 && (
                                         <div>
                                             <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Youtube className="text-primary"/> Videos</h3>
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                {filteredData.videos.map(video => (
+                                            <div className="grid md:grid-cols-2 gap-8">
+                                                {filteredData.videos?.map(video => (
                                                     <VideoCard key={video.id} {...video} />
                                                 ))}
                                             </div>
                                         </div>
                                     )}
                                     
-                                    {filteredData.audios.length > 0 && (
+                                    {(filteredData.audios?.length ?? 0) > 0 && (
                                         <div>
                                             <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><Music className="text-primary"/> Audio & Music</h3>
-                                            <div className="grid md:grid-cols-2 gap-6">
-                                                {filteredData.audios.map(audio => (
+                                            <div className="grid md:grid-cols-2 gap-8">
+                                                {filteredData.audios?.map(audio => (
                                                     <VideoCard key={audio.id} {...audio} />
                                                 ))}
-             '                               </div>
+                                            </div>
                                         </div>
                                     )}
 
+                                    {(filteredData.articles?.length ?? 0) > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-xl mb-4 flex items-center gap-2"><FileText className="text-primary"/> Articles</h3>
+                                            {/* Article rendering will go here */}
+                                        </div>
+                                    )}
                                     
-                                    {filteredData.videos.length === 0 && filteredData.audios.length === 0 && (
-                                        <div className="text-center py-12">
+                                    {(filteredData.videos?.length ?? 0) === 0 && 
+                                     (filteredData.audios?.length ?? 0) === 0 && 
+                                     (filteredData.articles?.length ?? 0) === 0 && (
+                                        <div className="text-center py-16">
                                             <p className="text-muted-foreground font-semibold">No resources found for "{searchTerm}".</p>
                                             <p className="text-muted-foreground text-sm">Try a different search term or check other categories.</p>
                                         </div>
@@ -233,5 +256,3 @@ export default function ResourcesPage() {
         </FadeIn>
     );
 }
-
-    
