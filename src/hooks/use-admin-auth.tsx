@@ -52,8 +52,6 @@ function useProvideAdminAuth() {
         if (adminSnap.exists()) {
           setIsAdmin(true);
         } else {
-          // If not an admin, they will need to enter a code.
-          // Don't set isAdmin to false here if it's already true from a code check.
           setIsAdmin(false); 
         }
       } else {
@@ -104,6 +102,7 @@ function useProvideAdminAuth() {
         return false;
       }
 
+      // "Promote" the user by adding them to the `admins` collection
       const adminRef = doc(db, "admins", user.uid);
       await setDoc(adminRef, { email: user.email }, { merge: true });
 
@@ -114,7 +113,7 @@ function useProvideAdminAuth() {
 
     } catch (err) {
       console.error("Error verifying admin code:", err);
-      setError("Something went wrong.");
+      setError("Something went wrong. Check Firestore rules and console for details.");
       return false;
     }
   };
