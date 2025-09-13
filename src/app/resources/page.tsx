@@ -48,7 +48,7 @@ const categoriesData: Record<
     ],
     audios: [
       { id: "79kpoGF8KWU", title: "Calming Music for Anxiety & Stress", url: "https://www.youtube.com/embed/79kpoGF8KWU" },
-      { id: "1h484i3CE18", title: "Solfeggio Frequency for Anxiety", url: "https://www.youtube.com/embed/1h484i3CE18" },
+      { id: "Nv07q-SFgNc", title: "Solfeggio Frequency for Anxiety", url: "https://www.youtube.com/embed/Nv07q-SFgNc" },
     ],
     articles: [],
   },
