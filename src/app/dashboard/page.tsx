@@ -4,12 +4,13 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-import { User } from "firebase/auth";
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2 } from "lucide-react";
+import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AccountSettings from "./account-settings";
 
 const allQuotes = [
   {
@@ -79,6 +80,48 @@ function QuoteDisplay() {
   );
 }
 
+function MainDashboard() {
+    const { user } = useAuth();
+    const displayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
+
+    return (
+         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-8">
+            {/* Quick Links */}
+            <Card className="lg:col-span-2">
+                <CardHeader>
+                    <CardTitle>Quick Links</CardTitle>
+                    <CardDescription>Jump right back into your favorite activities.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Link href="/resources" passHref>
+                            <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
+                            <BookOpen className="w-10 h-10 text-primary mb-2"/>
+                            <h3 className="font-semibold">Resources</h3>
+                        </Card>
+                    </Link>
+                    <Link href="/games" passHref>
+                        <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
+                            <Gamepad2 className="w-10 h-10 text-primary mb-2"/>
+                            <h3 className="font-semibold">Calming Games</h3>
+                        </Card>
+                    </Link>
+                        <Link href="/chat" passHref>
+                        <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
+                            <MessageSquareHeart className="w-10 h-10 text-primary mb-2"/>
+                            <h3 className="font-semibold">Chat with Bloom</h3>
+                        </Card>
+                    </Link>
+                </CardContent>
+            </Card>
+
+            {/* Quote of the Day */}
+            <div className="lg:col-span-1">
+                <QuoteDisplay />
+            </div>
+        </div>
+    )
+}
+
 
 export default function DashboardPage() {
   const { user, loading, logout } = useAuth();
@@ -114,40 +157,24 @@ export default function DashboardPage() {
                 </Button>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {/* Quick Links */}
-                <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Quick Links</CardTitle>
-                        <CardDescription>Jump right back into your favorite activities.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Link href="/resources" passHref>
-                             <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
-                                <BookOpen className="w-10 h-10 text-primary mb-2"/>
-                                <h3 className="font-semibold">Resources</h3>
-                            </Card>
-                        </Link>
-                        <Link href="/games" passHref>
-                            <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
-                                <Gamepad2 className="w-10 h-10 text-primary mb-2"/>
-                                <h3 className="font-semibold">Calming Games</h3>
-                            </Card>
-                        </Link>
-                         <Link href="/chat" passHref>
-                            <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
-                                <MessageSquareHeart className="w-10 h-10 text-primary mb-2"/>
-                                <h3 className="font-semibold">Chat with Bloom</h3>
-                            </Card>
-                        </Link>
-                    </CardContent>
-                </Card>
-
-                {/* Quote of the Day */}
-                <div className="lg:col-span-1">
-                   <QuoteDisplay />
-                </div>
-            </div>
+            <Tabs defaultValue="dashboard" className="w-full">
+                <TabsList>
+                    <TabsTrigger value="dashboard">
+                        <UserCog className="mr-2 h-4 w-4" />
+                        Dashboard
+                    </TabsTrigger>
+                    <TabsTrigger value="settings">
+                        <UserCog className="mr-2 h-4 w-4" />
+                        Account Settings
+                    </TabsTrigger>
+                </TabsList>
+                <TabsContent value="dashboard">
+                    <MainDashboard />
+                </TabsContent>
+                <TabsContent value="settings">
+                   <AccountSettings />
+                </TabsContent>
+            </Tabs>
         </div>
     </FadeIn>
   );
