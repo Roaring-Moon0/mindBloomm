@@ -21,10 +21,13 @@ import {
   RefreshCw,
   Search,
   Music,
+  Loader2,
+  Video,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FadeIn } from "@/components/ui/fade-in";
+import { useFirestoreCollection } from "@/hooks/use-firestore";
 
 // 🌟 Categories
 const categoriesData: Record<
@@ -105,24 +108,6 @@ const categoriesData: Record<
     ],
     articles: [],
   },
-  animated: {
-    name: "Animated Therapy 🌈",
-    description: "Fun, colorful animated videos that bring light to your day.",
-    videos: [
-      {
-        id: 'Y9A5wuTtblw',
-        title: "Animated Guide to Beating Depression",
-        url: "https://www.youtube.com/embed/Y9A5wuTtblw",
-      },
-      {
-        id: 'Gn5NaUnScHk',
-        title: "Fun Stress Relief Animation",
-        url: "https://www.youtube.com/embed/Gn5NaUnScHk",
-      },
-    ],
-    audios: [],
-    articles: [],
-  },
 };
 
 
@@ -150,6 +135,10 @@ const allQuotes = [
 
 // 🌟 Video Card
 function VideoCard({ title, url }: { title: string; url: string }) {
+  const embedUrl = url.includes('youtube.com/watch?v=')
+    ? url.replace('watch?v=', 'embed/')
+    : url;
+
   return (
     <Card className="bg-gradient-to-br from-pink-200/60 via-purple-200/60 to-blue-200/60 rounded-2xl shadow-lg hover:scale-[1.03] hover:shadow-2xl transition-all">
       <CardHeader>
@@ -160,7 +149,7 @@ function VideoCard({ title, url }: { title: string; url: string }) {
       <CardContent>
         <div className="aspect-video rounded-xl overflow-hidden shadow-inner">
           <iframe
-            src={url}
+            src={embedUrl}
             title={title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -210,12 +199,59 @@ function QuoteDisplay() {
   );
 }
 
+
+// Firestore Video Section
+function FirestoreVideoSection({ searchTerm }: { searchTerm: string }) {
+    const { data: videos, loading } = useFirestoreCollection('videos');
+
+    const filteredVideos = useMemo(() => {
+        const visibleVideos = videos?.filter((v: any) => v.visible !== false) || [];
+        if (!searchTerm) return visibleVideos;
+        
+        return visibleVideos.filter((video: any) => 
+            video.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    }, [videos, searchTerm]);
+
+    return (
+        <Card className="bg-card/70 rounded-2xl shadow-lg">
+            <CardHeader>
+                <CardTitle className="text-2xl font-headline text-primary">All Videos</CardTitle>
+                <CardDescription>All user-added videos from the library. You can add more in the admin dashboard.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                     <div className="flex items-center justify-center py-10 text-muted-foreground gap-2"><Loader2 className="animate-spin h-5 w-5"/>Loading videos...</div>
+                ) : filteredVideos && filteredVideos.length > 0 ? (
+                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {(filteredVideos as any[]).map((video) => (
+                            <VideoCard key={video.id} title={video.name} url={video.url} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-16">
+                        <p className="text-muted-foreground font-semibold">
+                            {searchTerm ? `No videos found for "${searchTerm}"` : "No videos have been added yet."}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                            {searchTerm ? "Try a different search term or clear the search." : "Add videos via the admin dashboard to see them here."}
+                        </p>
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+    )
+}
+
+
 // 🌟 Page
 export default function ResourcesPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("anxiety");
+  const [activeTab, setActiveTab] = useState("all-videos");
 
   const filteredData = useMemo(() => {
+    if (activeTab === 'all-videos') return null;
+
     const categoryData =
       categoriesData[activeTab as keyof typeof categoriesData];
     if (!searchTerm) return categoryData;
@@ -270,14 +306,17 @@ export default function ResourcesPage() {
 
           {/* Tabs */}
           <Tabs
-            defaultValue="anxiety"
+            defaultValue="all-videos"
             className="w-full"
             onValueChange={(value) => {
               setActiveTab(value);
               setSearchTerm("");
             }}
           >
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2 bg-gradient-to-r from-teal-200 via-purple-200 to-pink-200 rounded-xl p-2">
+               <TabsTrigger key="all-videos" value="all-videos">
+                  <Video className="mr-2 h-4 w-4"/> All Videos
+               </TabsTrigger>
               {Object.entries(categoriesData).map(([key, category]) => (
                 <TabsTrigger key={key} value={key}>
                   {category.name}
@@ -285,8 +324,13 @@ export default function ResourcesPage() {
               ))}
             </TabsList>
 
+            <TabsContent key="all-videos" value="all-videos" className="mt-10">
+                <FirestoreVideoSection searchTerm={searchTerm} />
+            </TabsContent>
+
             {Object.entries(categoriesData).map(([key]) => (
-              <TabsContent key={key} value={key} className="mt-10">
+              filteredData && activeTab === key && (
+                <TabsContent key={key} value={key} className="mt-10">
                 <Card className="bg-card/70 rounded-2xl shadow-lg">
                   <CardHeader>
                     <CardTitle className="text-2xl font-headline text-primary">
@@ -305,7 +349,7 @@ export default function ResourcesPage() {
                         </h3>
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {filteredData.videos?.map((video) => (
-                            <VideoCard key={video.url} {...video} />
+                            <VideoCard key={video.id} title={video.title} url={video.url} />
                           ))}
                         </div>
                       </div>
@@ -319,7 +363,7 @@ export default function ResourcesPage() {
                         </h3>
                         <div className="grid sm:grid-cols-2 gap-6">
                           {filteredData.audios?.map((audio) => (
-                            <VideoCard key={audio.url} {...audio} />
+                             <VideoCard key={audio.id} title={audio.title} url={audio.url} />
                           ))}
                         </div>
                       </div>
@@ -357,6 +401,7 @@ export default function ResourcesPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
+              )
             ))}
           </Tabs>
         </div>

@@ -7,7 +7,14 @@ import Link from 'next/link';
 import { useFirestoreCollection } from '@/hooks/use-firestore';
 import { Loader2, AlertTriangle, FileText } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
-import type { SurveyConfig } from '@/app/admin/page';
+
+interface Survey {
+    id: string;
+    name: string;
+    url: string;
+    description?: string;
+    visible?: boolean;
+}
 
 const defaultSurvey = {
     id: 'default-google-form-survey',
@@ -17,7 +24,9 @@ const defaultSurvey = {
 }
 
 export default function SurveyPage() {
-    const { data: surveys, loading, error } = useFirestoreCollection<SurveyConfig>('surveys');
+    const { data: surveys, loading, error } = useFirestoreCollection<Survey>('surveys');
+    
+    const visibleSurveys = (surveys || []).filter(s => s.visible !== false);
 
     return (
         <FadeIn>
@@ -47,7 +56,7 @@ export default function SurveyPage() {
                             </Link>
 
                             {/* Display surveys from Firestore */}
-                            {surveys && surveys.map(survey => (
+                            {visibleSurveys.map(survey => (
                                 <Link href={survey.url} target="_blank" rel="noopener noreferrer" key={survey.id} className="block">
                                     <Card className="hover:bg-secondary hover:border-primary/50 transition-colors">
                                         <CardHeader>
@@ -76,8 +85,12 @@ export default function SurveyPage() {
                             </div>
                         )}
 
-                        {!loading && !error && (!surveys || surveys.length === 0) && (
-                            <p className="text-center text-sm text-muted-foreground pt-6">You can add more surveys from the admin dashboard.</p>
+                        {!loading && !error && visibleSurveys.length === 0 && (
+                             <div className="text-center py-10 text-muted-foreground">
+                                <FileText className="mx-auto h-12 w-12"/>
+                                <p className="mt-4">No new surveys are available at this time.</p>
+                                <p className="text-sm">You can add more surveys from the admin dashboard.</p>
+                            </div>
                         )}
                     </CardContent>
                 </Card>
@@ -85,3 +98,5 @@ export default function SurveyPage() {
         </FadeIn>
     )
 }
+
+    
