@@ -1,78 +1,102 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { auth, db } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 type AdminAuthContextType = {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
-  error: string | null;
+  error: string;
   verifyCode: (code: string) => Promise<boolean>;
   logout: () => Promise<void>;
-};
+} | null;
 
-const AdminAuthContext = createContext<AdminAuthContextType>({
-  user: null,
-  isAdmin: false,
-  loading: true,
-  error: null,
-  verifyCode: async () => false,
-  logout: async () => {},
-});
+const AdminAuthContext = createContext<AdminAuthContextType>(null);
 
 export function AdminAuthProvider({ children }: { children: ReactNode }) {
+  const authState = useProvideAdminAuth();
+  return (
+    <AdminAuthContext.Provider value={authState}>
+      {children}
+    </AdminAuthContext.Provider>
+  );
+}
+
+export const useAdminAuth = () => {
+    const context = useContext(AdminAuthContext);
+    if (!context) {
+        throw new Error("useAdminAuth must be used within an AdminAuthProvider");
+    }
+    return context;
+};
+
+function useProvideAdminAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       setUser(firebaseUser);
-      setIsAdmin(false); // always reset until code is entered
+
+      if (firebaseUser) {
+        const adminRef = doc(db, "admins", firebaseUser.uid);
+        const adminSnap = await getDoc(adminRef);
+
+        if (adminSnap.exists()) {
+          setIsAdmin(true);
+        } else {
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const verifyCode = async (code: string): Promise<boolean> => {
-    if (!user?.email) {
-      setError("No user logged in.");
+  // 🔑 FIXED verifyCode logic
+  const verifyCode = async (code: string) => {
+    if (!user) {
+      setError("You must be logged in.");
       return false;
     }
 
-    setLoading(true);
-    setError(null);
-
     try {
-      const q = query(
-        collection(db, "adminCodes"),
-        where("email", "==", user.email),
-        where("code", "==", code),
-        where("active", "==", true)
-      );
+      // look for code in Firestore
+      const codeRef = doc(db, "adminCodes", code);
+      const codeSnap = await getDoc(codeRef);
 
-      const snapshot = await getDocs(q);
-
-      if (!snapshot.empty) {
-        setIsAdmin(true);
-        setLoading(false);
-        return true;
-      } else {
-        setIsAdmin(false);
-        setError("Invalid admin code.");
-        setLoading(false);
+      if (!codeSnap.exists()) {
+        setError("Invalid code.");
         return false;
       }
-    } catch (err: any) {
+
+      const data = codeSnap.data();
+
+      // OPTIONAL: If you want to lock code to one email
+      if (data.email && data.email !== user.email) {
+        setError("This code is not linked to your account.");
+        return false;
+      }
+
+      // ✅ mark user as admin (so they won’t need to re-enter next login)
+      const adminRef = doc(db, "admins", user.uid);
+      await setDoc(adminRef, { email: user.email }, { merge: true });
+
+      setIsAdmin(true);
+      setError("");
+      return true;
+    } catch (err) {
       console.error("Error verifying admin code:", err);
-      setError("Failed to verify admin access. Please try again.");
-      setIsAdmin(false);
-      setLoading(false);
+      setError("Something went wrong.");
       return false;
     }
   };
@@ -83,15 +107,5 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     setIsAdmin(false);
   };
 
-  return (
-    <AdminAuthContext.Provider
-      value={{ user, isAdmin, loading, error, verifyCode, logout }}
-    >
-      {children}
-    </AdminAuthContext.Provider>
-  );
-}
-
-export function useAdminAuth() {
-  return useContext(AdminAuthContext);
+  return { user, isAdmin, loading, error, verifyCode, logout };
 }
