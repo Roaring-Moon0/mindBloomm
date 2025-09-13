@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
@@ -65,52 +66,56 @@ function useProvideAdminAuth() {
   }, []);
 
   const verifyCode = async (code: string) => {
-    if (!user) {
-      setError("You must be logged in.");
+    if (!user || !user.email) {
+      setError("You must be logged in and have a verified email.");
       return false;
     }
-
+  
     try {
       setError("Verifying..."); // show status
-
+  
       const codesRef = collection(db, "adminCodes");
       const q = query(codesRef, where("code", "==", code.trim()));
       console.log("Running query for code:", code);
-
+  
       const querySnap = await getDocs(q);
       console.log("Query result size:", querySnap.size);
-
+  
       if (querySnap.empty) {
         console.log("❌ No document found for code:", code);
         setError("Invalid code.");
         return false;
       }
-
+  
       const matchDoc = querySnap.docs[0];
       const data = matchDoc.data();
       console.log("✅ Found doc:", matchDoc.id, data);
+  
+      // Make email comparison case-insensitive
+      const userEmail = user.email.toLowerCase();
+      const codeEmail = data.email ? data.email.toLowerCase() : null;
 
-      if (data.email && data.email !== user.email) {
-        console.log("❌ Email mismatch. User:", user.email, "Expected:", data.email);
+      if (codeEmail && codeEmail !== userEmail) {
+        console.log("❌ Email mismatch. User:", userEmail, "Expected:", codeEmail);
         setError("This code is not linked to your account.");
         return false;
       }
-
+  
       if (data.active === false) {
         console.log("❌ Code inactive");
         setError("This code is not active.");
         return false;
       }
-
+  
       // "Promote" the user by adding them to the `admins` collection
       const adminRef = doc(db, "admins", user.uid);
       await setDoc(adminRef, { email: user.email }, { merge: true });
-
+  
       setIsAdmin(true);
       setError(""); // Clear error on success
       console.log("🎉 Admin status granted for", user.email);
       return true;
-
+  
     } catch (err) {
       console.error("Error verifying admin code:", err);
       setError("Something went wrong. Check Firestore rules and console for details.");
