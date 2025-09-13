@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { User } from 'firebase/auth';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -103,11 +103,11 @@ export function useAdminAuth() {
   // This is a partial hook implementation for demonstration.
   // The full implementation would require more context from the app.
   // For now, we return a simplified version.
-  const { isAdmin, loading } = context;
+  const { user, isAdmin, loading, logout } = context;
 
   const verifyAdmin = async () => {
     return context.verifyAdmin();
   }
 
-  return { isAdmin, verifyAdmin, loading };
+  return { user, isAdmin, verifyAdmin, loading, logout };
 }
