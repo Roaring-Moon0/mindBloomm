@@ -1,13 +1,14 @@
 
 "use client";
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { User } from 'firebase/auth';
-import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import { useRouter } from 'next/navigation';
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { auth, db } from "@/lib/firebase";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 import { useAuth } from './use-auth';
 import { toast } from './use-toast';
+import { useRouter } from "next/navigation";
+
 
 interface AdminAuthContextType {
   user: User | null;
@@ -29,17 +30,17 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     const verifyAdminStatus = async () => {
       // Don't do anything if auth is still loading or there's no user.
       if (authLoading) {
+        setLoading(true);
         return;
       }
       
-      setLoading(true);
-
       if (!user) {
         setIsAdmin(false);
         setLoading(false);
         return;
       }
 
+      setLoading(true);
       try {
         if (!user.email) {
           setIsAdmin(false);
