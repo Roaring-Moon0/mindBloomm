@@ -81,14 +81,9 @@ export default function Home() {
                 </FadeIn>
               </div>
               <FadeIn>
-                <Image
-                  src="https://picsum.photos/seed/poppies/1200/800"
-                  width={1200}
-                  height={800}
-                  alt="A beautiful field of vibrant flowers, representing growth and tranquility."
-                  data-ai-hint="vibrant flowers"
-                  className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full"
-                />
+                <div className="mx-auto aspect-video overflow-hidden rounded-xl">
+                  <iframe src='https://my.spline.design/girlflowerscopy-6330b6217c09c959b3626e25b1f7d5fb/' frameBorder='0' width='100%' height='100%'></iframe>
+                </div>
               </FadeIn>
             </div>
           </div>
