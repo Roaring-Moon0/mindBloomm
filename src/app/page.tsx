@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
+import Spline from '@splinetool/react-spline/next';
 
 const features = [
   {
@@ -82,7 +83,7 @@ export default function Home() {
               </div>
               <FadeIn>
                 <div className="mx-auto aspect-video overflow-hidden rounded-xl">
-                  <iframe src='https://my.spline.design/girlflowerscopy-6330b6217c09c959b3626e25b1f7d5fb/' frameBorder='0' width='100%' height='100%'></iframe>
+                  <Spline scene="https://prod.spline.design/twsk8lf1VsNkjC80/scene.splinecode" />
                 </div>
               </FadeIn>
             </div>
