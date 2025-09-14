@@ -233,7 +233,7 @@ function AdminDashboardContent() {
         </div>
 
         <Tabs defaultValue="surveys" className="w-full">
-          <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto">
+          <TabsList>
             <TabsTrigger value="surveys">Surveys</TabsTrigger>
             <TabsTrigger value="videos" disabled>Videos</TabsTrigger>
             <TabsTrigger value="users" disabled>Users</TabsTrigger>
