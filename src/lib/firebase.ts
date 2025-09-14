@@ -14,6 +14,11 @@ const firebaseConfig = {
 
 // This helper function ensures that we have a single instance of the Firebase app.
 const getFirebaseApp = (): FirebaseApp => {
+    // This helps prevent silent failures.
+    if (!firebaseConfig.projectId) {
+        throw new Error("Firebase project ID is not set. Please check your src/lib/firebase.ts file.");
+    }
+    
     if (getApps().length > 0) {
         return getApp();
     }
