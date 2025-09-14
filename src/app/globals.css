@@ -41,45 +41,6 @@
     --chart-4: 210 70% 50%;  /* Darker Blue */
     --chart-5: 330 90% 75%;  /* Lighter Pink */
   }
-
-  .dark {
-    --background: 220 15% 8%;  /* dark navy-gray */
-    --foreground: 0 0% 98%;
-    
-    --card: 220 15% 12%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 220 15% 10%;
-    --popover-foreground: 0 0% 98%;
-    
-    /* 💖 Pink */
-    --primary: 330 80% 70%;
-    --primary-foreground: 220 20% 10%;
-    
-    /* 💙 Blue */
-    --secondary: 210 85% 65%;
-    --secondary-foreground: 220 20% 10%;
-    
-    --muted: 220 15% 18%;
-    --muted-foreground: 220 10% 65%;
-    
-    --accent: 210 85% 65%; /* Blue */
-    --accent-foreground: 220 20% 10%;
-    
-    --destructive: 330 70% 50%; /* darker pink */
-    --destructive-foreground: 0 0% 98%;
-    
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 330 80% 70%; /* pink glow */
-
-    /* 🎨 Charts (dark, pink + blue only) */
-    --chart-1: 330 80% 70%; /* Pink */
-    --chart-2: 210 85% 65%; /* Blue */
-    --chart-3: 330 70% 55%; /* Dark Pink */
-    --chart-4: 210 70% 50%; /* Dark Blue */
-    --chart-5: 330 90% 75%; /* Light Pink */
-  }
 }
 
 @layer base {

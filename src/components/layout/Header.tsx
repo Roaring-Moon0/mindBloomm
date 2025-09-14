@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/sheet';
 import Logo from '@/components/icons/Logo';
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
-import { ThemeToggle } from '@/components/theme-toggle';
 import { AuthButton } from './AuthButton';
 import { cn } from '@/lib/utils';
 
@@ -123,7 +122,6 @@ export function Header() {
                     </Link>
                 </Button>
             </div>
-          <ThemeToggle />
           <AuthButton />
         </div>
       </div>
