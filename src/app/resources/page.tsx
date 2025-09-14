@@ -380,5 +380,5 @@ export default function ResourcesPage() {
     </FadeIn>
   );
 }
-
+console.log("Resource page is working")
     
