@@ -3,44 +3,24 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Default-deny all access to collections not specified
-    match /{document=**} {
-      allow read, write: if false;
-    }
 
-    // Allow logged-in users to manage their own user document
-    match /users/{userId} {
-      allow read, create, update: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Allow any authenticated user to query the adminCodes collection.
-    // The application logic is responsible for verifying the code against the user's email.
-    match /adminCodes/{codeId} {
-      allow read: if request.auth != null;
-    }
-
-    // Allow users to read their own admin status and create it if they are authenticated.
-    // This allows the verifyCode function to promote a user to admin.
-    match /admins/{userId} {
+    // Allow logged-in users to read/write their own data in the 'users' collection
+    match /users/{userId}/{documents=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Allow read-only access for all other public collections for any authenticated user.
-    match /config/{docId} {
+    // Allow any authenticated user to read public collections like 'surveys'
+    match /surveys/{surveyId} {
       allow read: if request.auth != null;
     }
-    match /surveys/{docId} {
-      allow read: if request.auth != null;
+
+    // Allow admins to read/write admin-only collections
+    match /admins/{adminId} {
+      allow read, write: if get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.email == request.auth.email;
     }
-    match /videos/{docId} {
-      allow read: if request.auth != null;
-    }
-    match /announcements/{docId} {
-      allow read: if request.auth != null;
-    }
-    match /bannedUsers/{docId} {
-        allow read: if request.auth != null;
+    
+    match /adminCodes/{codeId} {
+      allow read, write: if get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.email == request.auth.email;
     }
   }
 }
