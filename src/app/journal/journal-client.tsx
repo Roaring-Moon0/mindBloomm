@@ -30,7 +30,7 @@ const JournalSkeleton = () => (
 )
 
 export default function JournalClientPage({ user }: { user: User }) {
-    // Conditionally set paths to prevent hooks from running before user is authenticated
+    // Conditionally set paths only when user object is available to prevent race conditions.
     const notesPath = user ? `users/${user.uid}/notes` : '';
     const journalPath = user ? `users/${user.uid}/journal/state` : '';
 
