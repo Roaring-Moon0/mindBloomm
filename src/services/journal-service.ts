@@ -2,7 +2,7 @@
 'use server';
 
 import { auth, db } from '@/lib/firebase';
-import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, Timestamp, setDoc } from 'firebase/firestore';
 import { z } from 'zod';
 
 const entrySchema = z.object({
@@ -20,35 +20,34 @@ export const addJournalEntry = async (payload: z.infer<typeof entrySchema>) => {
     const validated = entrySchema.parse(payload);
     
     const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
+    const newEntryRef = doc(collection(db, `users/${user.uid}/entries`));
 
     return runTransaction(db, async (transaction) => {
         const stateDoc = await transaction.get(journalStateRef);
 
-        let entryCount = 1;
-        let treeName = "My Gratitude Tree"; // Default name
-
-        if (stateDoc.exists()) {
-            const data = stateDoc.data();
-            entryCount = (data.entryCount || 0) + 1;
-            treeName = data.treeName || treeName;
-        } else {
-            // If state doc doesn't exist, create it with default name
-             transaction.set(journalStateRef, { treeName, entryCount: 0, lastEntryDate: serverTimestamp() });
-        }
-
-        const newEntryRef = doc(collection(db, `users/${user.uid}/entries`));
+        // Add the new journal entry first
         transaction.set(newEntryRef, {
             ...validated,
             createdAt: serverTimestamp(),
             uid: user.uid,
         });
 
-        transaction.update(journalStateRef, { 
-            entryCount: entryCount,
-            lastEntryDate: serverTimestamp()
-        });
-
-        return { id: newEntryRef.id, entryCount };
+        // Now, handle the journal state (the tree)
+        if (!stateDoc.exists()) {
+            // This is the first entry, create the state document
+            transaction.set(journalStateRef, { 
+                treeName: "My Gratitude Tree", // Default name
+                entryCount: 1,
+                lastEntryDate: serverTimestamp()
+            });
+        } else {
+            // State document exists, just update the count and date
+            const newCount = (stateDoc.data().entryCount || 0) + 1;
+            transaction.update(journalStateRef, { 
+                entryCount: newCount,
+                lastEntryDate: serverTimestamp()
+            });
+        }
     });
 };
 
@@ -61,7 +60,11 @@ export const deleteJournalEntry = async (id: string) => {
 
     return runTransaction(db, async (transaction) => {
         const stateDoc = await transaction.get(journalStateRef);
-        if (!stateDoc.exists()) throw new Error('Journal state not found.');
+        if (!stateDoc.exists()) {
+            // If for some reason the state doc doesn't exist, we can just delete the entry
+            transaction.delete(entryRef);
+            return;
+        };
 
         const currentCount = stateDoc.data().entryCount || 0;
         
