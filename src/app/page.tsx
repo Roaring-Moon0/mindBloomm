@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { FadeIn } from '@/components/ui/fade-in';
@@ -165,16 +165,18 @@ export default function Home() {
                 </p>
               </div>
             </FadeIn>
-            <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 md:gap-12 lg:grid-cols-3 mt-12">
+            <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 lg:grid-cols-3 mt-12">
               {teamMembers.slice(0,3).map((member, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)}>
-                  <Card className="text-center flex flex-col items-center p-6 h-full">
-                    <Avatar className="w-24 h-24 mb-4">
-                      <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
-                      <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <CardTitle className="text-lg">{member.name}</CardTitle>
-                    <p className="text-muted-foreground">{member.role}</p>
+                  <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-lg hover:border-primary/50">
+                    <CardContent className="p-6 flex flex-col items-center">
+                        <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
+                          <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
+                          <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <CardTitle className="text-xl">{member.name}</CardTitle>
+                        <CardDescription>{member.role}</CardDescription>
+                    </CardContent>
                   </Card>
                 </FadeIn>
               ))}
