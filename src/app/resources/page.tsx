@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useFirestoreCollection } from "@/hooks/use-firestore";
 import { useDebounce } from "@/hooks/use-debounce";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Youtube, AlertTriangle } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
@@ -46,6 +45,7 @@ export default function ResourcesPage() {
         setYoutubeVideos([]);
         setIsSearching(false);
         setIsBlocked(false);
+        setError(null);
         return;
       }
       
@@ -65,7 +65,7 @@ export default function ResourcesPage() {
           `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
             debouncedSearchQuery
           )}&type=video&maxResults=9&key=${
-            process.env.NEXT_PUBLIC_YT_API_KEY
+            process.env.NEXT_PUBLIC_YOUTUBE_API_KEY
           }`
         );
         if (!res.ok) {
@@ -126,7 +126,7 @@ export default function ResourcesPage() {
                 <div className="text-center py-10 px-4 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg max-w-2xl mx-auto">
                     <AlertTriangle className="mx-auto h-12 w-12"/>
                     <p className="mt-4 font-bold text-lg">For your safety, this search isn’t allowed.</p>
-                    <p className="text-sm">Please try a different keyword. If you are in distress, please reach out to one of the emergency helplines listed at the bottom of the page.</p>
+                    <p className="text-sm">Please try a different keyword. If you are in distress, please reach out to one of the emergency helplines.</p>
                 </div>
             )}
             
@@ -176,7 +176,7 @@ export default function ResourcesPage() {
                                     </CardHeader>
                                      <CardContent className="flex-grow flex items-end">
                                         <p className="text-sm text-muted-foreground">Curated by MindBloom</p>
-                                    </CardContent>
+                                     </CardContent>
                                 </Card>
                             </Link>
                         ))
