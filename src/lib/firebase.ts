@@ -4,21 +4,21 @@ import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id",
+  measurementId: "your-measurement-id"
 };
 
 // This helper function ensures that we have a single instance of the Firebase app.
 const getFirebaseApp = (): FirebaseApp => {
     // Before initializing, check if the necessary config values are provided.
     // This helps prevent silent failures.
-    if (!firebaseConfig.projectId) {
-        throw new Error("Firebase project ID is not set. Please check your .env file.");
+    if (!firebaseConfig.projectId || firebaseConfig.projectId === 'your-project-id') {
+        throw new Error("Firebase project ID is not set. Please check your src/lib/firebase.ts file.");
     }
     
     if (getApps().length > 0) {
