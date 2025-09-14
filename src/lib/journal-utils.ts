@@ -1,51 +1,55 @@
+import { formatDistanceToNow } from 'date-fns';
 
+export interface Note {
+    id: string;
+    content: string;
+    type: 'good' | 'bad';
+    createdAt: any; // Firestore timestamp
+}
+
+export interface Journal {
+    treeName: string;
+    createdAt: any;
+    lastWritten: any;
+    treeHealth: number;
+    missedDays: number;
+    mood: 'happy' | 'sad' | 'neutral' | 'weak';
+    emoji: string;
+}
 
 interface TreeStage {
     src: string;
-    alt: string;
-    stageName: string;
+    alt:string;
 }
 
-export const getTreeStage = (entryCount: number): TreeStage => {
-    if (entryCount === 0) {
+export const getTreeStage = (health: number): TreeStage => {
+    if (health < 20) {
         return {
-            src: '/assets/tree/seed.png',
-            alt: 'A single seed on the ground.',
-            stageName: 'Seed'
+            src: '/assets/tree/tree-dying.png',
+            alt: 'A weak, dying tree with very few leaves.'
         };
     }
-    if (entryCount >= 1 && entryCount <= 3) {
+    if (health < 40) {
         return {
-            src: '/assets/tree/sprout.png',
-            alt: 'A small green sprout emerging from the ground.',
-            stageName: 'Sprout'
+            src: '/assets/tree/tree-sad.png',
+            alt: 'A sad-looking tree with drooping leaves.'
         };
     }
-    if (entryCount > 3 && entryCount <= 7) {
-        return {
-            src: '/assets/tree/sapling.png',
-            alt: 'A young sapling with a few leaves.',
-            stageName: 'Sapling'
-        };
-    }
-    if (entryCount > 7 && entryCount <= 15) {
+    if (health < 70) {
         return {
             src: '/assets/tree/tree-small.png',
-            alt: 'A small tree with a developing canopy.',
-            stageName: 'Young Tree'
+            alt: 'A small but healthy tree.'
         };
     }
-    if (entryCount > 15) {
-        return {
-            src: '/assets/tree/tree-large.png',
-            alt: 'A large, flourishing tree with a full canopy.',
-            stageName: 'Flourishing Tree'
-        };
-    }
-    // Default case, should not be reached if entryCount is >= 0
     return {
-        src: '/assets/tree/seed.png',
-        alt: 'A single seed on the ground.',
-        stageName: 'Seed'
+        src: '/assets/tree/tree-large.png',
+        alt: 'A large, flourishing, and happy tree.'
     };
+};
+
+export const getTreeAge = (createdAt: any): string => {
+    if (!createdAt?.toDate) {
+        return 'Just Planted';
+    }
+    return formatDistanceToNow(createdAt.toDate(), { addSuffix: true });
 };
