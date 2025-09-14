@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useFirestoreCollection } from "@/hooks/use-firestore";
@@ -36,6 +35,12 @@ const BLOCKED_WORDS = [
 const containsBlockedWord = (query: string) => {
   const lowerCaseQuery = query.toLowerCase();
   return BLOCKED_WORDS.some((word) => lowerCaseQuery.includes(word));
+};
+
+// 🔹 Helper: Extract YouTube ID from URL
+const extractVideoId = (url: string) => {
+  const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+  return match ? match[1] : "";
 };
 
 // 📌 Old curated categories with thumbnails
@@ -133,12 +138,6 @@ export default function ResourcesPage() {
   const [isBlocked, setIsBlocked] = useState(false);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
-  // 🔹 Helper: Extract YouTube ID from URL
-  const extractVideoId = (url: string) => {
-    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
-    return match ? match[1] : "";
-  };
 
   // 🔹 Merge Firestore videos with old curated
   const allCuratedVideos = useMemo(() => {
@@ -332,7 +331,7 @@ export default function ResourcesPage() {
                   Object.entries(allCuratedVideos).map(([key, videos]) => (
                     <div key={key} className="mb-12">
                       <h2 className="text-2xl font-bold font-headline mb-6">
-                        {categoriesData[key]?.name || "From Your Dashboard"}
+                        {categoriesData[key]?.name || "Extra Resources"}
                       </h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {videos.map((video) => (
@@ -381,4 +380,3 @@ export default function ResourcesPage() {
     </FadeIn>
   );
 }
-
