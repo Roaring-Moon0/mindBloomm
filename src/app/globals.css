@@ -14,11 +14,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* 🌸 Main soothing lavender */
+    /* 🌸 Lavender primary */
     --primary: 276 65% 55%;
     --primary-foreground: 210 40% 98%;
 
-    /* 🌿 Gentle teal/secondary */
+    /* 🌿 Gentle teal secondary */
     --secondary: 174 62% 48%;
     --secondary-foreground: 210 40% 98%;
 
@@ -44,40 +44,41 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 220 15% 8%;  /* Softer than pure black */
     --foreground: 0 0% 98%;
     
-    --card: 240 10% 10%;
+    --card: 220 15% 12%;
     --card-foreground: 0 0% 98%;
     
-    --popover: 240 10% 3.9%;
+    --popover: 220 15% 10%;
     --popover-foreground: 0 0% 98%;
     
-    /* Baby Blue Primary */
-    --primary: 200 75% 76%; /* #89CFEF */
-    --primary-foreground: 200 100% 10%; /* Dark blue for contrast */
+    /* 🌌 Baby Blue primary */
+    --primary: 200 75% 72%;          /* Baby blue */
+    --primary-foreground: 220 85% 12%; /* Deep navy for contrast */
     
-    --secondary: 200 75% 50%; /* Softer Teal */
-    --secondary-foreground: 200 75% 95%;
+    --secondary: 200 65% 55%; 
+    --secondary-foreground: 210 40% 96%;
     
-    --muted: 240 4% 15%;
-    --muted-foreground: 240 4% 65%;
+    --muted: 220 15% 18%;
+    --muted-foreground: 220 10% 65%;
     
-    --accent: 200 75% 50%;
-    --accent-foreground: 200 75% 95%;
+    --accent: 200 75% 65%; /* Brighter baby blue */
+    --accent-foreground: 220 85% 12%;
     
-    --destructive: 0 63% 31%;
+    --destructive: 0 63% 40%;
     --destructive-foreground: 0 0% 98%;
     
-    --border: 240 4% 15%;
-    --input: 240 4% 15%;
-    --ring: 200 75% 76%; /* #89CFEF */
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 200 75% 72%; /* Baby blue glow */
 
-    --chart-1: 200 75% 76%;
-    --chart-2: 200 75% 50%;
-    --chart-3: 45 80% 60%;
-    --chart-4: 210 80% 60%;
-    --chart-5: 340 85% 65%;
+    /* 🎨 Dark mode chart palette */
+    --chart-1: 200 75% 72%; /* Baby blue */
+    --chart-2: 200 65% 55%;
+    --chart-3: 45 80% 60%;  /* Yellow */
+    --chart-4: 210 80% 60%; /* Sky blue */
+    --chart-5: 340 85% 65%; /* Pink */
   }
 }
 
@@ -86,7 +87,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
 }
 
@@ -97,18 +98,19 @@
   
   .petal {
     position: absolute;
-    background-color: hsl(var(--primary) / 0.2);
+    background-color: hsl(var(--primary) / 0.25);
     border-radius: 150px 0;
     animation: fall linear infinite;
+    filter: blur(0.5px); /* 🌸 softer floating petals */
   }
 
   @keyframes fall {
     0% {
-      transform: translateY(-10vh) rotate(0deg);
+      transform: translateY(-10vh) rotate(0deg) scale(0.9);
       opacity: 1;
     }
     100% {
-      transform: translateY(110vh) rotate(360deg);
+      transform: translateY(110vh) rotate(360deg) scale(1.1);
       opacity: 0;
     }
   }
