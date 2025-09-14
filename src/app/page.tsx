@@ -100,8 +100,8 @@ export default function Home() {
         {/* Features Section */}
         <ParallaxSection 
           className="w-full py-12 md:py-24 lg:py-32"
-          imageUrl="https://picsum.photos/seed/garden/1200/800"
-          imageHint="flower garden"
+          imageUrl="https://picsum.photos/seed/tranquil-garden/1200/800"
+          imageHint="tranquil garden"
         >
           <div className="container px-4 md:px-6">
             <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
