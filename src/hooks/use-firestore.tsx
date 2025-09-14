@@ -34,6 +34,12 @@ export function useFirestoreDocument<T>(path: string) {
         return () => unsubscribe();
     }, [path]);
 
+    useEffect(() => {
+        if (error) {
+            console.error('Firestore document load error:', error);
+        }
+    }, [error]);
+
     return { data, loading, error };
 }
 
@@ -50,13 +56,18 @@ export function useFirestoreCollection<T>(path: string) {
         }
 
         const collectionRef = collection(db, path);
-        const q = query(collectionRef, orderBy("createdAt", "desc"));
+        // Removing orderby to prevent need for composite indexes
+        const q = query(collectionRef);
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const collectionData: T[] = [];
             querySnapshot.forEach((doc) => {
                 collectionData.push({ id: doc.id, ...doc.data() } as T);
             });
+            // Manually sort by date client-side if createdAt exists
+            if (collectionData.length > 0 && collectionData[0].hasOwnProperty('createdAt')) {
+                collectionData.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
+            }
             setData(collectionData);
             setLoading(false);
         }, (err: any) => {
@@ -67,6 +78,12 @@ export function useFirestoreCollection<T>(path: string) {
 
         return () => unsubscribe();
     }, [path]);
+    
+    useEffect(() => {
+        if (error) {
+            console.error('Firestore collection load error:', error);
+        }
+    }, [error]);
 
     return { data, loading, error };
 }
