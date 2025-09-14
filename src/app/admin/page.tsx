@@ -101,7 +101,7 @@ export default function AdminPage() {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
               />
-              {error && <p className="text-red-500 text-sm font-medium">{error}</p>}
+              {error && <p className="text-destructive text-sm font-medium">{error}</p>}
               <Button
                 onClick={async () => {
                   setVerifying(true);

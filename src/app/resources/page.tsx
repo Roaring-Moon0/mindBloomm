@@ -246,12 +246,12 @@ function ResourcesContent() {
           </div>
   
           {isBlocked && (
-            <div className="text-center py-10 px-4 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg max-w-2xl mx-auto">
+            <div className="text-center py-10 px-4 text-destructive bg-destructive/10 rounded-lg max-w-2xl mx-auto">
               <AlertTriangle className="mx-auto h-12 w-12" />
               <p className="mt-4 font-bold text-lg">
                 For your safety, this search isn’t allowed.
               </p>
-              <p className="text-sm">
+              <p className="text-sm text-destructive/80">
                 Please try a different keyword. If you are in distress, please
                 reach out to one of the emergency helplines.
               </p>
