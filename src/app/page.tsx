@@ -134,19 +134,19 @@ export default function Home() {
                 <cite className="block not-italic font-semibold mt-2">- B.B. King</cite>
               </blockquote>
             </div>
-            <form action="/resources" method="GET" className="mx-auto w-full max-w-lg">
-                <div className="relative">
+            <form action="/resources" method="GET" className="mx-auto w-full max-w-lg flex items-center space-x-2">
+                <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                     <Input
                         type="search"
                         name="q"
-                        placeholder="Search for topics like 'mindfulness', 'motivation', etc."
-                        className="w-full pl-10 pr-24 h-12 text-base"
+                        placeholder="Search for topics like 'mindfulness'..."
+                        className="w-full pl-10 h-12 text-base"
                     />
-                    <Button type="submit" size="lg" className="absolute right-2 top-1/2 -translate-y-1/2 h-10">
-                        Search
-                    </Button>
                 </div>
+                <Button type="submit" size="lg" className="h-12 transition-transform duration-200 hover:scale-105">
+                    Search
+                </Button>
             </form>
           </FadeIn>
         </section>
