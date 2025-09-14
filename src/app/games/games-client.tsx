@@ -28,20 +28,20 @@ const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mo
 
 export function GamesClient() {
     return (
-        <div className="grid gap-12 lg:grid-cols-2 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-start">
             <div className="flex justify-center">
                 <BreathingVisualizer />
             </div>
             <div className="flex justify-center">
                 <ColorMatch />
             </div>
-            <div className="lg:col-span-2 flex justify-center">
+            <div className="md:col-span-2 flex justify-center">
                 <MemoryGame />
             </div>
             
-            <div className="lg:col-span-2">
+            <div className="md:col-span-2">
                 <h2 className="text-2xl font-bold text-center mb-8 font-headline">More Ways to Relax</h2>
-                <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8 max-w-lg mx-auto md:max-w-none">
                     <Card className="bg-secondary/30 opacity-60 cursor-not-allowed">
                         <CardHeader className="items-center text-center">
                             <Music className="w-10 h-10 text-primary" />
