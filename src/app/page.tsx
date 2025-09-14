@@ -85,11 +85,11 @@ export default function Home() {
               <FadeIn className="relative min-h-[300px] lg:min-h-0">
                   <div className="relative mx-auto aspect-video overflow-hidden rounded-xl z-10 shadow-xl">
                      <Image
-                        src="https://picsum.photos/seed/calm-water/600/400"
+                        src="https://picsum.photos/seed/serenity/600/400"
                         alt="A serene and calming scene with gentle lighting and natural elements"
                         fill
                         data-ai-hint="serene nature"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
                         priority
                      />
                   </div>
