@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { HeartHandshake, Lightbulb, Target, Mail, Linkedin } from 'lucide-react';
+import { Flower, Sprout, Sparkles, Mail, Linkedin } from 'lucide-react';
 import { FadeIn } from '@/components/ui/fade-in';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -30,9 +30,9 @@ const teamMembers: TeamMember[] = [
 ];
 
 const values = [
-    { icon: <HeartHandshake className="h-8 w-8 text-primary"/>, title: "Accessibility", description: "We believe everyone deserves access to quality mental health support, regardless of their circumstances." },
-    { icon: <Target className="h-8 w-8 text-primary"/>, title: "Empathy", description: "Our approach is rooted in compassion and understanding for each individual's unique journey." },
-    { icon: <Lightbulb className="h-8 w-8 text-primary"/>, title: "Integrity", description: "We are committed to providing evidence-based, responsible, and ethical tools and resources." },
+    { icon: <Flower className="h-8 w-8 text-primary"/>, title: "Accessibility", description: "We believe everyone deserves access to quality mental health support, regardless of their circumstances." },
+    { icon: <Sprout className="h-8 w-8 text-primary"/>, title: "Empathy", description: "Our approach is rooted in compassion and understanding for each individual's unique journey." },
+    { icon: <Sparkles className="h-8 w-8 text-primary"/>, title: "Integrity", description: "We are committed to providing evidence-based, responsible, and ethical tools and resources." },
 ];
 
 
@@ -149,5 +149,3 @@ export default function AboutPage() {
         </FadeIn>
     );
 }
-
-    

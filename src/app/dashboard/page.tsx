@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog } from "lucide-react";
+import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog, Flower, Home } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AccountSettings from "./account-settings";
@@ -160,11 +160,11 @@ export default function DashboardPage() {
             <Tabs defaultValue="dashboard" className="w-full">
                 <TabsList>
                     <TabsTrigger value="dashboard">
-                        <UserCog className="mr-2 h-4 w-4" />
+                        <Home className="mr-2 h-4 w-4" />
                         Dashboard
                     </TabsTrigger>
                     <TabsTrigger value="settings">
-                        <UserCog className="mr-2 h-4 w-4" />
+                        <Flower className="mr-2 h-4 w-4" />
                         Account Settings
                     </TabsTrigger>
                 </TabsList>

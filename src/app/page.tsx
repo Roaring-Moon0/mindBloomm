@@ -1,5 +1,6 @@
+
 import Link from 'next/link';
-import { ArrowRight, Leaf, MessageSquareHeart, Gamepad2, FileQuestion } from 'lucide-react';
+import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,7 +13,7 @@ import { ParallaxSection } from '@/components/ui/parallax-section';
 
 const features = [
   {
-    icon: <Leaf className="h-8 w-8 text-primary" />,
+    icon: <Flower className="h-8 w-8 text-primary" />,
     title: 'Resource Library',
     description: 'Explore articles, videos, and audio on anxiety, depression, and stress management.',
     href: '/resources',
