@@ -1,3 +1,4 @@
+
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useFirestoreCollection } from "@/hooks/use-firestore";
@@ -13,6 +14,7 @@ interface CuratedVideo {
   id: string;
   name: string;
   url: string;
+  thumbnail?: string;
   visible?: boolean;
 }
 
@@ -36,29 +38,88 @@ const containsBlockedWord = (query: string) => {
   return BLOCKED_WORDS.some((word) => lowerCaseQuery.includes(word));
 };
 
-// 📌 Old hardcoded fallback videos (curated starter library)
-const hardcodedVideos: CuratedVideo[] = [
-  {
-    id: "1",
-    name: "Guided Meditation for Anxiety & Stress",
-    url: "https://www.youtube.com/watch?v=1dbYduxIpwE",
+// 📌 Old curated categories with thumbnails
+const categoriesData: Record<string, { name: string; videos: CuratedVideo[] }> = {
+  anxiety: {
+    name: "Anxiety Relief",
+    videos: [
+      {
+        id: "1",
+        name: "Guided Meditation for Anxiety & Stress",
+        url: "https://www.youtube.com/watch?v=1dbYduxIpwE",
+        thumbnail: "https://img.youtube.com/vi/1dbYduxIpwE/hqdefault.jpg",
+      },
+      {
+        id: "2",
+        name: "Yoga For Anxiety and Stress",
+        url: "https://www.youtube.com/watch?v=hJbRpHZr_d0",
+        thumbnail: "https://img.youtube.com/vi/hJbRpHZr_d0/hqdefault.jpg",
+      },
+      {
+        id: "3",
+        name: "Quick Anxiety Relief in 5 Minutes",
+        url: "https://www.youtube.com/watch?v=MR57rug8NsM",
+        thumbnail: "https://img.youtube.com/vi/MR57rug8NsM/hqdefault.jpg",
+      },
+    ],
   },
-  {
-    id: "2",
-    name: "Yoga For Anxiety and Stress",
-    url: "https://www.youtube.com/watch?v=hJbRpHZr_d0",
+  depression: {
+    name: "Depression Support",
+    videos: [
+      {
+        id: "4",
+        name: "How to Cope With Depression",
+        url: "https://www.youtube.com/watch?v=EXB17cexyfQ",
+        thumbnail: "https://img.youtube.com/vi/EXB17cexyfQ/hqdefault.jpg",
+      },
+      {
+        id: "5",
+        name: "Motivational Speech for Depression",
+        url: "https://www.youtube.com/watch?v=U3nT2KDAGOc",
+        thumbnail: "https://img.youtube.com/vi/U3nT2KDAGOc/hqdefault.jpg",
+      },
+    ],
   },
-  {
-    id: "3",
-    name: "Quick Anxiety Relief in 5 Minutes",
-    url: "https://www.youtube.com/watch?v=MR57rug8NsM",
+  sleep: {
+    name: "Better Sleep",
+    videos: [
+      {
+        id: "6",
+        name: "Sleep Meditation Music",
+        url: "https://www.youtube.com/watch?v=1ZYbU82GVz4",
+        thumbnail: "https://img.youtube.com/vi/1ZYbU82GVz4/hqdefault.jpg",
+      },
+      {
+        id: "7",
+        name: "Guided Sleep Meditation",
+        url: "https://www.youtube.com/watch?v=M0u9GST_j3s",
+        thumbnail: "https://img.youtube.com/vi/M0u9GST_j3s/hqdefault.jpg",
+      },
+    ],
   },
-  {
-    id: "4",
-    name: "How to Stop an Anxiety Attack",
-    url: "https://www.youtube.com/watch?v=O-6f5wQXSu8",
+  stress: {
+    name: "Stress Management",
+    videos: [
+      {
+        id: "8",
+        name: "5-Minute Stress Relief",
+        url: "https://www.youtube.com/watch?v=hnpQrMqDoqE",
+        thumbnail: "https://img.youtube.com/vi/hnpQrMqDoqE/hqdefault.jpg",
+      },
+    ],
   },
-];
+  motivation: {
+    name: "Motivation & Positivity",
+    videos: [
+      {
+        id: "9",
+        name: "Powerful Motivational Speech",
+        url: "https://www.youtube.com/watch?v=mgmVOuLgFB0",
+        thumbnail: "https://img.youtube.com/vi/mgmVOuLgFB0/hqdefault.jpg",
+      },
+    ],
+  },
+};
 
 export default function ResourcesPage() {
   // 🔹 Get videos from Firestore backend
@@ -73,16 +134,33 @@ export default function ResourcesPage() {
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  // 🔹 Merge old static + Firestore backend videos
-  const visibleCuratedVideos = useMemo(() => {
-    const firestoreVideos = (curatedVideos || []).filter((v) => v.visible !== false);
-    const allVideos = [...hardcodedVideos, ...firestoreVideos];
-    // Remove duplicates by URL, preferring Firestore version if URL is the same
-    const uniqueVideos = Array.from(new Map(allVideos.map(v => [v.url, v])).values());
-    return uniqueVideos;
+  // 🔹 Helper: Extract YouTube ID from URL
+  const extractVideoId = (url: string) => {
+    const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/);
+    return match ? match[1] : "";
+  };
+
+  // 🔹 Merge Firestore videos with old curated
+  const allCuratedVideos = useMemo(() => {
+    const merged: Record<string, CuratedVideo[]> = {};
+    Object.entries(categoriesData).forEach(([key, cat]) => {
+      merged[key] = cat.videos;
+    });
+
+    (curatedVideos || [])
+      .filter((v) => v.visible !== false)
+      .forEach((video) => {
+        if (!merged["extra"]) merged["extra"] = [];
+        merged["extra"].push({
+          ...video,
+          thumbnail: `https://img.youtube.com/vi/${extractVideoId(video.url)}/hqdefault.jpg`,
+        });
+      });
+
+    return merged;
   }, [curatedVideos]);
 
-  // 🔹 Fetch YouTube results when searching
+  // 🔹 Fetch YouTube search results
   useEffect(() => {
     async function fetchYoutubeVideos() {
       if (debouncedSearchQuery.trim() === "") {
@@ -154,8 +232,7 @@ export default function ResourcesPage() {
             Resource Library
           </h1>
           <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-            Explore our curated library of safe videos, or search YouTube for
-            topics like 'meditation' or 'mindfulness'.
+            Explore our curated categories, or search YouTube for new content.
           </p>
         </div>
 
@@ -185,89 +262,123 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        {/* Video sections */}
+        {/* Video results */}
         {!isBlocked && (
           <>
-            <h2 className="text-2xl font-bold font-headline mb-6">
-              {showYoutubeResults
-                ? `YouTube Results for "${debouncedSearchQuery}"`
-                : "Our Curated Library"}
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {isSearching ? (
-                Array.from({ length: 6 }).map((_, i) => <VideoSkeleton key={i} />)
-              ) : showYoutubeResults ? (
-                youtubeVideos.length > 0 ? (
-                  youtubeVideos.map((video) => (
-                    <a
-                      href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      key={video.id.videoId}
-                    >
-                      <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-                        <div className="aspect-video relative">
-                          <img
-                            src={video.snippet.thumbnails.high.url}
-                            alt={video.snippet.title}
-                            className="object-cover w-full h-full"
-                          />
-                        </div>
-                        <CardHeader>
-                          <CardTitle className="text-lg leading-snug">
-                            {video.snippet.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-grow flex items-end">
-                          <p className="text-sm text-muted-foreground">
-                            By {video.snippet.channelTitle}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </a>
+            {showYoutubeResults ? (
+              <>
+                <h2 className="text-2xl font-bold font-headline mb-6">
+                  YouTube Results for "{debouncedSearchQuery}"
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {isSearching ? (
+                    Array.from({ length: 6 }).map((_, i) => (
+                      <VideoSkeleton key={i} />
+                    ))
+                  ) : youtubeVideos.length > 0 ? (
+                    youtubeVideos.map((video) => (
+                      <a
+                        href={`https://www.youtube.com/watch?v=${video.id.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        key={video.id.videoId}
+                      >
+                        <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                          <div className="aspect-video relative">
+                            <img
+                              src={video.snippet.thumbnails.high.url}
+                              alt={video.snippet.title}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                          <CardHeader>
+                            <CardTitle className="text-lg leading-snug">
+                              {video.snippet.title}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex-grow flex items-end">
+                            <p className="text-sm text-muted-foreground">
+                              By {video.snippet.channelTitle}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    ))
+                  ) : (
+                    <div className="col-span-full text-center py-20 text-muted-foreground">
+                      <Youtube className="mx-auto h-16 w-16 mb-4" />
+                      <p className="font-semibold">
+                        No YouTube videos found for "{debouncedSearchQuery}".
+                      </p>
+                      <p className="text-sm">Please try a different search term.</p>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                {curatedLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                     <div key={i} className="mb-12">
+                      <Skeleton className="h-8 w-1/4 mb-6" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <VideoSkeleton />
+                        <VideoSkeleton />
+                        <VideoSkeleton />
+                      </div>
+                    </div>
                   ))
                 ) : (
-                  <div className="col-span-full text-center py-20 text-muted-foreground">
-                    <Youtube className="mx-auto h-16 w-16 mb-4" />
-                    <p className="font-semibold">
-                      No YouTube videos found for "{debouncedSearchQuery}".
-                    </p>
-                    <p className="text-sm">Please try a different search term.</p>
-                  </div>
-                )
-              ) : curatedLoading ? (
-                Array.from({ length: visibleCuratedVideos.length || 3 }).map((_, i) => <VideoSkeleton key={i} />)
-              ) : (
-                visibleCuratedVideos.map((video) => (
-                  <Link
-                    href={video.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    key={video.id}
-                  >
-                    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
-                      <div className="aspect-video relative flex items-center justify-center bg-secondary">
-                        <Youtube className="h-16 w-16 text-secondary-foreground/50" />
+                  Object.entries(allCuratedVideos).map(([key, videos]) => (
+                    <div key={key} className="mb-12">
+                      <h2 className="text-2xl font-bold font-headline mb-6">
+                        {categoriesData[key]?.name || "From Your Dashboard"}
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {videos.map((video) => (
+                          <Link
+                            href={video.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            key={video.id}
+                          >
+                            <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col h-full">
+                              <div className="aspect-video relative">
+                                {video.thumbnail ? (
+                                  <img
+                                    src={video.thumbnail}
+                                    alt={video.name}
+                                    className="object-cover w-full h-full"
+                                  />
+                                ) : (
+                                  <div className="flex items-center justify-center bg-secondary w-full h-full">
+                                    <Youtube className="h-16 w-16 text-secondary-foreground/50" />
+                                  </div>
+                                )}
+                              </div>
+                              <CardHeader>
+                                <CardTitle className="text-lg leading-snug">
+                                  {video.name}
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="flex-grow flex items-end">
+                                <p className="text-sm text-muted-foreground">
+                                  Curated by MindBloom
+                                </p>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        ))}
                       </div>
-                      <CardHeader>
-                        <CardTitle className="text-lg leading-snug">
-                          {video.name}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="flex-grow flex items-end">
-                        <p className="text-sm text-muted-foreground">
-                          Curated by MindBloom
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                ))
-              )}
-            </div>
+                    </div>
+                  ))
+                )}
+              </>
+            )}
           </>
         )}
       </div>
     </FadeIn>
   );
 }
+
