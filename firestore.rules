@@ -2,46 +2,44 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Videos collection
+    // Public collections that anyone can read
     match /videos/{docId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if false; // Writes should be handled by backend/admin logic
     }
 
-    // Surveys
+    // Surveys can be read by anyone, but only authenticated users can write
+    // (assuming admin logic on the backend protects against unauthorized writes)
     match /surveys/{docId} {
-      allow read, write: if request.auth != null;
+      allow read: if true;
+      allow write: if request.auth != null;
     }
 
-    // Admin codes
+    // Admin codes can be read by authenticated users during verification
     match /adminCodes/{docId} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // Admins
+    // Admins can only manage their own admin document
     match /admins/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Users main doc
+    // User-specific data
     match /users/{userId} {
+      // A user can read and write their own main user document
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
-      // Subcollections inside each user
-      match /{subcollection=**}/{docId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+      // A user can read, write, and delete documents in their own 'notes' subcollection
+      match /notes/{noteId} {
+        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
       }
-    }
 
-    // Announcements
-    match /announcements/{docId} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Config
-    match /config/{docId} {
-      allow read, write: if request.auth != null;
+      // A user can read and write documents in their own 'journal' subcollection (e.g., the 'state' document)
+      match /journal/{journalDocId} {
+         allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }
