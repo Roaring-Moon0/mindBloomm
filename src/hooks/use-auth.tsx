@@ -51,8 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // It also fires after a successful signInWithPopup or signInWithRedirect.
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setLoading(true);
       if (currentUser) {
-        // User is signed in. Ensure their document exists in Firestore.
+        // User is signed in. Ensure their document exists in Firestore before setting user state.
         await ensureUserDocument(currentUser);
         setUser(currentUser);
       } else {
