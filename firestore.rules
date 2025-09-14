@@ -1,44 +1,47 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Everyone (even without login) can read videos and surveys
+
+    // Videos collection
     match /videos/{docId} {
       allow read: if true;
-      allow write: if false; // Handled by backend logic/admin
-    }
-    
-    match /surveys/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null; // Checked by admin verification flow
+      allow write: if false;
     }
 
-    // Admin verification codes
+    // Surveys
+    match /surveys/{docId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Admin codes
     match /adminCodes/{docId} {
       allow read: if request.auth != null;
       allow write: if false;
     }
 
-    // Admins collection - each admin can only read/write their own record
+    // Admins
     match /admins/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // 🔑 Normal users collection (with subcollections)
+    // Users main doc
     match /users/{userId} {
-      // User can only access their own document
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if request.auth != null && request.auth.uid == userId;
 
-      // notes subcollection
-      match /notes/{noteId} {
-        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+      // Subcollections inside each user
+      match /{subcollection=**}/{docId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
       }
+    }
 
-      // journal subcollection (contains 'state' document)
-      match /journal/{docId=**} {
-        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-      }
+    // Announcements
+    match /announcements/{docId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Config
+    match /config/{docId} {
+      allow read, write: if request.auth != null;
     }
   }
 }
