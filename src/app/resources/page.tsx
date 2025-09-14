@@ -1,8 +1,12 @@
+
 "use client";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Youtube } from "lucide-react";
+import { FadeIn } from "@/components/ui/fade-in";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ResourcesPage() {
   const [videos, setVideos] = useState<any[]>([]);
@@ -27,9 +31,14 @@ export default function ResourcesPage() {
           }`
         );
         const data = await res.json();
-        setVideos(data.items || []);
+        if (data.items) {
+          setVideos(data.items);
+        } else {
+            setVideos([]);
+        }
       } catch (err) {
         console.error("Error fetching YouTube data:", err);
+        setVideos([]);
       } finally {
         setLoading(false);
       }
@@ -42,60 +51,83 @@ export default function ResourcesPage() {
     setSearchTerm(query);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-green-200 via-blue-100 to-purple-200 p-6">
-      <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
-        🌈 Helpful YouTube Resources
-      </h1>
-      <form
-        onSubmit={handleSearch}
-        className="max-w-xl mx-auto mb-8 flex gap-2"
-      >
-        <Input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for topics like 'anxiety', 'meditation'..."
-          className="bg-white/80"
-        />
-        <Button type="submit">
-          <Search className="mr-2 h-4 w-4" /> Search
-        </Button>
-      </form>
+  const VideoSkeleton = () => (
+    <Card className="overflow-hidden">
+        <Skeleton className="w-full h-48" />
+        <CardContent className="p-4">
+            <Skeleton className="h-5 w-3/4 mb-2" />
+            <Skeleton className="h-4 w-1/2" />
+        </CardContent>
+    </Card>
+  )
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64 text-lg font-semibold">
-          Loading YouTube Videos...
-        </div>
-      ) : videos.length === 0 ? (
-        <p className="text-center text-gray-600">
-          No videos found for "{searchTerm}". Try another search.
-        </p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {videos.map((video) => (
-            <div
-              key={video.id.videoId || video.id.channelId}
-              className="rounded-2xl shadow-lg bg-white overflow-hidden hover:scale-105 transition-transform duration-300"
-            >
-              <iframe
-                className="w-full h-60"
-                src={`https://www.youtube.com/embed/${video.id.videoId}`}
-                title={video.snippet.title}
-                allowFullScreen
-              />
-              <div className="p-4">
-                <h3 className="font-semibold text-lg text-gray-800 mb-1">
-                  {video.snippet.title}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  {video.snippet.channelTitle}
+  return (
+    <FadeIn>
+        <div className="container mx-auto py-12 px-4 md:px-6">
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold tracking-tight font-headline">Resource Library</h1>
+                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                    Search YouTube for videos on topics like 'anxiety', 'meditation', or 'mindfulness'.
                 </p>
-              </div>
             </div>
-          ))}
+
+            <form
+                onSubmit={handleSearch}
+                className="max-w-xl mx-auto mb-12 flex gap-2"
+            >
+                <Input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search for topics..."
+                className="bg-background"
+                />
+                <Button type="submit" disabled={loading}>
+                    <Search className="mr-2 h-4 w-4" /> Search
+                </Button>
+            </form>
+
+            {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({length: 6}).map((_, i) => <VideoSkeleton key={i}/>)}
+                </div>
+            ) : videos.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                    <Youtube className="mx-auto h-16 w-16 mb-4"/>
+                    <p className="font-semibold">No videos found for "{searchTerm}".</p>
+                    <p className="text-sm">Please try a different search term.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {videos.map((video) => (
+                    <Card
+                        key={video.id.videoId}
+                        className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                    >
+                        <div className="aspect-video">
+                            <iframe
+                                className="w-full h-full"
+                                src={`https://www.youtube.com/embed/${video.id.videoId}`}
+                                title={video.snippet.title}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
+                        <CardHeader>
+                            <CardTitle className="text-lg leading-snug">
+                                {video.snippet.title}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="flex-grow flex items-end">
+                             <p className="text-sm text-muted-foreground">
+                                By {video.snippet.channelTitle}
+                            </p>
+                        </CardContent>
+                    </Card>
+                ))}
+                </div>
+            )}
         </div>
-      )}
-    </div>
+    </FadeIn>
   );
 }
