@@ -2,42 +2,40 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Allow public read access to the 'videos' collection
+    // Public collections
     match /videos/{docId} {
       allow read: if true;
-      allow write: if false;
+      allow write: if false; // Only admins should write, handled by backend logic
     }
-
-    // Surveys collection - allow authenticated users to read/write
-    match /surveys/{docId} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Admin verification codes
+    
+    // Admin & Config collections
     match /adminCodes/{docId} {
-      allow read: if request.auth != null;
-      allow write: if false;
+      allow read: if request.auth != null; // Checked by admin verification flow
     }
-
-    // Admins collection - each admin can read/write only their own record
     match /admins/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-
-    // Announcements collection - allow authenticated read/write
-    match /announcements/{docId} {
-      allow read, write: if request.auth != null;
+    match /surveys/{docId} {
+      allow read: if true; // Public can read surveys
+      allow write: if request.auth != null; // Checked by admin verification flow
     }
 
-    // Config collection - allow authenticated read/write
-    match /config/{docId} {
-      allow read, write: if request.auth != null;
-    }
+    // USER-SPECIFIC DATA
+    match /users/{userId} {
+      // Users can read/write their own top-level document.
+      allow read, update, delete: if request.auth != null && request.auth.uid == userId;
+      // New users can create their own document.
+      allow create: if request.auth != null;
 
-    // --- Correct User Data Rule ---
-    // Grants a logged-in user access to their own user document AND all sub-collections within it (e.g., 'entries', 'journal/state').
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Rule for the 'notes' subcollection
+      match /notes/{noteId} {
+        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Rule for the 'journal' subcollection (e.g., /journal/state)
+      match /journal/{doc=**} {
+        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }
