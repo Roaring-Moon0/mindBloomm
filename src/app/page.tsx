@@ -89,7 +89,7 @@ export default function Home() {
         </section>
 
         {/* Features Section */}
-        <ParallaxSection 
+        <ParallaxSection
           className="w-full py-12 md:py-24 lg:py-32"
           imageUrl="https://picsum.photos/seed/flower-garden/1200/800"
           imageHint="flower garden"
@@ -144,7 +144,7 @@ export default function Home() {
                         className="w-full pl-10 h-12 text-base"
                     />
                 </div>
-                <Button type="submit" size="lg" className="h-12 transition-transform duration-200 hover:scale-105">
+                <Button type="submit" size="lg" variant="secondary" className="h-12 transition-transform duration-200 hover:scale-105">
                     Search
                 </Button>
             </form>
