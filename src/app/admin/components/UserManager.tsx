@@ -19,7 +19,7 @@ export default function UserManager() {
             <p className="text-sm">Viewing and managing users is disabled.</p>
           </div>
         </CardContent>
-      </Admins>
+      </Card>
     </div>
   );
 }
