@@ -9,12 +9,14 @@ import type { ReactNode } from 'react';
 interface ParallaxSectionProps {
   children: ReactNode;
   imageUrl?: string;
+  imageHint?: string;
   className?: string;
 }
 
 export function ParallaxSection({ 
   children, 
   imageUrl = "https://picsum.photos/seed/parallaxbg/1200/800",
+  imageHint = "abstract background",
   className 
 }: ParallaxSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -37,7 +39,7 @@ export function ParallaxSection({
           src={imageUrl}
           alt="Parallax background"
           fill
-          data-ai-hint="abstract background"
+          data-ai-hint={imageHint}
           className="object-cover"
           sizes="100vw"
         />
