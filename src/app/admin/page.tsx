@@ -34,9 +34,9 @@ function AdminDashboardContent() {
         <Tabs defaultValue="surveys" className="w-full">
           <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full h-auto">
             <TabsTrigger value="surveys">Surveys</TabsTrigger>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="config">Config</TabsTrigger>
+            <TabsTrigger value="videos" disabled>Videos</TabsTrigger>
+            <TabsTrigger value="users" disabled>Users</TabsTrigger>
+            <TabsTrigger value="config" disabled>Config</TabsTrigger>
           </TabsList>
 
           <TabsContent value="surveys" className="mt-6"><SurveyManager /></TabsContent>
