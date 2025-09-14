@@ -92,7 +92,7 @@ export default function Home() {
         <ParallaxSection
           className="w-full py-12 md:py-24 lg:py-32"
           imageUrl="https://picsum.photos/seed/flower-garden/1200/800"
-          imageHint="flower garden"
+          data-ai-hint="flower garden"
         >
           <div className="container px-4 md:px-6">
             <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -144,7 +144,7 @@ export default function Home() {
                         className="w-full pl-10 h-12 text-base"
                     />
                 </div>
-                <Button type="submit" size="lg" variant="secondary" className="h-12 transition-transform duration-200 hover:scale-105">
+                <Button type="submit" size="lg" variant="secondary" className="h-12 transition-transform duration-200 hover:scale-105 rounded-lg">
                     Search
                 </Button>
             </form>
