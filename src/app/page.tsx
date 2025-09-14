@@ -85,7 +85,7 @@ export default function Home() {
               <FadeIn className="relative min-h-[300px] lg:min-h-0">
                   <div className="relative mx-auto aspect-video overflow-hidden rounded-xl z-10 shadow-xl">
                      <Image
-                        src="/assets/imf.png"
+                        src="/assets/img.png"
                         alt="Serene and calming background for MindBloom"
                         fill
                         className="object-cover transition-transform duration-300 ease-in-out hover:scale-105"
