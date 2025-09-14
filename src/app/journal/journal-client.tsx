@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { User } from 'firebase/auth';
@@ -29,8 +30,12 @@ const JournalSkeleton = () => (
 )
 
 export default function JournalClientPage({ user }: { user: User }) {
-    const { data: notes, loading: notesLoading, error: notesError } = useFirestoreCollection<Note>(`users/${user.uid}/notes`);
-    const { data: journal, loading: journalLoading, error: journalError } = useFirestoreDocument<Journal>(`users/${user.uid}/journal/state`);
+    // Conditionally set paths to prevent hooks from running before user is authenticated
+    const notesPath = user ? `users/${user.uid}/notes` : '';
+    const journalPath = user ? `users/${user.uid}/journal/state` : '';
+
+    const { data: notes, loading: notesLoading, error: notesError } = useFirestoreCollection<Note>(notesPath);
+    const { data: journal, loading: journalLoading, error: journalError } = useFirestoreDocument<Journal>(journalPath);
 
     const loading = notesLoading || journalLoading;
     const error = notesError || journalError;
