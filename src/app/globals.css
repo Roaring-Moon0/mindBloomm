@@ -53,8 +53,9 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 260 85% 65%; /* Brighter Lavender */
-    --primary-foreground: 260 85% 10%;
+    /* Baby Blue Primary */
+    --primary: 200 75% 76%; /* #89CFEF */
+    --primary-foreground: 200 100% 10%; /* Dark blue for contrast */
     
     --secondary: 200 75% 50%; /* Softer Teal */
     --secondary-foreground: 200 75% 95%;
@@ -70,9 +71,9 @@
     
     --border: 240 4% 15%;
     --input: 240 4% 15%;
-    --ring: 260 85% 65%;
+    --ring: 200 75% 76%; /* #89CFEF */
 
-    --chart-1: 260 85% 65%;
+    --chart-1: 200 75% 76%;
     --chart-2: 200 75% 50%;
     --chart-3: 45 80% 60%;
     --chart-4: 210 80% 60%;
