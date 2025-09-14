@@ -65,7 +65,7 @@ export function useFirestoreCollection<T>(path: string) {
                 collectionData.push({ id: doc.id, ...doc.data() } as T);
             });
             // Manually sort by date client-side if createdAt exists
-            if (collectionData.length > 0 && collectionData[0].hasOwnProperty('createdAt')) {
+            if (collectionData.length > 0 && (collectionData[0] as any).createdAt) {
                 collectionData.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
             }
             setData(collectionData);
