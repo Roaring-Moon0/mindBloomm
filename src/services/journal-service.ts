@@ -25,23 +25,22 @@ export const addJournalEntry = async (payload: z.infer<typeof entrySchema>) => {
     return runTransaction(db, async (transaction) => {
         const stateDoc = await transaction.get(journalStateRef);
 
-        // Add the new journal entry first
+        // Add the new journal entry
         transaction.set(newEntryRef, {
             ...validated,
             createdAt: serverTimestamp(),
             uid: user.uid,
         });
 
-        // Now, handle the journal state (the tree)
+        // If the journal state doesn't exist, create it.
         if (!stateDoc.exists()) {
-            // This is the first entry, create the state document
             transaction.set(journalStateRef, { 
-                treeName: "My Gratitude Tree", // Default name
+                treeName: "My Gratitude Tree",
                 entryCount: 1,
                 lastEntryDate: serverTimestamp()
             });
         } else {
-            // State document exists, just update the count and date
+            // Otherwise, increment the entry count.
             const newCount = (stateDoc.data().entryCount || 0) + 1;
             transaction.update(journalStateRef, { 
                 entryCount: newCount,
