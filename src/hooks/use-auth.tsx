@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { toast } from './use-toast';
 
@@ -16,24 +16,41 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Helper function to create user document if it doesn't exist
+// Helper function to create user document and initial journal state if they don't exist
 const ensureUserDocument = async (user: User) => {
     if (!user) return;
+    
     const userDocRef = doc(db, 'users', user.uid);
+    
     try {
         const userDoc = await getDoc(userDocRef);
+        
         if (!userDoc.exists()) {
-            // This is a new user, create their document
+            // This is a new user, create their main document and journal state
+            const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
+
             await setDoc(userDocRef, {
                 uid: user.uid,
                 email: user.email,
                 displayName: user.displayName || user.email?.split('@')[0],
                 photoURL: user.photoURL,
-                createdAt: new Date(),
+                createdAt: serverTimestamp(),
             });
+
+            // Create the initial journal state document
+            await setDoc(journalStateRef, { 
+                treeName: "My Tree",
+                createdAt: serverTimestamp(),
+                lastWritten: serverTimestamp(),
+                treeHealth: 80,
+                missedDays: 0,
+                mood: 'happy',
+                emoji: '😊',
+            });
+
             toast({
                 title: "Account Created!",
-                description: `Welcome to MindBloom, ${user.displayName || 'Friend'}.`,
+                description: `Welcome to MindBloom, ${user.displayName || 'Friend'}. Your tree has been planted!`,
             });
         }
     } catch (error) {
