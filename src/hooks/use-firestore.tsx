@@ -12,6 +12,7 @@ export function useFirestoreDocument<T>(path: string) {
 
     useEffect(() => {
         if (!path) {
+            setData(null);
             setLoading(false);
             return;
         };
@@ -51,6 +52,7 @@ export function useFirestoreCollection<T>(path: string) {
 
     useEffect(() => {
         if (!path) {
+            setData([]);
             setLoading(false);
             return;
         }
@@ -65,8 +67,8 @@ export function useFirestoreCollection<T>(path: string) {
                 collectionData.push({ id: doc.id, ...doc.data() } as T);
             });
             // Manually sort by date client-side if createdAt exists
-            if (collectionData.length > 0 && (collectionData[0] as any).createdAt) {
-                collectionData.sort((a: any, b: any) => b.createdAt?.toMillis() - a.createdAt?.toMillis());
+            if (collectionData.length > 0 && (collectionData[0] as any).createdAt?.toDate) {
+                collectionData.sort((a: any, b: any) => b.createdAt.toDate().getTime() - a.createdAt.toDate().getTime());
             }
             setData(collectionData);
             setLoading(false);
