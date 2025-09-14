@@ -1,50 +1,49 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 98%; /* light gray */
+    --foreground: 220 20% 10%; /* near-black text */
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 20% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 20% 10%;
 
-    /* 💖 Soft Pink primary */
-    --primary: 330 75% 70%;         /* Pink */
+    /* 💖 Pink */
+    --primary: 330 80% 65%;
     --primary-foreground: 0 0% 100%;
 
-    /* 💙 Gentle Blue secondary */
-    --secondary: 210 80% 60%;       /* Sky blue */
+    /* 💙 Blue */
+    --secondary: 210 80% 60%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 20% 95%;
+    --muted-foreground: 210 10% 40%;
 
-    --accent: 330 75% 70%; /* Pink accent */
+    --accent: 330 80% 65%; /* pink */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 330 80% 40%; /* dark pink instead of red */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 210 80% 60%; /* Blue ring */
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 210 80% 60%; /* blue */
     
-    /* 🎨 Chart palette */
-    --chart-1: 330 75% 70%;  /* Pink */
+    /* 🎨 Charts (ONLY pink + blue variations) */
+    --chart-1: 330 80% 65%;  /* Pink */
     --chart-2: 210 80% 60%;  /* Blue */
-    --chart-3: 270 65% 60%;  /* Lavender */
-    --chart-4: 45 85% 60%;   /* Yellow */
-    --chart-5: 160 60% 50%;  /* Teal */
+    --chart-3: 330 70% 55%;  /* Darker Pink */
+    --chart-4: 210 70% 50%;  /* Darker Blue */
+    --chart-5: 330 90% 75%;  /* Lighter Pink */
   }
 
   .dark {
-    --background: 220 15% 8%;
+    --background: 220 15% 8%;  /* dark navy-gray */
     --foreground: 0 0% 98%;
     
     --card: 220 15% 12%;
@@ -53,32 +52,33 @@
     --popover: 220 15% 10%;
     --popover-foreground: 0 0% 98%;
     
-    /* 💖 Blue + Pink duo */
-    --primary: 330 75% 72%;        /* Bright Pink */
-    --primary-foreground: 240 20% 12%; 
+    /* 💖 Pink */
+    --primary: 330 80% 70%;
+    --primary-foreground: 220 20% 10%;
     
-    --secondary: 210 85% 65%;      /* Sky Blue */
-    --secondary-foreground: 240 20% 12%;
+    /* 💙 Blue */
+    --secondary: 210 85% 65%;
+    --secondary-foreground: 220 20% 10%;
     
     --muted: 220 15% 18%;
     --muted-foreground: 220 10% 65%;
     
-    --accent: 210 85% 65%;  /* Blue accent */
-    --accent-foreground: 240 20% 12%;
+    --accent: 210 85% 65%; /* Blue */
+    --accent-foreground: 220 20% 10%;
     
-    --destructive: 0 63% 40%;
+    --destructive: 330 70% 50%; /* darker pink */
     --destructive-foreground: 0 0% 98%;
     
     --border: 220 15% 18%;
     --input: 220 15% 18%;
-    --ring: 330 75% 72%; /* Pink glow */
+    --ring: 330 80% 70%; /* pink glow */
 
-    /* 🎨 Chart palette (dark) */
-    --chart-1: 330 75% 72%; /* Pink */
+    /* 🎨 Charts (dark, pink + blue only) */
+    --chart-1: 330 80% 70%; /* Pink */
     --chart-2: 210 85% 65%; /* Blue */
-    --chart-3: 270 70% 65%; /* Purple */
-    --chart-4: 45 85% 60%;  /* Yellow */
-    --chart-5: 160 65% 55%; /* Teal */
+    --chart-3: 330 70% 55%; /* Dark Pink */
+    --chart-4: 210 70% 50%; /* Dark Blue */
+    --chart-5: 330 90% 75%; /* Light Pink */
   }
 }
 
@@ -101,7 +101,7 @@
     background-color: hsl(var(--primary) / 0.25);
     border-radius: 150px 0;
     animation: fall linear infinite;
-    filter: blur(0.5px); /* 🌸 softer floating petals */
+    filter: blur(0.5px);
   }
 
   @keyframes fall {
