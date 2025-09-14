@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion, Search } from 'lucide-react';
+import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion, Search, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -157,8 +157,11 @@ export default function Home() {
         <section id="team-preview" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <FadeIn className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">Our Experts</div>
+              <div className="space-y-4">
+                <div className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-base font-semibold text-primary transition-colors hover:bg-primary/20">
+                    <Users className="h-5 w-5" />
+                    <span>Our Experts</span>
+                </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Meet the Team</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Our team of dedicated professionals is here to support you.
@@ -168,9 +171,9 @@ export default function Home() {
             <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 lg:grid-cols-3 mt-12">
               {teamMembers.slice(0,3).map((member, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)}>
-                  <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-lg hover:border-primary/50">
+                  <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2 border-transparent hover:border-primary/50 bg-card">
                     <CardContent className="p-6 flex flex-col items-center">
-                        <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
+                        <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20 shadow-sm">
                           <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
                           <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                         </Avatar>
