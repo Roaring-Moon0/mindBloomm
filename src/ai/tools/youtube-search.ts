@@ -3,11 +3,13 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import fetch from 'node-fetch';
 
 const YoutubeSearchToolInputSchema = z.object({
   query: z.string(),
 });
 
+// Using z.any() because the YouTube API response is complex
 const YoutubeSearchToolOutputSchema = z.any();
 
 
@@ -38,7 +40,7 @@ export const youtubeSearchTool = ai.defineTool(
                 console.error('YouTube API Error:', errorBody);
                 throw new Error(`YouTube API request failed with status ${response.status}`);
             }
-            const data = await response.json();
+            const data: any = await response.json();
             return data.items;
         } catch (error) {
             console.error('Error fetching from YouTube API:', error);

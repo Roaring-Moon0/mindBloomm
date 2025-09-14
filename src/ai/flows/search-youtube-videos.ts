@@ -29,10 +29,10 @@ const searchYoutubeVideosFlow = ai.defineFlow(
     const searchResult = await youtubeSearchTool({ query });
 
     return {
-      videos: searchResult.map(item => ({
+      videos: searchResult.map((item: any) => ({
           id: item.id.videoId,
           title: item.snippet.title,
-          thumbnail: item.snippet.thumbnails.default.url
+          thumbnail: item.snippet.thumbnails.high.url
       }))
     };
   }
