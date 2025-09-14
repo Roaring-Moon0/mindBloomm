@@ -125,9 +125,11 @@ export default function Home() {
         </ParallaxSection>
 
         {/* New Discover Section */}
-        <section id="discover-resources" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
-          <FadeIn className="container grid items-center justify-center gap-6 px-4 text-center md:px-6">
+        <section id="discover-resources" className="relative w-full py-12 md:py-24 lg:py-32 bg-gradient-to-br from-primary/10 via-background to-background overflow-hidden">
+          <FloatingPetals />
+          <FadeIn className="container grid items-center justify-center gap-6 px-4 text-center md:px-6 z-10 relative">
             <div className="space-y-3">
+              <Flower className="mx-auto h-12 w-12 text-primary" />
               <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight font-headline">Discover New Resources</h2>
               <blockquote className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed italic">
                 "The beautiful thing about learning is that nobody can take it away from you."
@@ -144,7 +146,7 @@ export default function Home() {
                         className="w-full pl-10 h-12 text-base"
                     />
                 </div>
-                <Button type="submit" size="lg" variant="secondary" className="h-12 transition-transform duration-200 hover:scale-105 rounded-lg">
+                <Button type="submit" size="lg" className="h-12 transition-transform duration-200 hover:scale-105 rounded-lg">
                     Search
                 </Button>
             </form>
