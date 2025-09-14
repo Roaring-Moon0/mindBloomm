@@ -2,7 +2,7 @@
 "use client";
 
 // 👉 Import dependencies
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { auth } from "@/lib/firebase";
 import {
   signInWithEmailAndPassword,
@@ -13,7 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -25,10 +25,7 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     );
 }
 
-/* ---------------------------------------------------
-   🔹 LOGIN PAGE
-   --------------------------------------------------- */
-export default function LoginPage() {
+function LoginForm() {
   // form states
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -83,8 +80,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-var(--header-height))] px-4">
-      <form
+    <form
         onSubmit={handleLogin}
         className="p-6 shadow-lg rounded-xl w-full max-w-sm bg-card text-card-foreground border"
       >
@@ -161,6 +157,18 @@ export default function LoginPage() {
           </Link>
         </p>
       </form>
+  )
+}
+
+/* ---------------------------------------------------
+   🔹 LOGIN PAGE
+   --------------------------------------------------- */
+export default function LoginPage() {
+  return (
+    <div className="flex items-center justify-center min-h-[calc(100vh-var(--header-height))] px-4">
+      <Suspense fallback={<div className="w-full max-w-sm flex justify-center items-center h-96"><Loader2 className="w-8 h-8 animate-spin"/></div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }
