@@ -50,12 +50,19 @@ export function useFirestoreCollection<T>(path: string) {
         }
 
         const collectionRef = collection(db, path);
-        const q = query(collectionRef, orderBy('createdAt', 'desc'));
+        // Removing orderBy to prevent index-related errors.
+        const q = query(collectionRef);
 
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const collectionData: T[] = [];
             querySnapshot.forEach((doc) => {
                 collectionData.push({ id: doc.id, ...doc.data() } as T);
+            });
+            // Manually sort by createdAt on the client-side
+            collectionData.sort((a: any, b: any) => {
+                const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(0);
+                const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(0);
+                return dateB - dateA;
             });
             setData(collectionData);
             setLoading(false);
