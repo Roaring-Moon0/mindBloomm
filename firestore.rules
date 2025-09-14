@@ -5,37 +5,37 @@ service cloud.firestore {
     // Allow public read access to the 'videos' collection
     match /videos/{docId} {
       allow read: if true;
-      allow write: if false; // Nobody can write to videos from the client
+      allow write: if false;
     }
 
-    // Surveys collection - allow any authenticated user to read/write for now
+    // Surveys collection - allow authenticated users to read/write
     match /surveys/{docId} {
       allow read, write: if request.auth != null;
     }
 
-    // Admin verification codes - allow any authenticated user to read
+    // Admin verification codes
     match /adminCodes/{docId} {
       allow read: if request.auth != null;
-      allow write: if false; // Cannot be written from client
+      allow write: if false;
     }
 
-    // Admins collection
+    // Admins collection - each admin can read/write only their own record
     match /admins/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Announcements collection
+    // Announcements collection - allow authenticated read/write
     match /announcements/{docId} {
       allow read, write: if request.auth != null;
     }
 
-    // Config collection
+    // Config collection - allow authenticated read/write
     match /config/{docId} {
       allow read, write: if request.auth != null;
     }
 
-    // User-specific data, including journal entries and state
-    // The {document=**} wildcard recursively matches all sub-collections and documents.
+    // --- Correct User Data Rule ---
+    // Grants a logged-in user access to their own user document AND all sub-collections within it (e.g., 'entries', 'journal/state').
     match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
