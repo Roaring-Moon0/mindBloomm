@@ -6,7 +6,7 @@ import { getFirestore, Firestore } from "firebase/firestore";
 const firebaseConfig = {
   "projectId": "mindbloom-l8ow7",
   "appId": "1:202583968080:web:67b025852515f4d07d8455",
-  "storageBucket": "mindbloom-l8ow7.firebasestorage.app",
+  "storageBucket": "mindbloom-l8ow7.appspot.com",
   "apiKey": "AIzaSyAPZaKwIGQiHuiynQH47jx35k7rlZSanoM",
   "authDomain": "mindbloom-l8ow7.firebaseapp.com",
   "messagingSenderId": "202583968080"
