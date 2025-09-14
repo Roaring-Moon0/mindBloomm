@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/resources', label: 'Resources' },
-  { href: '/journal', label: 'Journal' },
   { href: '/games', label: 'Games' },
   { href: '/chat', label: 'Bloom AI' },
   { href: '/survey', label: 'Survey' },

@@ -1,17 +1,16 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog, Flower, Home, Notebook } from "lucide-react";
+import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog, Home } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AccountSettings from "./account-settings";
-import { useFirestoreDocument } from "@/hooks/use-firestore";
 
 const allQuotes = [
   {
@@ -84,33 +83,9 @@ function QuoteDisplay() {
 function MainDashboard() {
     const { user } = useAuth();
     const displayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
-    const { data: journalData } = useFirestoreDocument<any>(user ? `users/${user.uid}/journal/state` : '');
-
-    const hasWrittenToday = useMemo(() => {
-        if (!journalData?.lastEntryDate) return false;
-        const lastEntry = journalData.lastEntryDate.toDate();
-        const today = new Date();
-        return lastEntry.toDateString() === today.toDateString();
-    }, [journalData]);
-
+    
     return (
         <>
-            {!hasWrittenToday && journalData && (
-                 <FadeIn>
-                    <Card className="mb-8 bg-blue-50 border-blue-200">
-                        <CardHeader className="flex flex-row items-center gap-4">
-                             <Flower className="w-8 h-8 text-blue-500"/>
-                             <div>
-                                <CardTitle>Your Tree is Waiting</CardTitle>
-                                <CardDescription>Take a moment to reflect. Your tree, '{journalData.treeName || 'Journal Tree'}', grows with each entry.</CardDescription>
-                             </div>
-                             <Button asChild className="ml-auto">
-                                 <Link href="/journal">Write Today's Entry</Link>
-                             </Button>
-                        </CardHeader>
-                    </Card>
-                 </FadeIn>
-            )}
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-8">
                 {/* Quick Links */}
                 <Card className="lg:col-span-2">
@@ -118,17 +93,11 @@ function MainDashboard() {
                         <CardTitle>Quick Links</CardTitle>
                         <CardDescription>Jump right back into your favorite activities.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         <Link href="/resources" passHref>
                             <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
                                 <BookOpen className="w-10 h-10 text-primary mb-2"/>
                                 <h3 className="font-semibold">Resources</h3>
-                            </Card>
-                        </Link>
-                         <Link href="/journal" passHref>
-                            <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
-                                <Notebook className="w-10 h-10 text-primary mb-2"/>
-                                <h3 className="font-semibold">Journal</h3>
                             </Card>
                         </Link>
                         <Link href="/games" passHref>
