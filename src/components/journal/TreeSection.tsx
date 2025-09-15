@@ -18,8 +18,6 @@ import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
 import type { User } from 'firebase/auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
-import AnimatedGrowingTree from './AnimatedGrowingTree';
-import { getTreeGrowthLevel } from '@/lib/journal-utils';
 
 interface Note {
   id: string;
@@ -34,6 +32,19 @@ interface TreeState {
 }
 
 // ----------------- Tree Visualizer & Mood -----------------
+const TreeVisualizer = ({ health }: { health: string }) => {
+  let treeEmoji = '🌱';
+  if (health === 'healthy') treeEmoji = '🌳';
+  if (health === 'weak') treeEmoji = '🍂';
+  if (health === 'withered') treeEmoji = '🪵';
+  return (
+    <motion.div className="text-7xl sm:text-8xl flex justify-center"
+      animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 3 }}>
+      {treeEmoji}
+    </motion.div>
+  );
+};
+
 const TreeMood = ({ health }: { health: string }) => {
   let mood = '🙂';
   if (health === 'healthy') mood = '😄';
@@ -157,10 +168,9 @@ export default function TreeSection({ user }: { user: User }) {
 
   const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
   const treeHealth = treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered';
-  const treeProgress = totalNotes > 0 ? Math.min(100, (goodNotes.length / 30) * 100) : 0;
+  const treeProgress = totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0;
   const treeAge = treeState?.createdAt?.toDate ? Math.max(1, Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1;
   const treeName = treeState?.treeName || 'My Tree';
-  const growthLevel = getTreeGrowthLevel(goodNotes.length);
 
   // Effect to sync local input with Firestore state when editing begins
   useEffect(() => {
@@ -209,9 +219,7 @@ export default function TreeSection({ user }: { user: User }) {
 
       {/* CENTER COLUMN - Order 1 on mobile, 2 on desktop */}
       <div className="flex flex-col items-center justify-center space-y-4 md:order-2 order-1 text-center">
-        <div className="w-full h-96">
-            <AnimatedGrowingTree growthLevel={growthLevel} health={treeHealthRatio * 100} />
-        </div>
+        <TreeVisualizer health={treeHealth} />
         {editingName ?
           <div className="flex items-center space-x-2">
             <Input value={treeNameInput} onChange={e => setTreeNameInput(e.target.value)} disabled={isSavingName} onKeyDown={e => e.key === 'Enter' && handleSaveTreeName()} />
@@ -231,7 +239,7 @@ export default function TreeSection({ user }: { user: User }) {
         <div className="mt-4 w-full max-w-sm">
           <Label htmlFor="tree-progress" className="text-sm font-medium">Growth Progress</Label>
           <Progress id="tree-progress" value={treeProgress} className="mt-1 h-3" />
-          <p className="text-xs text-muted-foreground mt-1 text-center">More good notes help your tree grow strong.</p>
+          <p className="text-xs text-muted-foreground mt-1 text-center">More notes help your tree grow strong.</p>
         </div>
       </div>
       
