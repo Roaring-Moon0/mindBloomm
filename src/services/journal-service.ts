@@ -1,4 +1,3 @@
-
 'use server';
 
 import { db } from '@/lib/firebase';
@@ -11,6 +10,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { format } from 'date-fns';
+import type { User } from 'firebase/auth';
 
 // ==============================
 // Interfaces
@@ -104,11 +104,11 @@ export const deleteJournalEntry = async (entryId: string, uid: string) => {
 
 // ==============================
 // Update Tree Name (Journal)
-export const updateTreeName = async (name: string, uid: string) => {
-  if (!uid) throw new Error('You must be logged in to update the tree name.');
-
-  const treeStateRef = doc(db, `users/${uid}/journal/state`);
+export const updateTreeName = async (payload: { name: string }, user: User) => {
+  if (!user) throw new Error('You must be logged in to update the tree name.');
+  
+  const treeStateRef = doc(db, `users/${user.uid}/journal/state`);
   await updateDoc(treeStateRef, {
-    treeName: name,
+    treeName: payload.name,
   });
 };
