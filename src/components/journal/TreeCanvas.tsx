@@ -4,8 +4,8 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import { OrbitControls, Stars } from "@react-three/drei";
 
+// Simple 3D Tree component
 function Tree3D({ health }: { health: string }) {
-  // Simple tree: a cylinder trunk + sphere foliage
   const trunkHeight = 1.2;
   const trunkRadius = 0.1;
   const foliageColor = health === "healthy" ? "#4ade80" : health === "weak" ? "#facc15" : "#a3a3a3";
