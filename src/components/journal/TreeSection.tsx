@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import type { User } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
@@ -145,7 +146,7 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 // ----------------- Main TreeSection -----------------
 export default function TreeSection({ user }: { user: User }) {
   const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
-  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}/journal/state` : '');
 
   const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
@@ -193,34 +194,8 @@ export default function TreeSection({ user }: { user: User }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
 
-      {/* LEFT COLUMN */}
-      <div className="space-y-4 md:space-y-6">
-        <Card>
-          <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex space-x-2">
-              <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} />
-              <Button onClick={async () => {
-                if (!badNote.trim()) return;
-                setIsSavingBad(true);
-                try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
-                catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
-                finally { setIsSavingBad(false); }
-              }} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><NotesGraph notes={notes} /></CardContent>
-        </Card>
-
-        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
-      </div>
-
-      {/* CENTER COLUMN */}
-      <div className="flex flex-col items-center justify-center space-y-4 md:order-none order-first">
+      {/* CENTER COLUMN - Order 1 on mobile */}
+      <div className="flex flex-col items-center justify-center space-y-4 md:order-2 order-1">
         <TreeVisualizer health={treeHealth} />
         {editingName ?
           <div className="flex items-center space-x-2">
@@ -228,7 +203,8 @@ export default function TreeSection({ user }: { user: User }) {
             <Button size="sm" onClick={handleSaveTreeName} disabled={isSavingName}>{isSavingName ? <Loader2 className="animate-spin" /> : 'Save'}</Button>
             <Button size="sm" variant="ghost" onClick={() => setEditingName(false)} disabled={isSavingName}>Cancel</Button>
           </div> :
-          <div className="group flex items-center gap-2"><h2 className="text-2xl font-bold">{treeName}</h2>
+          <div className="group flex items-center gap-2">
+            <h2 className="text-2xl font-bold">{treeName}</h2>
             <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100" onClick={() => setEditingName(true)}>Rename</Button>
           </div>
         }
@@ -241,8 +217,12 @@ export default function TreeSection({ user }: { user: User }) {
         </div>
       </div>
 
-      {/* RIGHT COLUMN */}
-      <div className="space-y-4 md:space-y-6">
+      {/* RIGHT COLUMN - Order 2 on mobile */}
+      <div className="space-y-4 md:order-3 order-2">
+        <Card>
+            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+        </Card>
         <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
@@ -258,12 +238,6 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
-        </Card>
-
         <Card>
           <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
@@ -273,6 +247,31 @@ export default function TreeSection({ user }: { user: User }) {
           </CardContent>
         </Card>
       </div>
+
+      {/* LEFT COLUMN - Order 3 on mobile */}
+      <div className="space-y-4 md:order-1 order-3">
+        <Card>
+          <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex space-x-2">
+              <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} />
+              <Button onClick={async () => {
+                if (!badNote.trim()) return;
+                setIsSavingBad(true);
+                try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
+                catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
+                finally { setIsSavingBad(false); }
+              }} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
+          <CardContent className="flex justify-center"><NotesGraph notes={notes} /></CardContent>
+        </Card>
+        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
+      </div>
+
 
       {/* Dialogs */}
       <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
