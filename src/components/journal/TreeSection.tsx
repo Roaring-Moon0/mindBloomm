@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import type { User } from 'firebase/auth';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
@@ -19,6 +18,7 @@ import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
+import type { User } from 'firebase/auth';
 
 interface Note {
   id: string;
@@ -165,7 +165,6 @@ export default function TreeSection({ user }: { user: User }) {
 
   const notes = notesData || [];
   const goodNotes = useMemo(() => notes.filter(n => n.type === 'good'), [notes]);
-  const badNotes = useMemo(() => notes.filter(n => n.type === 'bad'), [notes]);
   const totalNotes = notes.length;
 
   const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
@@ -189,6 +188,22 @@ export default function TreeSection({ user }: { user: User }) {
   const handleNewChat = async () => {
     try { await startNewChat(user); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
+  };
+
+  const handleAddGoodNote = async () => {
+    if (!goodNote.trim()) return;
+    setIsSavingGood(true);
+    try { await addNote({ text: goodNote, type: 'good' }, user); setGoodNote(''); toast({ title: 'Note added!' }); }
+    catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
+    finally { setIsSavingGood(false); }
+  };
+
+  const handleAddBadNote = async () => {
+    if (!badNote.trim()) return;
+    setIsSavingBad(true);
+    try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
+    catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
+    finally { setIsSavingBad(false); }
   };
 
   return (
@@ -220,42 +235,27 @@ export default function TreeSection({ user }: { user: User }) {
       {/* RIGHT COLUMN - Order 2 on mobile */}
       <div className="space-y-4 md:order-3 order-2">
         <Card>
+            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+        </Card>
+        <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
-              <Input value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} />
-              <Button onClick={async () => {
-                if (!goodNote.trim()) return;
-                setIsSavingGood(true);
-                try { await addNote({ text: goodNote, type: 'good' }, user); setGoodNote(''); toast({ title: 'Note added!' }); }
-                catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
-                finally { setIsSavingGood(false); }
-              }} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
+              <Input value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} onKeyDown={(e) => e.key === 'Enter' && handleAddGoodNote()}/>
+              <Button onClick={handleAddGoodNote} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
             </div>
           </CardContent>
         </Card>
-        
         <Card>
           <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
-              <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} />
-              <Button onClick={async () => {
-                if (!badNote.trim()) return;
-                setIsSavingBad(true);
-                try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
-                catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
-                finally { setIsSavingBad(false); }
-              }} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
+              <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} onKeyDown={(e) => e.key === 'Enter' && handleAddBadNote()} />
+              <Button onClick={handleAddBadNote} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
             </div>
           </CardContent>
         </Card>
-        
-        <Card>
-          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
-        </Card>
-
         <Card>
           <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
