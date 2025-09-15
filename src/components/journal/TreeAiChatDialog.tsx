@@ -48,9 +48,15 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
     }
   }, [isOpen, treeState.name]);
 
-  // Autoscroll to latest message
+  // Autoscroll to latest message only if user is already near the bottom
   useEffect(() => {
-    if (lastMessageRef.current) {
+    const scrollContainer = scrollAreaViewportRef.current;
+    if (!scrollContainer) return;
+
+    const isUserAtBottom =
+      scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 50;
+
+    if (isUserAtBottom && lastMessageRef.current) {
       lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   }, [messages, isLoading]);
