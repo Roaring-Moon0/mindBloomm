@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -13,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import { Sparkles, Plus, Download, Bot, History, BrainCircuit } from "lucide-react";
+import { Sparkles, Plus, Download, Bot, History, BrainCircuit, Loader2 } from "lucide-react";
 import jsPDF from "jspdf";
 import { TreeAiChatDialog } from "./TreeAiChatDialog";
 import { ChatHistoryDialog } from "./ChatHistoryDialog";
@@ -113,7 +114,7 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[]; isOpen
                     <DialogDescription>A complete history of your thoughts.</DialogDescription>
                 </DialogHeader>
                 <div className="space-y-2 max-h-96 overflow-y-auto p-1">
-                    {notes.length > 0 ? notes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} /> : <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
+                    {notes.length > 0 ? notes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : ''} /> : <BurningNote key={n.id} text={n.text} createdAt={n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : ''} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
                 </div>
                 <DialogFooter>
                     <Button onClick={downloadPDF} disabled={notes.length === 0}><Download className="mr-2 h-4 w-4" /> Download as PDF</Button>
@@ -125,9 +126,10 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[]; isOpen
 }
 
 export default function TreeSection() {
-  const { user } = useAuth();
-  const { data: notesData } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
-  const { data: treeState } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
+  const { user, loading: authLoading } = useAuth();
+  
+  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
 
   const [newNote, setNewNote] = useState("");
   const [isSavingNote, setIsSavingNote] = useState(false);
@@ -158,6 +160,17 @@ export default function TreeSection() {
     setTreeNameInput(treeName);
   }, [treeName]);
 
+  if (authLoading || notesLoading || treeStateLoading) {
+      return (
+        <div className="flex justify-center items-center h-96">
+            <Loader2 className="w-12 h-12 animate-spin text-primary" />
+        </div>
+      )
+  }
+
+  if (!user) {
+    return <div className="p-4 text-center text-destructive font-medium">You must be logged in to view this section.</div>;
+  }
 
   const handleAddNote = async () => {
     if (!newNote.trim()) return;
@@ -308,3 +321,5 @@ export default function TreeSection() {
     </div>
   );
 }
+
+    
