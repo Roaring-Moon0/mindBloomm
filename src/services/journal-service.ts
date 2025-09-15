@@ -14,4 +14,3 @@ export const addSurvey = async (payload:z.infer<typeof surveySchema>)=>{
 export const updateSurvey = async (id:string, payload:Partial<z.infer<typeof surveySchema>>)=>{ await updateDoc(doc(db,'surveys',id), payload); };
 export const deleteSurvey = async (id:string)=>{ await deleteDoc(doc(db,'surveys',id)); };
 export const toggleSurveyVisibility = async (id:string, visible:boolean)=>{ await updateDoc(doc(db,'surveys',id), { visible }); };
-
