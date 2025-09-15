@@ -214,7 +214,6 @@ export default function TreeSection() {
               <Input value={newNote} onChange={(e) => { setNewNote(e.target.value); setNoteType("bad"); }} placeholder="What's weighing on you?" disabled={isSavingNote} />
               <Button onClick={handleAddNote} disabled={isSavingNote || !newNote || noteType !== 'bad'}>{isSavingNote && noteType === 'bad' ? 'Saving...' : 'Release'}</Button>
             </div>
-            {badNotes.slice(0, 3).map((n) => <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P')} />)}
           </CardContent>
         </Card>
 
@@ -267,7 +266,6 @@ export default function TreeSection() {
               <Input value={newNote} onChange={(e) => { setNewNote(e.target.value); setNoteType("good"); }} placeholder="What are you grateful for?" disabled={isSavingNote} />
               <Button onClick={handleAddNote} disabled={isSavingNote || !newNote || noteType !== 'good'}>{isSavingNote && noteType === 'good' ? 'Saving...' : 'Add'}</Button>
             </div>
-            {goodNotes.slice(0, 3).map((n) => <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P')} />)}
           </CardContent>
         </Card>
 
