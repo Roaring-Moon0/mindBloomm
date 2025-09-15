@@ -164,7 +164,7 @@ export default function Home() {
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Meet the Team</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our team of dedicated professionals is here to support you.
+                  Our team is here to support you.
                 </p>
               </div>
             </FadeIn>
