@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -44,7 +45,7 @@ export function GamesClient() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 items-start">
             
             {/* Breathing Visualizer */}
-            <div className="flex justify-center col-span-1">
+            <div className="flex justify-center sm:col-span-1">
                 <BreathingVisualizer />
             </div>
 
@@ -75,7 +76,7 @@ export function GamesClient() {
             </div>
 
             {/* Color Match */}
-            <div className="flex justify-center col-span-1 sm:col-span-1">
+            <div className="flex justify-center sm:col-span-1">
                 <ColorMatch />
             </div>
 
