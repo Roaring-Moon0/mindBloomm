@@ -8,18 +8,35 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // Users can create their own doc and read/update it.
+    // Allow users to read/write their own user document.
     match /users/{userId} {
-      allow create: if request.auth.uid == userId;
-      allow read, update: if request.auth.uid == userId;
-    }
-    
-    // Users can read/write to their own subcollections (like notes, chats, journal)
-    match /users/{userId}/{subcollection=**}/{docId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, update, create: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Surveys and Videos are public to any authenticated user.
+    // Allow users full access to their own notes subcollection.
+    match /users/{userId}/notes/{noteId} {
+      allow get, list, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow users full access to their own journalEntries subcollection.
+    match /users/{userId}/journalEntries/{entryId} {
+      allow get, list, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow users full access to their own journal state.
+    match /users/{userId}/journal/{docId} {
+        allow get, list, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow users full access to their own chats and messages.
+    match /users/{userId}/chats/{chatId} {
+      allow get, list, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/chats/{chatId}/messages/{messageId} {
+       allow get, list, create, update, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Surveys and Videos are public to any authenticated user for reading.
     match /surveys/{surveyId} {
       allow read: if request.auth != null;
     }
