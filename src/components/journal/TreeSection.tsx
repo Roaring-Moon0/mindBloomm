@@ -16,7 +16,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Sparkles, Plus, Download, Bot, History, Loader2, Edit } from 'lucide-react';
+import { Sparkles, Plus, Download, Bot, History, Loader2, Edit, Check } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 
