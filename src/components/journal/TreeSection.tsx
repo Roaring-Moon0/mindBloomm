@@ -1,10 +1,14 @@
 
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useMemo } from 'react';
+import type { User } from 'firebase/auth';
+import { useAuth } from '@/hooks/use-auth';
+import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
+import { motion } from 'framer-motion';
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,10 +19,11 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Sparkles, Plus, Download, Bot, History, Loader2, Edit } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
+
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
-import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
-import { useAuth } from '@/hooks/use-auth';
+import { JournalEntryCard } from './JournalEntryCard';
+import { JournalEditor } from './JournalEditor';
 
 interface Note {
   id: string;
@@ -102,13 +107,6 @@ const NotesGraph = ({ notes }: { notes: Note[] }) => {
 // ----------------- Memories Dialog -----------------
 function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen: boolean, onOpenChange: (open: boolean) => void }) {
   const { toast } = useToast();
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [isOpen, notes]);
 
   const downloadPDF = () => {
     const doc = new jsPDF();
@@ -128,7 +126,7 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
           <DialogTitle>All Memories</DialogTitle>
           <DialogDescription>A complete history of your thoughts.</DialogDescription>
         </DialogHeader>
-        <div ref={scrollRef} className="space-y-2 max-h-96 overflow-y-auto p-1">
+        <div className="space-y-2 max-h-96 overflow-y-auto p-1">
           {notes.length > 0 ? notes.map(n => n.type === 'good' ?
             <GoodNote key={n.id} text={n.text} createdAt={n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : ''} /> :
             <BurningNote key={n.id} text={n.text} createdAt={n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : ''} />
@@ -144,10 +142,10 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection({ uid }: { uid: string }) {
-  const { user } = useAuth(); // We still need the full user object for Dialogs
-  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(uid ? `users/${uid}/notes` : '');
-  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(uid ? `users/${uid}/journal/state` : '');
+export default function TreeSection({ user }: { user: User }) {
+  const { uid } = user;
+  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${uid}/notes`);
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${uid}/journal/state`);
 
   const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
@@ -168,27 +166,25 @@ export default function TreeSection({ uid }: { uid: string }) {
   const goodNotes = useMemo(() => notes.filter(n => n.type === 'good'), [notes]);
   const totalNotes = notes.length;
 
-  const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
-  const treeHealth = treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered';
-  const treeProgress = totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0;
-  const treeAge = treeState?.createdAt?.toDate ? Math.max(1, Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1;
-  const treeName = treeState?.treeName || 'My Tree';
+  const treeHealthRatio = useMemo(() => totalNotes > 0 ? goodNotes.length / totalNotes : 0.5, [totalNotes, goodNotes]);
+  const treeHealth = useMemo(() => treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered', [treeHealthRatio]);
+  const treeProgress = useMemo(() => totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0, [totalNotes]);
+  const treeAge = useMemo(() => treeState?.createdAt?.toDate ? Math.max(1, Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1, [treeState]);
+  const treeName = useMemo(() => treeState?.treeName || 'My Tree', [treeState]);
 
-  // Effect to sync local input with Firestore state when editing begins
   useEffect(() => {
-    if (!uid) return;
     if (editingName) {
       setTreeNameInput(treeName);
     }
-  }, [editingName, treeName, uid]);
+  }, [editingName, treeName]);
 
-  if (!uid || !user || (notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
+  if ((notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
     try { 
-        await renameTree(treeNameInput, uid); 
+        await renameTree(uid, treeNameInput); 
         toast({ title: 'Tree renamed successfully!' }); 
         setEditingName(false); 
     }
@@ -295,9 +291,11 @@ export default function TreeSection({ uid }: { uid: string }) {
 
 
       {/* Dialogs */}
-      <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-      {user && <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />}
-      {user && <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />}
+      {user && <>
+        <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
+        <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
+        <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
+      </>}
     </div>
   );
 }

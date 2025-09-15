@@ -19,10 +19,6 @@ export interface NotePayload {
   type: 'good' | 'bad';
 }
 
-interface JournalEntryPayload {
-  content: string;
-}
-
 // ==============================
 // Notes
 // ==============================
@@ -36,7 +32,7 @@ export const addNote = async (payload: NotePayload, uid: string) => {
   });
 };
 
-export const deleteNote = async (noteId: string, uid: string) => {
+export const deleteNote = async (uid: string, noteId: string) => {
   if (!uid) throw new Error('You must be logged in to delete a note.');
 
   const noteDocRef = doc(db, `users/${uid}/notes`, noteId);
@@ -46,7 +42,7 @@ export const deleteNote = async (noteId: string, uid: string) => {
 // ==============================
 // Tree State
 // ==============================
-export const renameTree = async (name: string, uid: string) => {
+export const renameTree = async (uid: string, name: string) => {
   if (!uid) throw new Error('You must be logged in to rename the tree.');
 
   const treeStateRef = doc(db, `users/${uid}/journal/state`);
