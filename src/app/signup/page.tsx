@@ -3,18 +3,12 @@
 
 // 👉 Import dependencies
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff } from "lucide-react";
+import { signUpWithEmail, signInWithGoogle } from "@/services/auth-service";
 
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -50,15 +44,7 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      // ✅ Create user with Firebase Auth
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-
-      if (auth.currentUser) {
-        await updateProfile(auth.currentUser, {
-            displayName: name
-        });
-      }
-
+      await signUpWithEmail(email, password, name);
       router.push("/dashboard"); // redirect after signup
     } catch (err: any) {
       if (err.code === 'auth/email-already-in-use') {
@@ -74,9 +60,8 @@ export default function SignupPage() {
   const handleGoogleSignIn = async () => {
     setError(null);
     setLoading(true);
-    const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        await signInWithGoogle();
         router.push('/dashboard');
     } catch (err: any) {
         setError(err.message);

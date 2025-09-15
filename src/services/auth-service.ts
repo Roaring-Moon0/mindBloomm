@@ -5,9 +5,33 @@ import {
   reauthenticateWithCredential,
   EmailAuthProvider,
   verifyBeforeUpdateEmail,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
 } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
+
+// --- Sign In / Sign Up ---
+
+export const signInWithEmail = async (email: string, password: string) => {
+    return await signInWithEmailAndPassword(auth, email, password);
+};
+
+export const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    return await signInWithPopup(auth, provider);
+};
+
+export const signUpWithEmail = async (email: string, password: string, displayName: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    if (auth.currentUser) {
+        await firebaseUpdateProfile(auth.currentUser, { displayName });
+    }
+    return userCredential;
+};
+
 
 // --- Reauthentication ---
 export const reauthenticateWithPassword = async (password: string) => {

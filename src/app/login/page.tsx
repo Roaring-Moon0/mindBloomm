@@ -3,17 +3,12 @@
 
 // 👉 Import dependencies
 import { useState, Suspense } from "react";
-import { auth } from "@/lib/firebase";
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup
-} from "firebase/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { signInWithEmail, signInWithGoogle } from "@/services/auth-service";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -42,17 +37,12 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      // ✅ Login using Firebase Auth
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmail(email, password);
       router.push(redirect); // redirect after login
     } catch (err: any) {
        switch (err.code) {
         case "auth/user-not-found":
-          setError("No account found with this email.");
-          break;
         case "auth/wrong-password":
-          setError("Incorrect password. Please try again.");
-          break;
         case "auth/invalid-credential":
            setError("The email or password you entered is incorrect.");
            break;
@@ -68,9 +58,8 @@ function LoginForm() {
   const handleGoogleSignIn = async () => {
     setError(null);
     setLoading(true);
-    const provider = new GoogleAuthProvider();
     try {
-        await signInWithPopup(auth, provider);
+        await signInWithGoogle();
         router.push(redirect);
     } catch (err: any) {
         setError(err.message);
