@@ -180,7 +180,7 @@ export default function TreeSection({ user }: { user: User }) {
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { await renameTree({name: treeNameInput}, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
+    try { await renameTree(treeNameInput, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
@@ -220,7 +220,7 @@ export default function TreeSection({ user }: { user: User }) {
           </div> :
           <div className="group flex items-center gap-2">
             <h2 className="text-2xl font-bold">{treeName}</h2>
-            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 text-primary hover:text-primary/80" onClick={() => setEditingName(true)}>Rename</Button>
+            <Button size="sm" variant="ghost" className="text-primary hover:text-primary/80" onClick={() => setEditingName(true)}>Rename</Button>
           </div>
         }
         <div className="text-lg font-semibold text-muted-foreground">{treeAge} days old</div>
@@ -247,7 +247,7 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-         <Card>
+        <Card>
           <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
@@ -256,7 +256,7 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-        <Card>
+         <Card>
           <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
             <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
