@@ -1,7 +1,10 @@
+
 'use server';
 
 import { auth, db } from '@/lib/firebase';
-import { collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, setDoc } from 'firebase/firestore';
+import { 
+  collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, setDoc 
+} from 'firebase/firestore';
 import { z } from 'zod';
 
 const entrySchema = z.object({
@@ -12,28 +15,30 @@ const nameSchema = z.object({
   name: z.string().min(1, 'Tree name cannot be empty.').max(50, 'Tree name is too long.'),
 });
 
-export const addNote = async (payload: {text: string, type: 'good' | 'bad'}) => {
-    const user = auth.currentUser;
-    if (!user) throw new Error('You must be logged in.');
+// --- Add Note ---
+export const addNote = async (payload: { text: string; type: 'good' | 'bad' }) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error('You must be logged in.');
 
-    await addDoc(collection(db, "users", user.uid, "notes"), {
-      text: payload.text,
-      type: payload.type,
-      createdAt: serverTimestamp(),
-    });
+  await addDoc(collection(db, "users", user.uid, "notes"), {
+    text: payload.text,
+    type: payload.type,
+    createdAt: serverTimestamp(),
+  });
 };
 
+// --- Rename Tree ---
 export const renameTree = async (newName: string) => {
-    const user = auth.currentUser;
-    if (!user) throw new Error('You must be logged in.');
-    if (!newName.trim()) throw new Error('Name cannot be empty.');
+  const user = auth.currentUser;
+  if (!user) throw new Error('You must be logged in.');
 
-    // This updates the displayName at the root of the user document
-    await updateDoc(doc(db, "users", user.uid), { treeName: newName });
+  // Update the treeName field in the user's root document
+  const userRef = doc(db, "users", user.uid);
+  await updateDoc(userRef, { treeName: newName });
 };
 
-
-export const startNewChat = async (): Promise<string> => {
+// --- Start New Chat ---
+export const startNewChat = async () => {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in.');
     
@@ -43,22 +48,10 @@ export const startNewChat = async (): Promise<string> => {
       createdAt: serverTimestamp(),
     });
 
+    // Generate a more descriptive title
     await updateDoc(newChatRef, { title: `Chat #${newChatRef.id.substring(0,4)}...`});
     
     return newChatRef.id;
-};
-
-export const sendMessage = async (chatId: string, message: string) => {
-    const user = auth.currentUser;
-    if (!user) throw new Error('You must be logged in.');
-    if (!message.trim()) throw new Error('Message cannot be empty.');
-
-    const messagesRef = collection(db, "users", user.uid, "chats", chatId, "messages");
-    await addDoc(messagesRef, {
-      text: message,
-      sender: 'user',
-      timestamp: serverTimestamp(),
-    });
 };
 
 
