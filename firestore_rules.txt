@@ -21,11 +21,8 @@ service cloud.firestore {
     match /users/{userId} {
       allow create: if request.auth.uid == userId;
       allow read, update: if request.auth.uid == userId || isAdmin();
-    }
-
-    // Admins can list all users.
-    match /users/{document=**} {
-        allow list: if isAdmin();
+      // Admins can list all users.
+      allow list: if isAdmin();
     }
     
     // User-specific subcollections (journal, notes, chats, etc.)
@@ -48,10 +45,10 @@ service cloud.firestore {
 
     // Surveys Collection
     // - Any authenticated user can read surveys that are marked as visible.
-    // - Admins have full access to create, update, and delete surveys.
+    // - Admins have full access to create, update, delete, and list surveys.
     match /surveys/{surveyId} {
       allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
-      allow create, update, delete: if isAdmin();
+      allow list, create, update, delete: if isAdmin();
     }
 
     // Videos Collection
@@ -59,7 +56,7 @@ service cloud.firestore {
     // - Admins have full access.
     match /videos/{videoId} {
         allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
-        allow create, update, delete: if isAdmin();
+        allow list, create, update, delete: if isAdmin();
     }
   }
 }
