@@ -35,6 +35,16 @@ export function MindPaint() {
     }
   }, []);
 
+  const getTouchPos = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    return {
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    };
+  };
 
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     const ctx = getCanvasContext();
@@ -43,7 +53,7 @@ export function MindPaint() {
     setIsDrawing(true);
     ctx.beginPath();
 
-    const pos = e.nativeEvent instanceof MouseEvent ? { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY } : { x: e.nativeEvent.touches[0].clientX - canvasRef.current!.offsetLeft, y: e.nativeEvent.touches[0].clientY - canvasRef.current!.offsetTop };
+    const pos = 'touches' in e.nativeEvent ? getTouchPos(e as React.TouchEvent<HTMLCanvasElement>) : { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
 
     ctx.moveTo(pos.x, pos.y);
   };
@@ -53,11 +63,16 @@ export function MindPaint() {
     const ctx = getCanvasContext();
     if (!ctx) return;
 
+    // Prevent scrolling on touch devices while drawing
+    if ('touches' in e.nativeEvent) {
+      e.preventDefault();
+    }
+
     ctx.lineWidth = brushSize;
     ctx.lineCap = 'round';
     ctx.strokeStyle = brushColor;
     
-    const pos = e.nativeEvent instanceof MouseEvent ? { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY } : { x: e.nativeEvent.touches[0].clientX - canvasRef.current!.offsetLeft, y: e.nativeEvent.touches[0].clientY - canvasRef.current!.offsetTop };
+    const pos = 'touches' in e.nativeEvent ? getTouchPos(e as React.TouchEvent<HTMLCanvasElement>) : { x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY };
 
     ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
