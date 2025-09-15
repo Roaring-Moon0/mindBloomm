@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Sparkles, Plus, Download, Bot, History, BrainCircuit, Loader2 } from 'lucide-react';
+import { Sparkles, Plus, Download, Bot, History, Loader2 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
@@ -32,11 +32,13 @@ interface TreeState {
   createdAt?: any;
 }
 
+// ---------- Tree Visualizer ----------
 const TreeVisualizer = ({ health }: { health: string }) => {
-  let treeEmoji = '🌱'; // Default
+  let treeEmoji = '🌱';
   if (health === 'healthy') treeEmoji = '🌳';
   if (health === 'weak') treeEmoji = '🍂';
   if (health === 'withered') treeEmoji = '🪵';
+  if (health === 'missing') treeEmoji = '🥀';
   return (
     <motion.div
       className="text-8xl flex justify-center"
@@ -48,11 +50,13 @@ const TreeVisualizer = ({ health }: { health: string }) => {
   );
 };
 
+// ---------- Tree Mood ----------
 const TreeMood = ({ health }: { health: string }) => {
-  let mood = '🙂'; // Default
+  let mood = '🙂';
   if (health === 'healthy') mood = '😄';
   if (health === 'weak') mood = '😕';
   if (health === 'withered') mood = '😢';
+  if (health === 'missing') mood = '🥺';
   return (
     <motion.div
       className="text-6xl text-center"
@@ -64,6 +68,7 @@ const TreeMood = ({ health }: { health: string }) => {
   );
 };
 
+// ---------- Notes ----------
 const BurningNote = ({ text, createdAt }: { text: string; createdAt: string }) => (
   <motion.div
     className="p-2 rounded-md bg-red-100/60 border border-red-400/50 text-sm"
@@ -86,6 +91,7 @@ const GoodNote = ({ text, createdAt }: { text: string; createdAt: string }) => (
   </motion.div>
 );
 
+// ---------- Notes Graph ----------
 const NotesGraph = ({ notes }: { notes: Note[] }) => {
   const goodCount = notes.filter((n) => n.type === 'good').length;
   const badCount = notes.filter((n) => n.type === 'bad').length;
@@ -122,15 +128,10 @@ const NotesGraph = ({ notes }: { notes: Note[] }) => {
   );
 };
 
-function MemoriesDialog({
-  notes,
-  isOpen,
-  onOpenChange,
-}: {
-  notes: Note[];
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
+// ---------- Memories Dialog ----------
+function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[]; isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+  const { toast } = useToast();
+
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text('Your Memories', 10, 10);
@@ -183,43 +184,70 @@ function MemoriesDialog({
   );
 }
 
+// ---------- Main Component ----------
 export default function TreeSection() {
   const { user, loading: authLoading } = useAuth();
-  
   const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
   const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
+  const { toast } = useToast();
 
-  const [goodNote, setGoodNote] = useState("");
+  const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
-  const [badNote, setBadNote] = useState("");
+  const [badNote, setBadNote] = useState('');
   const [isSavingBad, setIsSavingBad] = useState(false);
-  
   const [editingName, setEditingName] = useState(false);
-  const [treeNameInput, setTreeNameInput] = useState("");
+  const [treeNameInput, setTreeNameInput] = useState('');
   const [isSavingName, setIsSavingName] = useState(false);
-
   const [isMemoriesOpen, setIsMemoriesOpen] = useState(false);
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
-
-  const { toast } = useToast();
 
   const notes = notesData || [];
   const goodNotes = useMemo(() => notes.filter((n) => n.type === 'good'), [notes]);
   const badNotes = useMemo(() => notes.filter((n) => n.type === 'bad'), [notes]);
   const totalNotes = notes.length;
 
+  // ---------- Tree Health ----------
   const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
-  const treeHealth = treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered';
+  let treeHealth = treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered';
   const treeProgress = totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0;
-  
-  const treeAge = treeState?.createdAt?.toDate ? Math.max(1, Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1;
+
+  // ---------- Tree Age ----------
+  const treeAge = treeState?.createdAt?.toDate
+    ? Math.max(
+        1,
+        Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))
+      )
+    : 1;
   const treeName = treeState?.treeName || 'My Tree';
 
   useEffect(() => {
     setTreeNameInput(treeName);
   }, [treeName]);
-  
+
+  // ---------- Check for last note ----------
+  const lastNoteDate = notes.length
+    ? notes.reduce((latest, n) => {
+        const nDate = n.createdAt?.toDate ? n.createdAt.toDate() : new Date(0);
+        return nDate > latest ? nDate : latest;
+      }, new Date(0))
+    : null;
+
+  const daysSinceLastNote = lastNoteDate
+    ? Math.ceil((new Date().getTime() - lastNoteDate.getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  // Tree misses you if no note for 3+ days
+  if (daysSinceLastNote >= 3) {
+    treeHealth = 'missing';
+  }
+
+  useEffect(() => {
+    if (daysSinceLastNote >= 3) {
+      toast({ title: "Your tree misses you!", description: `It's been ${daysSinceLastNote} days since your last note.` });
+    }
+  }, [daysSinceLastNote, toast]);
+
   if (authLoading || notesLoading || treeStateLoading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -231,7 +259,8 @@ export default function TreeSection() {
   if (!user) {
     return <div className="p-4 text-center text-destructive font-medium">You must be logged in to view this section.</div>;
   }
-  
+
+  // ---------- Handlers ----------
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) {
       toast({ variant: 'destructive', title: 'Name cannot be empty.' });
@@ -248,7 +277,7 @@ export default function TreeSection() {
       setIsSavingName(false);
     }
   };
-  
+
   const handleNewChat = async () => {
     try {
       await startNewChat();
@@ -270,12 +299,7 @@ export default function TreeSection() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
-              <Input
-                value={badNote}
-                onChange={(e) => setBadNote(e.target.value)}
-                placeholder="What's weighing on you?"
-                disabled={isSavingBad}
-              />
+              <Input value={badNote} onChange={(e) => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} />
               <Button
                 onClick={async () => {
                   if (!badNote.trim()) return;
@@ -306,9 +330,10 @@ export default function TreeSection() {
             <NotesGraph notes={notes} />
           </CardContent>
         </Card>
-        
-        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
 
+        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}>
+          <Sparkles className="mr-2 h-4 w-4" /> See All Memories
+        </Button>
       </div>
 
       {/* CENTER COLUMN */}
@@ -316,7 +341,7 @@ export default function TreeSection() {
         <TreeVisualizer health={treeHealth} />
         {editingName ? (
           <div className="flex items-center space-x-2">
-            <Input value={treeNameInput} onChange={(e) => setTreeNameInput(e.target.value)} disabled={isSavingName} onKeyDown={(e) => e.key === 'Enter' && handleSaveTreeName()}/>
+            <Input value={treeNameInput} onChange={(e) => setTreeNameInput(e.target.value)} disabled={isSavingName} onKeyDown={(e) => e.key === 'Enter' && handleSaveTreeName()} />
             <Button size="sm" onClick={handleSaveTreeName} disabled={isSavingName}>{isSavingName ? <Loader2 className="animate-spin" /> : 'Save'}</Button>
             <Button size="sm" variant="ghost" onClick={() => setEditingName(false)} disabled={isSavingName}>Cancel</Button>
           </div>
@@ -327,11 +352,11 @@ export default function TreeSection() {
           </div>
         )}
         <div className="text-lg font-semibold text-muted-foreground">{treeAge} days old</div>
-        
+
         <div className="mt-4 w-full max-w-sm">
-            <Label htmlFor="tree-progress" className="text-sm font-medium">Growth Progress</Label>
-            <Progress id="tree-progress" value={treeProgress} className="mt-1 h-3"/>
-            <p className="text-xs text-muted-foreground mt-1 text-center">More notes help your tree grow strong.</p>
+          <Label htmlFor="tree-progress" className="text-sm font-medium">Growth Progress</Label>
+          <Progress id="tree-progress" value={treeProgress} className="mt-1 h-3" />
+          <p className="text-xs text-muted-foreground mt-1 text-center">More notes help your tree grow strong.</p>
         </div>
       </div>
 
@@ -344,12 +369,7 @@ export default function TreeSection() {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
-              <Input
-                value={goodNote}
-                onChange={(e) => setGoodNote(e.target.value)}
-                placeholder="What are you grateful for?"
-                disabled={isSavingGood}
-              />
+              <Input value={goodNote} onChange={(e) => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} />
               <Button
                 onClick={async () => {
                   if (!goodNote.trim()) return;
@@ -380,30 +400,29 @@ export default function TreeSection() {
             <TreeMood health={treeHealth} />
           </CardContent>
         </Card>
-        
-         <Card>
+
+        <Card>
           <CardHeader>
             <CardTitle>Interact</CardTitle>
             <CardDescription>Chat with your tree or review past conversations.</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
-             <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
-             <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
-             <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
+            <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
+            <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
+            <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
           </CardContent>
         </Card>
-
       </div>
-        
+
       {/* DIALOGS */}
       <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-      
+
       <TreeAiChatDialog
         isOpen={isAiChatOpen}
         onOpenChange={setIsAiChatOpen}
         treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }}
       />
-      
+
       <ChatHistoryDialog
         isOpen={isChatHistoryOpen}
         onOpenChange={setIsChatHistoryOpen}
@@ -411,3 +430,5 @@ export default function TreeSection() {
     </div>
   );
 }
+
+    
