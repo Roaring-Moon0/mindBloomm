@@ -1,3 +1,4 @@
+
 import { formatDistanceToNow } from 'date-fns';
 
 export interface Note {
@@ -18,32 +19,27 @@ export interface Journal {
 }
 
 interface TreeStage {
-    src: string;
-    alt:string;
+    stageName: string;
 }
 
 export const getTreeStage = (health: number): TreeStage => {
     if (health < 20) {
         return {
-            src: '/assets/tree/tree-dying.png',
-            alt: 'A weak, dying tree with very few leaves.'
+            stageName: 'Withering'
         };
     }
     if (health < 40) {
         return {
-            src: '/assets/tree/tree-sad.png',
-            alt: 'A sad-looking tree with drooping leaves.'
+            stageName: 'Struggling'
         };
     }
     if (health < 70) {
         return {
-            src: '/assets/tree/tree-small.png',
-            alt: 'A small but healthy tree.'
+            stageName: 'Growing'
         };
     }
     return {
-        src: '/assets/tree/tree-large.png',
-        alt: 'A large, flourishing, and happy tree.'
+        stageName: 'Flourishing'
     };
 };
 
