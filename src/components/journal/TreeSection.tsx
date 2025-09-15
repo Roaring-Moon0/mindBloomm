@@ -181,7 +181,7 @@ export default function TreeSection({ user }: { user: User }) {
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { await renameTree(treeNameInput, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
+    try { await renameTree({name: treeNameInput}, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
@@ -220,10 +220,6 @@ export default function TreeSection({ user }: { user: User }) {
       {/* RIGHT COLUMN - Order 2 on mobile */}
       <div className="space-y-4 md:order-3 order-2">
         <Card>
-            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
-        </Card>
-        <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
@@ -238,18 +234,7 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
-          <CardContent className="grid grid-cols-1 gap-2">
-            <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
-            <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
-            <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* LEFT COLUMN - Order 3 on mobile */}
-      <div className="space-y-4 md:order-1 order-3">
+        
         <Card>
           <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
@@ -265,6 +250,24 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
+        
+        <Card>
+          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
+          <CardContent className="grid grid-cols-1 gap-2">
+            <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
+            <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
+            <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* LEFT COLUMN - Order 3 on mobile */}
+      <div className="space-y-4 md:order-1 order-3">
         <Card>
           <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
           <CardContent className="flex justify-center"><NotesGraph notes={notes} /></CardContent>
