@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -51,8 +50,9 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
   }, [isOpen, treeState.name]);
   
   useEffect(() => {
-    if (scrollAreaViewportRef.current) {
-      scrollAreaViewportRef.current.scrollTop = scrollAreaViewportRef.current.scrollHeight;
+    const viewport = scrollAreaViewportRef.current;
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
     }
   }, [messages]);
 
