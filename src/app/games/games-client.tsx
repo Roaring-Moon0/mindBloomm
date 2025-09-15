@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 
 const GameSkeleton = () => (
@@ -63,6 +64,12 @@ export function GamesClient() {
                         </Card>
                     </DialogTrigger>
                     <DialogContent className="max-w-fit p-4">
+                        <VisuallyHidden>
+                            <DialogHeader>
+                                <DialogTitle>Mind Paint Game</DialogTitle>
+                                <DialogDescription>A digital canvas to draw freely and express your creativity. Use the controls to change colors, adjust brush size, or clear the canvas.</DialogDescription>
+                            </DialogHeader>
+                        </VisuallyHidden>
                         <MindPaint />
                     </DialogContent>
                 </Dialog>
