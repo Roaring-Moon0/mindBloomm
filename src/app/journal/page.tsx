@@ -7,17 +7,7 @@ import { FadeIn } from '@/components/ui/fade-in';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import TreeSection from '@/components/journal/TreeSection';
-
-function JournalClientPage({ uid }: { uid: string }) {
-    return (
-        <FadeIn>
-            <div className="container mx-auto py-8">
-               <TreeSection uid={uid} />
-            </div>
-        </FadeIn>
-    )
-}
+import JournalClientPage from './journal-client';
 
 
 export default function JournalPage() {
