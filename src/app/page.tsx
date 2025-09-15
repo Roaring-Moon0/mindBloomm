@@ -40,6 +40,7 @@ const features = [
 
 const teamMembers = [
   { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man' },
+  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face' },
   { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face' },
   { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face' },
 ];
