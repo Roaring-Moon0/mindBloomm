@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface TreeState {
   name: string;
@@ -33,7 +34,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,15 +45,14 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
         },
       ]);
     } else {
-      // Clear messages and input when dialog is closed
       setMessages([]);
       setInput('');
     }
   }, [isOpen, treeState.name]);
   
   useEffect(() => {
-    if (scrollAreaRef.current) {
-        scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    if (scrollViewportRef.current) {
+        scrollViewportRef.current.scrollTop = scrollViewportRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -72,7 +72,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
         treeName: treeState.name,
         treeHealth: treeState.health,
         treeMood: treeState.mood,
-        history: currentMessages.slice(-10), // Pass the last 10 messages for context
+        history: currentMessages.slice(-10),
       });
 
       const assistantMessage: Message = { role: 'assistant', content: response };
@@ -97,7 +97,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] md:max-w-lg lg:max-w-2xl grid-rows-[auto,1fr,auto] max-h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[425px] md:max-w-lg lg:max-w-2xl flex flex-col max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Talk to {treeState.name}</DialogTitle>
           <DialogDescription>
@@ -105,43 +105,45 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="flex-grow my-4 pr-4 -mr-4" viewportRef={scrollAreaRef}>
-           <div className="space-y-4">
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}
-              >
-                {message.role === 'assistant' && (
-                  <Avatar className="w-8 h-8 border-2 border-primary/50 bg-green-100 text-lg">
-                    <AvatarFallback>🌳</AvatarFallback>
-                  </Avatar>
-                )}
-                <div className={`rounded-lg p-3 max-w-sm text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+        <div className="flex-grow my-4 -mr-4 pr-4 overflow-y-auto">
+            <ScrollArea className="h-full" viewportRef={scrollViewportRef}>
+                <div className="space-y-4 pr-4">
+                    {messages.map((message, index) => (
+                    <div
+                        key={index}
+                        className={cn("flex items-start gap-3", message.role === 'user' ? 'justify-end' : '')}
+                    >
+                        {message.role === 'assistant' && (
+                        <Avatar className="w-8 h-8 border-2 border-primary/50 bg-green-100 text-lg">
+                            <AvatarFallback>🌳</AvatarFallback>
+                        </Avatar>
+                        )}
+                        <div className={cn("rounded-lg p-3 max-w-sm text-sm", message.role === 'user' ? 'bg-primary/20' : 'bg-secondary')}>
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        </div>
+                        {message.role === 'user' && user && (
+                        <Avatar className="w-8 h-8">
+                            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                        </Avatar>
+                        )}
+                    </div>
+                    ))}
+                    {isLoading && (
+                    <div className="flex items-start gap-3">
+                        <Avatar className="w-8 h-8 border-2 border-primary/50 bg-green-100 text-lg">
+                            <AvatarFallback>🌳</AvatarFallback>
+                        </Avatar>
+                        <div className="rounded-lg p-3 bg-secondary flex items-center gap-2 text-sm">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <p>The tree is gathering its thoughts...</p>
+                        </div>
+                    </div>
+                    )}
                 </div>
-                {message.role === 'user' && user && (
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            ))}
-             {isLoading && (
-              <div className="flex items-start gap-3">
-                 <Avatar className="w-8 h-8 border-2 border-primary/50 bg-green-100 text-lg">
-                    <AvatarFallback>🌳</AvatarFallback>
-                  </Avatar>
-                <div className="rounded-lg p-3 bg-secondary flex items-center gap-2 text-sm">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <p>The tree is gathering its thoughts...</p>
-                </div>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+            </ScrollArea>
+        </div>
 
-        <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t">
+        <form onSubmit={handleSendMessage} className="flex-shrink-0 flex items-center gap-2 pt-4 border-t">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
