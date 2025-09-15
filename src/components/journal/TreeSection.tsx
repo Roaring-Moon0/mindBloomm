@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import type { User } from 'firebase/auth';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
@@ -38,7 +38,7 @@ const TreeVisualizer = ({ health }: { health: string }) => {
   if (health === 'weak') treeEmoji = '🍂';
   if (health === 'withered') treeEmoji = '🪵';
   return (
-    <motion.div className="text-8xl flex justify-center"
+    <motion.div className="text-7xl sm:text-8xl flex justify-center"
       animate={{ scale: [1, 1.05, 1] }} transition={{ repeat: Infinity, duration: 3 }}>
       {treeEmoji}
     </motion.div>
@@ -51,7 +51,7 @@ const TreeMood = ({ health }: { health: string }) => {
   if (health === 'weak') mood = '😕';
   if (health === 'withered') mood = '😢';
   return (
-    <motion.div className="text-6xl text-center" animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+    <motion.div className="text-5xl sm:text-6xl text-center" animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
       {mood}
     </motion.div>
   );
@@ -191,10 +191,10 @@ export default function TreeSection({ user }: { user: User }) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
 
       {/* LEFT COLUMN */}
-      <div className="space-y-4">
+      <div className="space-y-4 md:space-y-6">
         <Card>
           <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
@@ -220,7 +220,7 @@ export default function TreeSection({ user }: { user: User }) {
       </div>
 
       {/* CENTER COLUMN */}
-      <div className="flex flex-col items-center justify-center space-y-4">
+      <div className="flex flex-col items-center justify-center space-y-4 md:order-none order-first">
         <TreeVisualizer health={treeHealth} />
         {editingName ?
           <div className="flex items-center space-x-2">
@@ -242,7 +242,7 @@ export default function TreeSection({ user }: { user: User }) {
       </div>
 
       {/* RIGHT COLUMN */}
-      <div className="space-y-4">
+      <div className="space-y-4 md:space-y-6">
         <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
