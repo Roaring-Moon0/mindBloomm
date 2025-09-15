@@ -1,10 +1,19 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Music } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Paintbrush } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
 
 const GameSkeleton = () => (
     <div className="w-full max-w-md mx-auto">
@@ -41,7 +50,22 @@ export function GamesClient() {
                 <BreathingVisualizer />
             </div>
             <div className="lg:col-span-2 flex justify-center">
-                 <MindPaint />
+                 <Dialog>
+                    <DialogTrigger asChild>
+                        <Card className="w-full max-w-lg mx-auto text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50">
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-headline">Mind Paint</CardTitle>
+                                <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex flex-col items-center justify-center p-6">
+                                <Paintbrush className="w-24 h-24 text-primary" />
+                            </CardContent>
+                        </Card>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-fit p-4">
+                        <MindPaint />
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="flex justify-center">
                 <ColorMatch />
