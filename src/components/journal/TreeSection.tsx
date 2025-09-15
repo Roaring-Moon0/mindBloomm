@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -24,12 +23,19 @@ import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
 import { JournalEntryCard } from './JournalEntryCard';
 import { JournalEditor } from './JournalEditor';
+import { JournalTree } from './JournalTree';
 
 interface Note {
   id: string;
   text: string;
   type: 'good' | 'bad';
   createdAt: any;
+}
+
+interface JournalEntry {
+    id: string;
+    content: string;
+    createdAt: any;
 }
 
 interface TreeState {
@@ -144,6 +150,7 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 // ----------------- Main TreeSection -----------------
 export default function TreeSection({ user }: { user: User }) {
   const { uid } = user;
+  const { data: journalEntries, loading: entriesLoading } = useFirestoreCollection<JournalEntry>(`users/${uid}/journalEntries`);
   const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${uid}/notes`);
   const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${uid}/journal/state`);
 
@@ -166,6 +173,8 @@ export default function TreeSection({ user }: { user: User }) {
   const goodNotes = useMemo(() => notes.filter(n => n.type === 'good'), [notes]);
   const totalNotes = notes.length;
 
+  const entryCount = journalEntries?.length || 0;
+
   const treeHealthRatio = useMemo(() => totalNotes > 0 ? goodNotes.length / totalNotes : 0.5, [totalNotes, goodNotes]);
   const treeHealth = useMemo(() => treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered', [treeHealthRatio]);
   const treeProgress = useMemo(() => totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0, [totalNotes]);
@@ -178,13 +187,14 @@ export default function TreeSection({ user }: { user: User }) {
     }
   }, [editingName, treeName]);
 
-  if ((notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
+  const loading = entriesLoading || notesLoading || treeStateLoading;
+  if (loading && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
     try { 
-        await renameTree(uid, treeNameInput); 
+        await renameTree(treeNameInput); 
         toast({ title: 'Tree renamed successfully!' }); 
         setEditingName(false); 
     }
@@ -193,14 +203,14 @@ export default function TreeSection({ user }: { user: User }) {
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }, uid); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { await addNote({ text: goodNote, type: 'good' }); setGoodNote(''); toast({ title: 'Note added!' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -208,86 +218,65 @@ export default function TreeSection({ user }: { user: User }) {
   const handleAddBadNote = async () => {
     if (!badNote.trim()) return;
     setIsSavingBad(true);
-    try { await addNote({ text: badNote, type: 'bad' }, uid); setBadNote(''); toast({ title: 'Note released.' }); }
+    try { await addNote({ text: badNote, type: 'bad' }); setBadNote(''); toast({ title: 'Note released.' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingBad(false); }
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-2 sm:p-4 md:p-6">
-
-      {/* CENTER COLUMN - Order 1 on mobile, 2 on desktop */}
-      <div className="flex flex-col items-center justify-center space-y-4 md:order-2 order-1 text-center">
-        <TreeVisualizer health={treeHealth} />
-        {editingName ?
-          <div className="flex items-center space-x-2">
-            <Input value={treeNameInput} onChange={e => setTreeNameInput(e.target.value)} disabled={isSavingName} onKeyDown={e => e.key === 'Enter' && handleSaveTreeName()} />
-            <Button size="sm" onClick={handleSaveTreeName} disabled={isSavingName}>{isSavingName ? <Loader2 className="animate-spin" /> : 'Save'}</Button>
-            <Button size="sm" variant="ghost" onClick={() => setEditingName(false)} disabled={isSavingName}>Cancel</Button>
-          </div> :
-          <div className="group flex items-center gap-2">
-            <h2 className="text-2xl font-bold">{treeName}</h2>
-             <Button size="icon" variant="ghost" className="text-primary hover:text-primary/80 h-7 w-7" onClick={() => setEditingName(true)}>
-                <Edit className="h-4 w-4 text-green-500" />
-                <span className="sr-only">Rename</span>
-            </Button>
-          </div>
-        }
-        <div className="text-lg font-semibold text-muted-foreground">{treeAge} days old</div>
-
-        <div className="mt-4 w-full max-w-sm">
-          <Label htmlFor="tree-progress" className="text-sm font-medium">Growth Progress</Label>
-          <Progress id="tree-progress" value={treeProgress} className="mt-1 h-3" />
-          <p className="text-xs text-muted-foreground mt-1 text-center">More notes help your tree grow strong.</p>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-6">
+            <JournalEditor />
+            <div className="space-y-4">
+                <h3 className="text-xl font-bold">Past Entries</h3>
+                {journalEntries && journalEntries.length > 0 ? (
+                    journalEntries.map(entry => (
+                        <JournalEntryCard key={entry.id} entry={entry} />
+                    ))
+                ) : (
+                    <Card>
+                        <CardContent className="pt-6 text-center text-muted-foreground">
+                            No journal entries yet. Add one above to start growing your tree!
+                        </CardContent>
+                    </Card>
+                )}
+            </div>
         </div>
-      </div>
-      
-      {/* RIGHT COLUMN - Order 2 on mobile, 3 on desktop */}
-      <div className="space-y-4 md:order-3 order-2">
-        <Card className='md:hidden'>
-            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex space-x-2">
-              <Input value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} onKeyDown={(e) => e.key === 'Enter' && handleAddGoodNote()}/>
-              <Button onClick={handleAddGoodNote} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex space-x-2">
-              <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} onKeyDown={(e) => e.key === 'Enter' && handleAddBadNote()} />
-              <Button onClick={handleAddBadNote} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
-          <CardContent className="grid grid-cols-1 gap-2">
-            <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
-            <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
-            <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* LEFT COLUMN - Order 3 on mobile, 1 on desktop */}
-      <div className="space-y-4 md:order-1 order-3">
-        <Card className='hidden md:block'>
-          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><NotesGraph notes={notes} /></CardContent>
-        </Card>
-        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
-      </div>
+        {/* Right Column */}
+        <div className="space-y-6">
+            <JournalTree entryCount={entryCount} treeName={treeName} />
+            <Card>
+                <CardHeader>
+                    <CardTitle>Interact</CardTitle>
+                    <CardDescription>Chat with your tree or review past conversations.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 gap-2">
+                    <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
+                    <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
+                    <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
+                <CardContent className="space-y-2">
+                    <div className="flex space-x-2">
+                    <Input value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} onKeyDown={(e) => e.key === 'Enter' && handleAddGoodNote()}/>
+                    <Button onClick={handleAddGoodNote} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
+                    </div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
+                <CardContent className="space-y-2">
+                    <div className="flex space-x-2">
+                    <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} onKeyDown={(e) => e.key === 'Enter' && handleAddBadNote()} />
+                    <Button onClick={handleAddBadNote} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
 
 
       {/* Dialogs */}

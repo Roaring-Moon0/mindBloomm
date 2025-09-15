@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -31,7 +30,7 @@ export function JournalTree({ entryCount, treeName: initialTreeName }: JournalTr
         }
         setIsSaving(true);
         try {
-            await updateTreeName({ name: newName });
+            await updateTreeName(newName);
             toast({ title: 'Tree name updated!' });
             setIsEditingName(false);
         } catch (error: any) {

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -34,7 +33,7 @@ export function JournalEditor() {
         }
 
         try {
-            await addJournalEntry(user.uid, values.content);
+            await addJournalEntry(values.content);
             toast({ title: "Entry Saved", description: "Your tree has grown a little today!" });
             form.reset();
         } catch (error: any) {
