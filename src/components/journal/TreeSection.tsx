@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 
+
 // ----- Components -----
 
 function TreeVisualizer({ health }: { health: string }) {
