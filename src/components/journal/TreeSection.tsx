@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Sparkles, Plus, Download, Bot, History, Loader2, Edit } from 'lucide-react';
@@ -288,8 +289,12 @@ export default function TreeSection({ user }: { user: User }) {
 
       {/* Dialogs */}
       <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-      <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
-      <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
+      {user && (
+        <>
+          <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
+          <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
+        </>
+      )}
     </div>
   );
 }
