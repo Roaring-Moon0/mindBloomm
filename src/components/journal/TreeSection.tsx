@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -12,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Sparkles, Plus, Download, Bot, History, BrainCircuit } from "lucide-react";
 import jsPDF from "jspdf";
@@ -94,9 +93,40 @@ const NotesGraph = ({ notes }: { notes: Note[] }) => {
   );
 };
 
+function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[]; isOpen: boolean; onOpenChange: (open: boolean) => void }) {
+    const downloadPDF = () => {
+        const doc = new jsPDF();
+        doc.text("Your Memories", 10, 10);
+        notes.forEach((n, i) => {
+            const date = n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : 'N/A';
+            doc.text(`[${n.type.toUpperCase()}] ${n.text} (${date})`, 10, 20 + i * 10);
+        });
+        doc.save("memories.pdf");
+        toast({ title: "Downloading PDF..." });
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-lg">
+                <DialogHeader>
+                    <DialogTitle>All Memories</DialogTitle>
+                    <DialogDescription>A complete history of your thoughts.</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2 max-h-96 overflow-y-auto p-1">
+                    {notes.length > 0 ? notes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} /> : <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
+                </div>
+                <DialogFooter>
+                    <Button onClick={downloadPDF} disabled={notes.length === 0}><Download className="mr-2 h-4 w-4" /> Download as PDF</Button>
+                    <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 export default function TreeSection() {
   const { user } = useAuth();
-  const { data: notes } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
+  const { data: notesData } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
   const { data: treeState } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
 
   const [newNote, setNewNote] = useState("");
@@ -112,10 +142,10 @@ export default function TreeSection() {
 
   const { toast } = useToast();
 
-  const validNotes = notes || [];
-  const goodNotes = validNotes.filter(n => n.type === 'good');
-  const badNotes = validNotes.filter(n => n.type === 'bad');
-  const totalNotes = validNotes.length;
+  const notes = notesData || [];
+  const goodNotes = notes.filter(n => n.type === 'good');
+  const badNotes = notes.filter(n => n.type === 'bad');
+  const totalNotes = notes.length;
 
   const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
   const treeHealth = treeHealthRatio > 0.66 ? "healthy" : treeHealthRatio > 0.33 ? "weak" : "withered";
@@ -159,17 +189,6 @@ export default function TreeSection() {
         setIsSavingName(false);
     }
   };
-
-  const downloadPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Your Memories", 10, 10);
-    validNotes.forEach((n, i) => {
-        const date = n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : 'N/A';
-        doc.text(`[${n.type.toUpperCase()}] ${n.text} (${date})`, 10, 20 + i * 10);
-    });
-    doc.save("memories.pdf");
-    toast({ title: "Downloading PDF..." });
-  };
   
   const handleNewChat = async () => {
     try {
@@ -204,25 +223,11 @@ export default function TreeSection() {
             <CardTitle>Memories Graph</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <NotesGraph notes={validNotes} />
+            <NotesGraph notes={notes} />
           </CardContent>
         </Card>
         
-        <Dialog open={isMemoriesOpen} onOpenChange={setIsMemoriesOpen}>
-          <DialogTrigger asChild>
-            <Button className="w-full" variant="outline"><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
-              <DialogTitle>All Memories</DialogTitle>
-              <DialogDescription>A complete history of your thoughts.</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-2 max-h-96 overflow-y-auto p-1">
-              {validNotes.length > 0 ? validNotes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} /> : <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
-            </div>
-            <Button onClick={downloadPDF} disabled={validNotes.length === 0}><Download className="mr-2 h-4 w-4" /> Download as PDF</Button>
-          </DialogContent>
-        </Dialog>
+        <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}><Sparkles className="mr-2 h-4 w-4" /> See All Memories</Button>
 
       </div>
 
@@ -289,14 +294,15 @@ export default function TreeSection() {
 
       </div>
         
-      {/* AI Chat Dialog */}
+      {/* DIALOGS */}
+      <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
+      
       <TreeAiChatDialog
         isOpen={isAiChatOpen}
         onOpenChange={setIsAiChatOpen}
         treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }}
       />
       
-      {/* Chat History Dialog */}
       <ChatHistoryDialog
         isOpen={isChatHistoryOpen}
         onOpenChange={setIsChatHistoryOpen}
