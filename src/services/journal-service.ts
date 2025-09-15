@@ -1,7 +1,7 @@
 
 'use client';
 
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
 import { 
   collection, addDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc, deleteDoc
 } from 'firebase/firestore';
