@@ -16,8 +16,8 @@ import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
-import type { User } from 'firebase/auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
+import { useAuth } from '@/hooks/use-auth';
 
 interface Note {
   id: string;
@@ -143,9 +143,10 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection({ user }: { user: User }) {
-  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
-  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}/journal/state` : '');
+export default function TreeSection({ uid }: { uid: string }) {
+  const { user } = useAuth(); // We still need the full user object for Dialogs
+  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(uid ? `users/${uid}/notes` : '');
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(uid ? `users/${uid}/journal/state` : '');
 
   const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
@@ -174,18 +175,19 @@ export default function TreeSection({ user }: { user: User }) {
 
   // Effect to sync local input with Firestore state when editing begins
   useEffect(() => {
+    if (!uid) return;
     if (editingName) {
       setTreeNameInput(treeName);
     }
-  }, [editingName, treeName]);
+  }, [editingName, treeName, uid]);
 
-  if (notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
+  if ((notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
     try { 
-        await renameTree(treeNameInput, user); 
+        await renameTree(treeNameInput, uid); 
         toast({ title: 'Tree renamed successfully!' }); 
         setEditingName(false); 
     }
@@ -194,14 +196,14 @@ export default function TreeSection({ user }: { user: User }) {
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(user); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }, user); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { await addNote({ text: goodNote, type: 'good' }, uid); setGoodNote(''); toast({ title: 'Note added!' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -209,7 +211,7 @@ export default function TreeSection({ user }: { user: User }) {
   const handleAddBadNote = async () => {
     if (!badNote.trim()) return;
     setIsSavingBad(true);
-    try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
+    try { await addNote({ text: badNote, type: 'bad' }, uid); setBadNote(''); toast({ title: 'Note released.' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingBad(false); }
   };

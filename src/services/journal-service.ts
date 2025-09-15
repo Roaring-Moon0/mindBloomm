@@ -9,7 +9,6 @@ import {
   deleteDoc,
   serverTimestamp,
 } from 'firebase/firestore';
-import type { User } from 'firebase/auth';
 import { format } from 'date-fns';
 
 
@@ -20,9 +19,9 @@ interface NotePayload {
   type: 'good' | 'bad';
 }
 
-export const addNote = async (payload: NotePayload, user: User) => {
-  if (!user) throw new Error('You must be logged in to add a note.');
-  const notesCollectionRef = collection(db, `users/${user.uid}/notes`);
+export const addNote = async (payload: NotePayload, uid: string) => {
+  if (!uid) throw new Error('You must be logged in to add a note.');
+  const notesCollectionRef = collection(db, `users/${uid}/notes`);
   await addDoc(notesCollectionRef, {
     ...payload,
     createdAt: serverTimestamp(),
@@ -31,24 +30,24 @@ export const addNote = async (payload: NotePayload, user: User) => {
 
 // --- Tree State ---
 
-export const renameTree = async (name: string, user: User) => {
-  if (!user) throw new Error('You must be logged in to rename the tree.');
-  const treeStateRef = doc(db, `users/${user.uid}/journal/state`);
+export const renameTree = async (name: string, uid: string) => {
+  if (!uid) throw new Error('You must be logged in to rename the tree.');
+  const treeStateRef = doc(db, `users/${uid}/journal/state`);
   await updateDoc(treeStateRef, { treeName: name });
 };
 
 
 // --- Chat ---
 
-export const startNewChat = async (user: User) => {
-    if (!user) throw new Error('You must be logged in to start a chat.');
-    const chatsCollectionRef = collection(db, `users/${user.uid}/chats`);
+export const startNewChat = async (uid: string) => {
+    if (!uid) throw new Error('You must be logged in to start a chat.');
+    const chatsCollectionRef = collection(db, `users/${uid}/chats`);
     
     // Create a new chat document
     const newChatRef = await addDoc(chatsCollectionRef, {
         title: `Chat from ${format(new Date(), 'MMMM d, yyyy')}`,
         createdAt: serverTimestamp(),
-        userId: user.uid,
+        userId: uid,
     });
     
     // Add the initial assistant message to this new chat
