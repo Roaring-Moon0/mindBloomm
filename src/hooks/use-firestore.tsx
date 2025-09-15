@@ -94,12 +94,14 @@ export function useFirestoreCollection<T>(path: string) {
           // Sort by createdAt if present
           if (
             collectionData.length > 0 &&
-            (collectionData[0] as any).createdAt?.toDate
+            (collectionData[0] as any).createdAt !== undefined
           ) {
             collectionData.sort(
-              (a: any, b: any) =>
-                b.createdAt.toDate().getTime() -
-                a.createdAt.toDate().getTime()
+              (a: any, b: any) => {
+                const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+                const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+                return timeB - timeA;
+              }
             );
           }
 
