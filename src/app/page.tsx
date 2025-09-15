@@ -160,7 +160,7 @@ export default function Home() {
               <div className="space-y-4">
                 <div className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-base font-semibold text-primary transition-colors hover:bg-primary/20">
                     <Users className="h-5 w-5" />
-                    <span>Our Experts</span>
+                    <span>Our Team</span>
                 </div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Meet the Team</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
