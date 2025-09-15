@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -181,7 +182,7 @@ export default function TreeSection({ uid }: { uid: string }) {
     }
   }, [editingName, treeName, uid]);
 
-  if (!user || (notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
+  if (!uid || !user || (notesLoading || treeStateLoading) && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });

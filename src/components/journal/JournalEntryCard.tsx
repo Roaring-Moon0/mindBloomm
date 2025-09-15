@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,11 +25,12 @@ interface JournalEntry {
     createdAt: any;
 }
 
-export function JournalEntryCard({ entry, uid }: { entry: JournalEntry; uid: string }) {
+export function JournalEntryCard({ entry, uid }: { entry: JournalEntry, uid: string }) {
     
     const handleDelete = async () => {
         if (!uid) {
-            return toast({ variant: 'destructive', title: "Error", description: "User ID is missing." });
+            toast({ variant: 'destructive', title: "Error", description: "User ID is missing." });
+            return;
         }
         try {
             await deleteJournalEntry(uid, entry.id);
@@ -51,7 +53,7 @@ export function JournalEntryCard({ entry, uid }: { entry: JournalEntry; uid: str
             <CardFooter className="flex justify-end">
                  <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" disabled={!uid}>
+                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
                             <Trash2 className="w-4 h-4"/>
                         </Button>
                     </AlertDialogTrigger>

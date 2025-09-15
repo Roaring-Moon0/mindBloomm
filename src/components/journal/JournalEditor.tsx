@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -28,8 +29,10 @@ export function JournalEditor() {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         if (!user) {
-            return toast({ variant: 'destructive', title: 'You must be logged in to save an entry.' });
+            toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to save an entry.' });
+            return;
         }
+
         try {
             await addJournalEntry(user.uid, values.content);
             toast({ title: "Entry Saved", description: "Your tree has grown a little today!" });

@@ -10,7 +10,6 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { format } from 'date-fns';
-import type { User } from 'firebase/auth';
 
 // ==============================
 // Interfaces
