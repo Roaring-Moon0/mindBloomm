@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { useFirestoreCollection, useFirestoreDocument } from "@/hooks/use-firestore";
@@ -304,5 +304,3 @@ export default function TreeSection() {
     </div>
   );
 }
-
-    
