@@ -1,38 +1,30 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // By default, deny all reads and writes.
+    // Default deny all
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // Users Collection
-    // - Authenticated users can create their own user document.
-    // - Users can only read and update their own document.
+    // Users can create their own doc and read/update it.
     match /users/{userId} {
       allow create: if request.auth.uid == userId;
       allow read, update: if request.auth.uid == userId;
     }
     
-    // User-specific subcollections (journal, notes, chats, etc.)
-    // Users can read/write to their own subcollections.
-    match /users/{userId}/{collection}/{docId} {
-      allow read, write: if request.auth.uid == userId;
+    // Users can read/write to their own subcollections (like notes, chats, journal)
+    match /users/{userId}/{subcollection=**}/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Surveys Collection
-    // - Any authenticated user can read surveys that are marked as visible.
+    // Surveys and Videos are public to any authenticated user.
     match /surveys/{surveyId} {
-      allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
+      allow read: if request.auth != null;
     }
-
-    // Videos Collection
-    // - Any authenticated user can read videos that are marked as visible.
     match /videos/{videoId} {
-        allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
+      allow read: if request.auth != null;
     }
   }
 }

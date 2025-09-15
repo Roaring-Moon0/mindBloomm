@@ -21,6 +21,7 @@ interface NotePayload {
 
 export const addNote = async (payload: NotePayload, uid: string) => {
   if (!uid) throw new Error('You must be logged in to add a note.');
+  console.log("Writing note for uid:", uid);
   const notesCollectionRef = collection(db, `users/${uid}/notes`);
   await addDoc(notesCollectionRef, {
     ...payload,
@@ -59,6 +60,8 @@ export const startNewChat = async (uid: string) => {
     });
 };
 
+// This function is no longer used by the main journal but might be used elsewhere.
+// It relies on the global auth state.
 export const addJournalEntry = async (payload: { content: string }) => {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to save an entry.');
@@ -70,7 +73,8 @@ export const addJournalEntry = async (payload: { content: string }) => {
     });
 };
 
-
+// This function is no longer used by the main journal but might be used elsewhere.
+// It relies on the global auth state.
 export const deleteJournalEntry = async (entryId: string) => {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to delete an entry.');
@@ -79,7 +83,8 @@ export const deleteJournalEntry = async (entryId: string) => {
     await deleteDoc(entryDocRef);
 };
 
-
+// This function is no longer used by the main journal but might be used elsewhere.
+// It relies on the global auth state.
 export const updateTreeName = async (payload: { name: string }) => {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to update the tree name.');

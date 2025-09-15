@@ -1,56 +1,30 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is an admin
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
     }
 
-    // Rules for the 'users' collection
+    // Users can create their own doc and read/update it.
     match /users/{userId} {
-      // Any authenticated user can create their own document
-      allow create: if request.auth != null && request.auth.uid == userId;
-      // Users can only read or update their own document
-      allow read, update: if request.auth != null && request.auth.uid == userId;
-      // Admins can read or update any user document
-      allow read, update: if isAdmin();
-      // By default, deny delete
-      allow delete: if false;
+      allow create: if request.auth.uid == userId;
+      allow read, update: if request.auth.uid == userId;
     }
     
-    // Rules for user-specific subcollections like notes, chats, etc.
-    match /users/{userId}/{collection}/{docId} {
-        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
+    // Users can read/write to their own subcollections (like notes, chats, journal)
+    match /users/{userId}/{subcollection=**}/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
-    
-    // Admins have full access to survey data
+
+    // Surveys and Videos are public to any authenticated user.
     match /surveys/{surveyId} {
-      allow read, write, delete: if isAdmin();
-      // Allow any authenticated user to read surveys
-      allow list, get: if request.auth != null;
+      allow read: if request.auth != null;
     }
-
-    // Videos are public to all authenticated users
     match /videos/{videoId} {
-        allow read: if request.auth != null;
-        allow write, delete: if isAdmin();
-    }
-    
-    // 'adminCodes' can be read by any authenticated user to check their code.
-    // Writes should only be done from a trusted server or the console.
-    match /adminCodes/{codeId} {
       allow read: if request.auth != null;
-      allow write: if isAdmin(); // Or lock down further if needed
-    }
-
-    // The 'admins' collection is read-only for clients to check status.
-    // Only allow writes from a trusted backend process (or another admin).
-    match /admins/{adminId} {
-      allow read: if request.auth != null;
-      allow write: if isAdmin(); // Admins can add other admins
     }
   }
 }
