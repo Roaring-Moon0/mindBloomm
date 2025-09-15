@@ -14,3 +14,10 @@ export function getTreeStage(entryCount: number) {
     }
     return { src: '/assets/trees/tree_stage_1.png', alt: 'A tiny sprout just breaking through the soil.', stageName: 'Sprout' };
 }
+
+export function getTreeGrowthLevel(goodNoteCount: number): number {
+    if (goodNoteCount >= 25) return 3; // Mature
+    if (goodNoteCount >= 15) return 2; // Young
+    if (goodNoteCount >= 5) return 1;  // Sapling
+    return 0; // Seed
+}
