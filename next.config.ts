@@ -4,6 +4,9 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   output: 'standalone',
   /* config options here */
+  experimental: {
+    allowedDevOrigins: ["https://6000-firebase-studio-1757422870257.cluster-ancjwrkgr5dvux4qug5rbzyc2y.cloudworkstations.dev"],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
