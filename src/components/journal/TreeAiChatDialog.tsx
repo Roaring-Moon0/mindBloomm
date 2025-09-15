@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -42,6 +43,10 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
           content: `Hello. I am ${treeState.name}. It is good to feel the sun with you. What is on your mind?`,
         },
       ]);
+    } else {
+      // Clear messages and input when dialog is closed
+      setMessages([]);
+      setInput('');
     }
   }, [isOpen, treeState.name]);
   
@@ -56,7 +61,8 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
     if (!input.trim() || isLoading) return;
 
     const userMessage: Message = { role: 'user', content: input };
-    setMessages((prev) => [...prev, userMessage]);
+    const currentMessages = [...messages, userMessage];
+    setMessages(currentMessages);
     setInput('');
     setIsLoading(true);
 
@@ -66,6 +72,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
         treeName: treeState.name,
         treeHealth: treeState.health,
         treeMood: treeState.mood,
+        history: messages, // Pass the conversation history
       });
 
       const assistantMessage: Message = { role: 'assistant', content: result.response };

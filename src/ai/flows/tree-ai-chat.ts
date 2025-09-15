@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A Genkit flow for chatting with the user's Tree Journal.
@@ -13,11 +14,17 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
+const MessageSchema = z.object({
+  role: z.enum(['user', 'assistant']),
+  content: z.string(),
+});
+
 const TreeAiChatInputSchema = z.object({
   userInput: z.string().describe("The user's message to their tree."),
   treeName: z.string().describe("The name of the user's tree."),
   treeHealth: z.number().describe("The current health of the tree (0-100)."),
   treeMood: z.string().describe("The current mood of the tree (e.g., happy, sad, weak)."),
+  history: z.array(MessageSchema).optional().describe("The previous chat messages to provide context."),
 });
 export type TreeAiChatInput = z.infer<typeof TreeAiChatInputSchema>;
 
@@ -53,8 +60,20 @@ Based on your state, tailor your response.
 4.  **Keep it concise and poetic.** Avoid long, clinical paragraphs.
 5.  **If the user asks for advice, guide them gently with questions, like a wise old tree would.** Don't give direct instructions. Example: "What do you think this feeling is trying to tell you?" or "Perhaps this is a time for rest, like winter, before new growth begins."
 6.  **If the user expresses gratitude or happiness, share in their joy.** Example: "Your happiness feels like sunshine on my leaves."
+7.  **Continue the conversation naturally based on the history.**
 
-User's message:
+{{#if history}}
+This is the conversation history. Continue it naturally.
+{{#each history}}
+  {{#if (eq role 'user')}}
+    User: {{{content}}}
+  {{else}}
+    {{../treeName}}: {{{content}}}
+  {{/if}}
+{{/each}}
+{{/if}}
+
+User's latest message:
 "{{{userInput}}}"
 
 Your response as {{{treeName}}}:`,
