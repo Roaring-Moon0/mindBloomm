@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -177,18 +176,17 @@ export default function TreeSection({ user }: { user: User }) {
   useEffect(() => { setTreeNameInput(treeName); }, [treeName]);
 
   if (notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
-  if (!user) return <div className="p-4 text-center text-destructive font-medium">You must be logged in to view this section.</div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { await renameTree(treeNameInput); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
+    try { await renameTree(treeNameInput, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(user); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
@@ -205,7 +203,7 @@ export default function TreeSection({ user }: { user: User }) {
               <Button onClick={async () => {
                 if (!badNote.trim()) return;
                 setIsSavingBad(true);
-                try { await addNote({ text: badNote, type: 'bad' }); setBadNote(''); toast({ title: 'Note released.' }); }
+                try { await addNote({ text: badNote, type: 'bad' }, user); setBadNote(''); toast({ title: 'Note released.' }); }
                 catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
                 finally { setIsSavingBad(false); }
               }} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
@@ -253,7 +251,7 @@ export default function TreeSection({ user }: { user: User }) {
               <Button onClick={async () => {
                 if (!goodNote.trim()) return;
                 setIsSavingGood(true);
-                try { await addNote({ text: goodNote, type: 'good' }); setGoodNote(''); toast({ title: 'Note added!' }); }
+                try { await addNote({ text: goodNote, type: 'good' }, user); setGoodNote(''); toast({ title: 'Note added!' }); }
                 catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
                 finally { setIsSavingGood(false); }
               }} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
