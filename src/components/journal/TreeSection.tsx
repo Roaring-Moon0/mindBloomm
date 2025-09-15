@@ -162,7 +162,7 @@ export default function TreeSection({ user }: { user: User }) {
 
   const { toast } = useToast();
 
-  const notes = notesData || [];
+  const notes = useMemo(() => notesData || [], [notesData]);
   const goodNotes = useMemo(() => notes.filter(n => n.type === 'good'), [notes]);
   const totalNotes = notes.length;
 
