@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { useAuth } from '@/hooks/use-auth';
 
 interface JournalEntry {
     id: string;
@@ -25,16 +24,15 @@ interface JournalEntry {
     createdAt: any;
 }
 
-export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
-    const { user } = useAuth();
+export function JournalEntryCard({ entry, uid }: { entry: JournalEntry, uid: string }) {
     
     const handleDelete = async () => {
-        if (!user) {
-            toast({ variant: 'destructive', title: "Error", description: "You must be logged in to delete this entry." });
+        if (!uid) {
+            toast({ variant: 'destructive', title: "Error", description: "User ID is missing." });
             return;
         }
         try {
-            await deleteJournalEntry(entry.id);
+            await deleteJournalEntry(entry.id, uid);
             toast({ title: "Entry Deleted" });
         } catch (error: any) {
              toast({ variant: 'destructive', title: "Error Deleting Entry", description: error.message });

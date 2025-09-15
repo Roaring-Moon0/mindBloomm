@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { addJournalEntry } from '@/services/journal-service';
 import { toast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -17,8 +16,7 @@ const formSchema = z.object({
   content: z.string().min(10, { message: "Your entry must be at least 10 characters." }),
 });
 
-export function JournalEditor() {
-    const { user } = useAuth();
+export function JournalEditor({ uid }: { uid: string }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: { content: "" },
@@ -27,13 +25,13 @@ export function JournalEditor() {
     const { formState: { isSubmitting } } = form;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        if (!user) {
+        if (!uid) {
             toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to save an entry.' });
             return;
         }
 
         try {
-            await addJournalEntry(values.content);
+            await addJournalEntry({ content: values.content }, uid);
             toast({ title: "Entry Saved", description: "Your tree has grown a little today!" });
             form.reset();
         } catch (error: any) {
@@ -67,7 +65,7 @@ export function JournalEditor() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSubmitting || !user}>
+                        <Button type="submit" disabled={isSubmitting || !uid}>
                             {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</> : <><PlusCircle className="mr-2 h-4 w-4"/> Save Entry</>}
                         </Button>
                     </form>

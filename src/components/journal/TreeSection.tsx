@@ -148,8 +148,8 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection({ user }: { user: User }) {
-  const { uid } = user;
+export default function TreeSection({ uid }: { uid: string }) {
+  const { user } = useAuth();
   const { data: journalEntries, loading: entriesLoading } = useFirestoreCollection<JournalEntry>(`users/${uid}/journalEntries`);
   const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${uid}/notes`);
   const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${uid}/journal/state`);
@@ -194,7 +194,7 @@ export default function TreeSection({ user }: { user: User }) {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
     try { 
-        await renameTree(treeNameInput); 
+        await renameTree(treeNameInput, uid); 
         toast({ title: 'Tree renamed successfully!' }); 
         setEditingName(false); 
     }
@@ -203,14 +203,14 @@ export default function TreeSection({ user }: { user: User }) {
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { await addNote({ text: goodNote, type: 'good' }, uid); setGoodNote(''); toast({ title: 'Note added!' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -218,7 +218,7 @@ export default function TreeSection({ user }: { user: User }) {
   const handleAddBadNote = async () => {
     if (!badNote.trim()) return;
     setIsSavingBad(true);
-    try { await addNote({ text: badNote, type: 'bad' }); setBadNote(''); toast({ title: 'Note released.' }); }
+    try { await addNote({ text: badNote, type: 'bad' }, uid); setBadNote(''); toast({ title: 'Note released.' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingBad(false); }
   };
@@ -227,12 +227,12 @@ export default function TreeSection({ user }: { user: User }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-6">
-            <JournalEditor />
+            <JournalEditor uid={uid} />
             <div className="space-y-4">
                 <h3 className="text-xl font-bold">Past Entries</h3>
                 {journalEntries && journalEntries.length > 0 ? (
                     journalEntries.map(entry => (
-                        <JournalEntryCard key={entry.id} entry={entry} />
+                        <JournalEntryCard key={entry.id} entry={entry} uid={uid} />
                     ))
                 ) : (
                     <Card>
@@ -246,7 +246,7 @@ export default function TreeSection({ user }: { user: User }) {
 
         {/* Right Column */}
         <div className="space-y-6">
-            <JournalTree entryCount={entryCount} treeName={treeName} />
+            <JournalTree entryCount={entryCount} treeName={treeName} uid={uid} />
             <Card>
                 <CardHeader>
                     <CardTitle>Interact</CardTitle>

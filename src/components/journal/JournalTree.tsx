@@ -14,9 +14,10 @@ import { getTreeStage } from '@/lib/journal-utils';
 interface JournalTreeProps {
     entryCount: number;
     treeName?: string;
+    uid: string;
 }
 
-export function JournalTree({ entryCount, treeName: initialTreeName }: JournalTreeProps) {
+export function JournalTree({ entryCount, treeName: initialTreeName, uid }: JournalTreeProps) {
     const [isEditingName, setIsEditingName] = useState(false);
     const [newName, setNewName] = useState(initialTreeName || '');
     const [isSaving, setIsSaving] = useState(false);
@@ -30,7 +31,7 @@ export function JournalTree({ entryCount, treeName: initialTreeName }: JournalTr
         }
         setIsSaving(true);
         try {
-            await updateTreeName(newName);
+            await updateTreeName(newName, uid);
             toast({ title: 'Tree name updated!' });
             setIsEditingName(false);
         } catch (error: any) {
