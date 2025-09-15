@@ -1,10 +1,10 @@
+'use client';
 
-'use server';
-
-import { auth, db } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import { 
-  collection, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, setDoc 
+  collection, addDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, setDoc 
 } from 'firebase/firestore';
+import type { User } from 'firebase/auth';
 import { z } from 'zod';
 
 const entrySchema = z.object({
@@ -16,8 +16,7 @@ const nameSchema = z.object({
 });
 
 // --- Add Note ---
-export const addNote = async (payload: { text: string; type: 'good' | 'bad' }) => {
-  const user = auth.currentUser;
+export const addNote = async (payload: { text: string; type: 'good' | 'bad' }, user: User) => {
   if (!user) throw new Error('You must be logged in.');
 
   await addDoc(collection(db, "users", user.uid, "notes"), {
@@ -28,8 +27,7 @@ export const addNote = async (payload: { text: string; type: 'good' | 'bad' }) =
 };
 
 // --- Rename Tree ---
-export const renameTree = async (newName: string) => {
-  const user = auth.currentUser;
+export const renameTree = async (newName: string, user: User) => {
   if (!user) throw new Error('You must be logged in.');
 
   const userRef = doc(db, "users", user.uid);
@@ -37,8 +35,7 @@ export const renameTree = async (newName: string) => {
 };
 
 // --- Start New Chat ---
-export const startNewChat = async () => {
-    const user = auth.currentUser;
+export const startNewChat = async (user: User) => {
     if (!user) throw new Error('You must be logged in.');
     
     const chatsRef = collection(db, "users", user.uid, "chats");
@@ -54,8 +51,7 @@ export const startNewChat = async () => {
 };
 
 
-export const addJournalEntry = async (payload: z.infer<typeof entrySchema>) => {
-    const user = auth.currentUser;
+export const addJournalEntry = async (payload: z.infer<typeof entrySchema>, user: User) => {
     if (!user) throw new Error('You must be logged in to add an entry.');
 
     const validated = entrySchema.parse(payload);
@@ -88,8 +84,7 @@ export const addJournalEntry = async (payload: z.infer<typeof entrySchema>) => {
     });
 };
 
-export const deleteJournalEntry = async (id: string) => {
-    const user = auth.currentUser;
+export const deleteJournalEntry = async (id: string, user: User) => {
     if (!user) throw new Error('You must be logged in to delete an entry.');
 
     const entryRef = doc(db, `users/${user.uid}/entries`, id);
@@ -109,8 +104,7 @@ export const deleteJournalEntry = async (id: string) => {
     });
 };
 
-export const updateTreeName = async (payload: z.infer<typeof nameSchema>) => {
-    const user = auth.currentUser;
+export const updateTreeName = async (payload: z.infer<typeof nameSchema>, user: User) => {
     if (!user) throw new Error('You must be logged in to update the tree name.');
     
     const validated = nameSchema.parse(payload);
