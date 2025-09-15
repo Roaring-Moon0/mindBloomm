@@ -70,26 +70,22 @@ function useProvideAdminAuth() {
       setError("You must be logged in and have a verified email.");
       return false;
     }
-  
+
     try {
       setError("Verifying..."); // show status
-  
-      const codesRef = collection(db, "adminCodes");
-      const q = query(codesRef, where("code", "==", code.trim()));
-      console.log("Running query for code:", code);
-  
-      const querySnap = await getDocs(q);
-      console.log("Query result size:", querySnap.size);
-  
-      if (querySnap.empty) {
-        console.log("❌ No document found for code:", code);
+      
+      const trimmedCode = code.trim();
+      const codeRef = doc(db, "adminCodes", trimmedCode);
+      const codeSnap = await getDoc(codeRef);
+
+      if (!codeSnap.exists()) {
+        console.log("❌ No document found for code:", trimmedCode);
         setError("Invalid code.");
         return false;
       }
   
-      const matchDoc = querySnap.docs[0];
-      const data = matchDoc.data();
-      console.log("✅ Found doc:", matchDoc.id, data);
+      const data = codeSnap.data();
+      console.log("✅ Found doc:", codeSnap.id, data);
   
       // Make email comparison case-insensitive
       const userEmail = user.email.toLowerCase();
