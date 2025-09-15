@@ -1,24 +1,25 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Plus } from "lucide-react";
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp,
+} from "firebase/firestore";
+import { db, auth } from "@/lib/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-// 🟢 Dummy Journal Data
-const mockJournal = {
-  treeAge: 12, // days old
-  treeHealth: "healthy", // healthy | weak | withered
-  notes: [
-    { id: 1, text: "Had a peaceful day ✨", type: "good" },
-    { id: 2, text: "Got stressed at work 😓", type: "bad" },
-    { id: 3, text: "Meditated for 15 minutes 🧘", type: "good" },
-  ],
-};
-
-// 🌳 Tree Visualizer (center column)
+// 🌳 Tree Visualizer
 function TreeVisualizer({ health }: { health: string }) {
   let treeEmoji = "🌱";
   if (health === "healthy") treeEmoji = "🌳";
@@ -36,7 +37,7 @@ function TreeVisualizer({ health }: { health: string }) {
   );
 }
 
-// 😀 Mood Emoji (right column)
+// 😀 Mood Emoji
 function TreeMood({ health }: { health: string }) {
   let mood = "🙂";
   if (health === "healthy") mood = "😄";
@@ -54,20 +55,35 @@ function TreeMood({ health }: { health: string }) {
   );
 }
 
-// 🔥 Burning Effect Note (bad notes only)
-function BurningNote({ text }: { text: string }) {
+// 🔥 Burning Effect for Bad Notes
+function BurningNote({ text, createdAt }: { text: string; createdAt: string }) {
   return (
     <motion.div
-      className="p-2 rounded-md bg-red-100 border border-red-400"
+      className="p-2 rounded-md bg-red-100 border border-red-400 text-sm"
       animate={{ opacity: [1, 0.6, 1], scale: [1, 1.05, 1] }}
       transition={{ repeat: Infinity, duration: 1.5 }}
     >
       {text} 🔥
+      <div className="text-xs text-gray-600">{createdAt}</div>
     </motion.div>
   );
 }
 
-// 📊 Good vs Bad Pie Graph
+// 🌟 Glow Effect for Good Notes
+function GoodNote({ text, createdAt }: { text: string; createdAt: string }) {
+  return (
+    <motion.div
+      className="p-2 rounded-md bg-green-100 border border-green-400 text-sm"
+      animate={{ opacity: [1, 0.8, 1] }}
+      transition={{ repeat: Infinity, duration: 3 }}
+    >
+      {text} ✨
+      <div className="text-xs text-gray-600">{createdAt}</div>
+    </motion.div>
+  );
+}
+
+// 📊 Pie Chart
 function NotesGraph({ notes }: { notes: any[] }) {
   const good = notes.filter((n) => n.type === "good").length;
   const bad = notes.filter((n) => n.type === "bad").length;
@@ -84,9 +100,7 @@ function NotesGraph({ notes }: { notes: any[] }) {
         data={data}
         cx={100}
         cy={100}
-        labelLine={false}
         outerRadius={80}
-        fill="#8884d8"
         dataKey="value"
       >
         {data.map((_, index) => (
@@ -98,23 +112,70 @@ function NotesGraph({ notes }: { notes: any[] }) {
   );
 }
 
-// 🌱 Main Tree Section
 export default function TreeSection() {
-  const [journal] = useState(mockJournal);
+  const [user] = useAuthState(auth);
+  const [notes, setNotes] = useState<any[]>([]);
+  const [newNote, setNewNote] = useState("");
+  const [noteType, setNoteType] = useState<"good" | "bad">("good");
+
+  // Load notes from Firestore
+  useEffect(() => {
+    if (!user) return;
+    const q = query(
+      collection(db, "users", user.uid, "notes"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      setNotes(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          createdAt: doc.data().createdAt?.toDate().toLocaleString() || "",
+        }))
+      );
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  // Save new note
+  async function addNote() {
+    if (!user || !newNote.trim()) return;
+    await addDoc(collection(db, "users", user.uid, "notes"), {
+      text: newNote,
+      type: noteType,
+      createdAt: serverTimestamp(),
+    });
+    setNewNote("");
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-      {/* LEFT COLUMN */}
+      {/* LEFT COLUMN - BAD NOTES */}
       <div className="space-y-4">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Bad Notes</CardTitle>
+            <Button size="sm" onClick={() => setNoteType("bad")}>
+              <Plus className="mr-1 h-4 w-4" /> Write
+            </Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {journal.notes
+            {noteType === "bad" && (
+              <div className="flex space-x-2 mb-2">
+                <Input
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Write a bad note..."
+                />
+                <Button onClick={addNote}>Save</Button>
+              </div>
+            )}
+            {notes
               .filter((n) => n.type === "bad")
               .map((n) => (
-                <BurningNote key={n.id} text={n.text} />
+                <BurningNote key={n.id} text={n.text} createdAt={n.createdAt} />
               ))}
           </CardContent>
         </Card>
@@ -124,7 +185,7 @@ export default function TreeSection() {
             <CardTitle>Memories Graph</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <NotesGraph notes={journal.notes} />
+            <NotesGraph notes={notes} />
           </CardContent>
         </Card>
 
@@ -135,28 +196,34 @@ export default function TreeSection() {
 
       {/* CENTER COLUMN */}
       <div className="flex flex-col items-center justify-center space-y-6">
-        <TreeVisualizer health={journal.treeHealth} />
-        <div className="text-lg font-semibold">
-          Tree Age: {journal.treeAge} days
-        </div>
+        <TreeVisualizer health="healthy" />
+        <div className="text-lg font-semibold">Tree Age: 12 days</div>
       </div>
 
-      {/* RIGHT COLUMN */}
+      {/* RIGHT COLUMN - GOOD NOTES */}
       <div className="space-y-4">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Good Notes</CardTitle>
+            <Button size="sm" onClick={() => setNoteType("good")}>
+              <Plus className="mr-1 h-4 w-4" /> Write
+            </Button>
           </CardHeader>
           <CardContent className="space-y-2">
-            {journal.notes
+            {noteType === "good" && (
+              <div className="flex space-x-2 mb-2">
+                <Input
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Write a good note..."
+                />
+                <Button onClick={addNote}>Save</Button>
+              </div>
+            )}
+            {notes
               .filter((n) => n.type === "good")
               .map((n) => (
-                <div
-                  key={n.id}
-                  className="p-2 rounded-md bg-green-100 border border-green-400"
-                >
-                  {n.text} 🌟
-                </div>
+                <GoodNote key={n.id} text={n.text} createdAt={n.createdAt} />
               ))}
           </CardContent>
         </Card>
@@ -166,7 +233,7 @@ export default function TreeSection() {
             <CardTitle>Tree Mood</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <TreeMood health={journal.treeHealth} />
+            <TreeMood health="healthy" />
           </CardContent>
         </Card>
 
@@ -178,7 +245,7 @@ export default function TreeSection() {
             <div className="w-full bg-gray-200 rounded-full h-4">
               <div
                 className="bg-green-500 h-4 rounded-full"
-                style={{ width: `${Math.min(journal.treeAge * 5, 100)}%` }}
+                style={{ width: `60%` }}
               ></div>
             </div>
           </CardContent>
