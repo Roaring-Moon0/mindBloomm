@@ -59,12 +59,12 @@ export function GamesClient() {
                                 <CardTitle className="text-2xl font-headline">Mind Paint</CardTitle>
                                 <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
                             </CardHeader>
-                            <CardContent className="flex flex-col items-center justify-center p-6 flex-grow">
+                             <CardContent className="flex flex-col items-center justify-center p-6 flex-grow">
                                 <Paintbrush className="w-32 h-32 text-primary" />
                             </CardContent>
                         </Card>
                     </DialogTrigger>
-                    <DialogContent className="max-w-fit p-4">
+                    <DialogContent className="max-w-4xl w-full h-full max-h-[90vh] flex flex-col p-4">
                         <VisuallyHidden>
                             <DialogHeader>
                                 <DialogTitle>Mind Paint Game</DialogTitle>
