@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { TreeAiChatDialog } from './TreeAiChatDialog';
 
 // 🌳 Tree Visualizer
 function TreeVisualizer({ health }: { health: string }) {
@@ -117,6 +117,7 @@ export default function TreeSection() {
   const [notes, setNotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState("");
   const [noteType, setNoteType] = useState<"good" | "bad">("good");
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Load notes from Firestore
   useEffect(() => {
@@ -149,108 +150,122 @@ export default function TreeSection() {
     });
     setNewNote("");
   }
+  
+  const treeHealth = notes.filter(n => n.type === 'good').length > notes.filter(n => n.type === 'bad').length ? 'healthy' : 'weak';
+  const treeAge = notes.length;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-      {/* LEFT COLUMN - BAD NOTES */}
-      <div className="space-y-4">
-        <Card>
-          <CardHeader className="flex flex-row justify-between items-center">
-            <CardTitle>Bad Notes</CardTitle>
-            <Button size="sm" onClick={() => setNoteType("bad")}>
-              <Plus className="mr-1 h-4 w-4" /> Write
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {noteType === "bad" && (
-              <div className="flex space-x-2 mb-2">
-                <Input
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="Write a bad note..."
-                />
-                <Button onClick={addNote}>Save</Button>
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+        {/* LEFT COLUMN - BAD NOTES */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Bad Notes</CardTitle>
+              <Button size="sm" onClick={() => setNoteType("bad")}>
+                <Plus className="mr-1 h-4 w-4" /> Write
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {noteType === "bad" && (
+                <div className="flex space-x-2 mb-2">
+                  <Input
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Write a bad note..."
+                  />
+                  <Button onClick={addNote}>Save</Button>
+                </div>
+              )}
+              {notes
+                .filter((n) => n.type === "bad")
+                .map((n) => (
+                  <BurningNote key={n.id} text={n.text} createdAt={n.createdAt} />
+                ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Memories Graph</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <NotesGraph notes={notes} />
+            </CardContent>
+          </Card>
+
+          <Button className="w-full" variant="outline" onClick={() => setIsChatOpen(true)}>
+            <Sparkles className="mr-2 h-4 w-4" /> Talk to Your Tree
+          </Button>
+        </div>
+
+        {/* CENTER COLUMN */}
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <TreeVisualizer health={treeHealth} />
+          <div className="text-lg font-semibold">Tree Age: {treeAge} days</div>
+        </div>
+
+        {/* RIGHT COLUMN - GOOD NOTES */}
+        <div className="space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row justify-between items-center">
+              <CardTitle>Good Notes</CardTitle>
+              <Button size="sm" onClick={() => setNoteType("good")}>
+                <Plus className="mr-1 h-4 w-4" /> Write
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {noteType === "good" && (
+                <div className="flex space-x-2 mb-2">
+                  <Input
+                    value={newNote}
+                    onChange={(e) => setNewNote(e.target.value)}
+                    placeholder="Write a good note..."
+                  />
+                  <Button onClick={addNote}>Save</Button>
+                </div>
+              )}
+              {notes
+                .filter((n) => n.type === "good")
+                .map((n) => (
+                  <GoodNote key={n.id} text={n.text} createdAt={n.createdAt} />
+                ))}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Tree Mood</CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center">
+              <TreeMood health={treeHealth} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Tree Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-green-500 h-4 rounded-full"
+                  style={{ width: `${Math.min(treeAge * 5, 100)}%` }}
+                ></div>
               </div>
-            )}
-            {notes
-              .filter((n) => n.type === "bad")
-              .map((n) => (
-                <BurningNote key={n.id} text={n.text} createdAt={n.createdAt} />
-              ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Memories Graph</CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <NotesGraph notes={notes} />
-          </CardContent>
-        </Card>
-
-        <Button className="w-full" variant="outline">
-          <Sparkles className="mr-2 h-4 w-4" /> Talk to Your Tree
-        </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      {/* CENTER COLUMN */}
-      <div className="flex flex-col items-center justify-center space-y-6">
-        <TreeVisualizer health="healthy" />
-        <div className="text-lg font-semibold">Tree Age: 12 days</div>
-      </div>
-
-      {/* RIGHT COLUMN - GOOD NOTES */}
-      <div className="space-y-4">
-        <Card>
-          <CardHeader className="flex flex-row justify-between items-center">
-            <CardTitle>Good Notes</CardTitle>
-            <Button size="sm" onClick={() => setNoteType("good")}>
-              <Plus className="mr-1 h-4 w-4" /> Write
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {noteType === "good" && (
-              <div className="flex space-x-2 mb-2">
-                <Input
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="Write a good note..."
-                />
-                <Button onClick={addNote}>Save</Button>
-              </div>
-            )}
-            {notes
-              .filter((n) => n.type === "good")
-              .map((n) => (
-                <GoodNote key={n.id} text={n.text} createdAt={n.createdAt} />
-              ))}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tree Mood</CardTitle>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <TreeMood health="healthy" />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Tree Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full bg-gray-200 rounded-full h-4">
-              <div
-                className="bg-green-500 h-4 rounded-full"
-                style={{ width: `60%` }}
-              ></div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+      <TreeAiChatDialog 
+        isOpen={isChatOpen} 
+        onOpenChange={setIsChatOpen} 
+        treeState={{ 
+            name: "My Tree", // This could be dynamic in the future
+            health: Math.max(10, 100 - (notes.filter(n => n.type === 'bad').length * 10)),
+            mood: treeHealth,
+        }}
+    />
+    </>
   );
 }
