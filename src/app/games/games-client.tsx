@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { cn } from '@/lib/utils';
 
 
 const GameSkeleton = () => (
@@ -53,12 +54,12 @@ export function GamesClient() {
             <div className="lg:col-span-2 flex justify-center">
                  <Dialog>
                     <DialogTrigger asChild>
-                        <Card className="w-full max-w-lg mx-auto text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50">
+                        <Card className="w-full max-w-lg mx-auto text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50 h-full flex flex-col">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-headline">Mind Paint</CardTitle>
                                 <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
                             </CardHeader>
-                            <CardContent className="flex flex-col items-center justify-center p-6">
+                            <CardContent className="flex flex-col items-center justify-center p-6 flex-grow">
                                 <Paintbrush className="w-24 h-24 text-primary" />
                             </CardContent>
                         </Card>
