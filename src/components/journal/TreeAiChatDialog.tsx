@@ -67,15 +67,15 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
     setIsLoading(true);
 
     try {
-      const result = await treeAiChat({
+      const { response } = await treeAiChat({
         userInput: input,
         treeName: treeState.name,
         treeHealth: treeState.health,
         treeMood: treeState.mood,
-        history: messages, // Pass the conversation history
+        history: currentMessages.slice(-10), // Pass the last 10 messages for context
       });
 
-      const assistantMessage: Message = { role: 'assistant', content: result.response };
+      const assistantMessage: Message = { role: 'assistant', content: response };
       setMessages((prev) => [...prev, assistantMessage]);
 
     } catch (error) {

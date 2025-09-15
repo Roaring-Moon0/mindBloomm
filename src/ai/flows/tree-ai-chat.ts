@@ -65,10 +65,10 @@ Based on your state, tailor your response.
 {{#if history}}
 This is the conversation history. Continue it naturally.
 {{#each history}}
-  {{#if this.isUser}}
-    User: {{{content}}}
+  {{#if (eq this.role 'user')}}
+    User: {{{this.content}}}
   {{else}}
-    {{../treeName}}: {{{content}}}
+    {{../treeName}}: {{{this.content}}}
   {{/if}}
 {{/each}}
 {{/if}}
@@ -87,13 +87,7 @@ const treeAiChatFlow = ai.defineFlow(
     outputSchema: TreeAiChatOutputSchema,
   },
   async (input) => {
-    // Add an 'isUser' flag to each history message for easier templating
-    const historyWithFlag = input.history?.map(msg => ({ ...msg, isUser: msg.role === 'user' })) || [];
-    
-    const { output } = await prompt({
-        ...input,
-        history: historyWithFlag,
-    });
+    const { output } = await prompt(input);
     return { response: output!.response };
   }
 );
