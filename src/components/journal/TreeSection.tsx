@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { Progress } from "@/components/ui/progress";
+import { Label } from "@/components/ui/label";
 
 // ----- Child Components -----
 
