@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
@@ -176,6 +177,7 @@ export default function TreeSection({ user }: { user: User }) {
   useEffect(() => { setTreeNameInput(treeName); }, [treeName]);
 
   if (notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
+  if (!user) return <div className="p-4 text-center text-destructive font-medium">You must be logged in to view this section.</div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });

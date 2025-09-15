@@ -32,7 +32,6 @@ export const renameTree = async (newName: string) => {
   const user = auth.currentUser;
   if (!user) throw new Error('You must be logged in.');
 
-  // Update the treeName field in the user's root document
   const userRef = doc(db, "users", user.uid);
   await updateDoc(userRef, { treeName: newName });
 };
