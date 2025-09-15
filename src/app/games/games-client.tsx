@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -16,12 +15,11 @@ import {
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { cn } from '@/lib/utils';
 
-
-const GameSkeleton = () => (
+const GameSkeleton = ({ height = 400 }: { height?: number }) => (
     <div className="w-full max-w-md mx-auto">
-        <Skeleton className="h-[400px] w-full" />
+        <Skeleton className="w-full" style={{ height: `${height}px` }}/>
     </div>
-)
+);
 
 const BreathingVisualizer = dynamic(() => import('@/components/games/BreathingVisualizer').then(mod => mod.BreathingVisualizer), {
     loading: () => <GameSkeleton />,
@@ -36,25 +34,25 @@ const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mo
     ssr: false
 });
 const MindPaint = dynamic(() => import('@/components/games/MindPaint').then(mod => mod.MindPaint), {
-    loading: () => (
-         <div className="w-full max-w-lg mx-auto">
-            <Skeleton className="h-[500px] w-full" />
-        </div>
-    ),
+    loading: () => <GameSkeleton height={500} />,
     ssr: false
 });
 
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-            <div className="flex justify-center md:col-span-1 lg:col-span-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 items-start">
+            
+            {/* Breathing Visualizer */}
+            <div className="flex justify-center col-span-1">
                 <BreathingVisualizer />
             </div>
-            <div className="lg:col-span-2 flex justify-center">
-                 <Dialog>
+
+            {/* Mind Paint */}
+            <div className="flex justify-center sm:col-span-2 lg:col-span-2 w-full">
+                <Dialog>
                     <DialogTrigger asChild>
-                        <Card className="w-full max-w-lg mx-auto text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50 h-full flex flex-col">
+                        <Card className="w-full max-w-lg text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50 h-full flex flex-col">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-headline">Mind Paint</CardTitle>
                                 <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
@@ -75,12 +73,17 @@ export function GamesClient() {
                     </DialogContent>
                 </Dialog>
             </div>
-            <div className="flex justify-center">
+
+            {/* Color Match */}
+            <div className="flex justify-center col-span-1 sm:col-span-1">
                 <ColorMatch />
             </div>
-            <div className="md:col-span-2 flex justify-center">
+
+            {/* Memory Game */}
+            <div className="flex justify-center col-span-1 sm:col-span-2 lg:col-span-3 w-full">
                 <MemoryGame />
             </div>
+
         </div>
     )
 }
