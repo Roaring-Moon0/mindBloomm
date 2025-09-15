@@ -6,7 +6,6 @@ import { z } from 'zod';
 
 const entrySchema = z.object({
   content: z.string().min(1, 'Content cannot be empty.'),
-  type: z.enum(['good', 'bad']),
 });
 
 const nameSchema = z.object({
