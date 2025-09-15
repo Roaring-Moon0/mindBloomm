@@ -1,8 +1,9 @@
+
 'use client';
 
 import { db } from '@/lib/firebase';
 import { 
-  collection, addDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc
+  collection, addDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc, deleteDoc
 } from 'firebase/firestore';
 import type { User } from 'firebase/auth';
 
@@ -41,3 +42,30 @@ export const startNewChat = async (user: User) => {
     
     return newChatRef.id;
 };
+
+export const addJournalEntry = async (payload: { content: string }) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("You must be logged in to add an entry.");
+
+  const entriesRef = collection(db, 'users', user.uid, 'journalEntries');
+  await addDoc(entriesRef, {
+    ...payload,
+    createdAt: serverTimestamp(),
+  });
+};
+
+export const deleteJournalEntry = async (entryId: string) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("You must be logged in to delete an entry.");
+
+    const entryRef = doc(db, 'users', user.uid, 'journalEntries', entryId);
+    await deleteDoc(entryRef);
+}
+
+export const updateTreeName = async (payload: { name: string }) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("You must be logged in to update the tree name.");
+    
+    const journalRef = doc(db, 'users', user.uid, 'journal', 'state');
+    await setDoc(journalRef, payload, { merge: true });
+}

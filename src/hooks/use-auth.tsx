@@ -38,14 +38,9 @@ const ensureUserDocument = async (user: User) => {
             });
 
             // Create the initial journal state document
-            await setDoc(journalStateRef, { 
-                treeName: "My Tree",
+             await setDoc(journalStateRef, { 
+                treeName: "My Gratitude Tree",
                 createdAt: serverTimestamp(),
-                lastWritten: serverTimestamp(),
-                treeHealth: 80,
-                missedDays: 0,
-                mood: 'happy',
-                emoji: '😊',
             });
 
             toast({

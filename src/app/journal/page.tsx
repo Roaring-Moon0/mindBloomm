@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
@@ -7,19 +8,8 @@ import { FadeIn } from '@/components/ui/fade-in';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import TreeSection from '@/components/journal/TreeSection';
+import JournalClientPage from './journal-client';
 import type { User } from 'firebase/auth';
-
-
-function JournalClientPage({ user }: { user: User }) {
-    return (
-        <FadeIn>
-            <div className="container mx-auto py-8">
-               <TreeSection user={user} />
-            </div>
-        </FadeIn>
-    )
-}
 
 
 export default function JournalPage() {
