@@ -108,7 +108,7 @@ export default function Home() {
               {features.map((feature, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)} className="flex flex-col">
                   <Link href={feature.href} className="block h-full w-full">
-                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 bg-card/80 backdrop-blur-sm">
+                      <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:scale-105 bg-card/80 backdrop-blur-sm rounded-xl">
                           <CardHeader className="flex flex-col items-center text-center gap-4">
                               {feature.icon}
                               <CardTitle>{feature.title}</CardTitle>
@@ -143,7 +143,7 @@ export default function Home() {
                         type="search"
                         name="q"
                         placeholder="Search for topics like 'mindfulness'..."
-                        className="w-full pl-10 h-12 text-base"
+                        className="w-full pl-10 h-12 text-base rounded-lg"
                     />
                 </div>
                 <Button type="submit" size="lg" className="h-12 transition-transform duration-200 hover:scale-105 rounded-lg">
@@ -171,7 +171,7 @@ export default function Home() {
             <div className="mx-auto grid max-w-sm gap-8 sm:max-w-none sm:grid-cols-2 lg:grid-cols-3 mt-12">
               {teamMembers.slice(0,3).map((member, index) => (
                 <FadeIn key={index} delay={0.1 * (index + 1)}>
-                  <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2 border-transparent hover:border-primary/50 bg-card">
+                  <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2 border-transparent hover:border-primary/50 bg-card rounded-xl">
                     <CardContent className="p-6 flex flex-col items-center">
                         <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20 shadow-sm">
                           <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
@@ -222,7 +222,7 @@ export default function Home() {
                 </div>
                 <div className="mx-auto w-full max-w-sm space-y-2">
                     <form className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                        <Input type="email" placeholder="Enter your email" className="max-w-lg flex-1" />
+                        <Input type="email" placeholder="Enter your email" className="max-w-lg flex-1 rounded-lg" />
                         <Button type="submit">Subscribe</Button>
                     </form>
                     <p className="text-xs text-muted-foreground">
