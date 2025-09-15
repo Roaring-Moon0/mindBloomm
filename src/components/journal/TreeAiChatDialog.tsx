@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import type { User } from 'firebase/auth';
 import { treeAiChat } from '@/ai/flows/tree-ai-chat';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Send, Loader2 } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 
 interface TreeState {
   name: string;
@@ -19,6 +19,7 @@ interface TreeState {
 interface TreeAiChatDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  user: User;
   treeState: TreeState;
 }
 
@@ -27,8 +28,7 @@ interface Message {
   content: string;
 }
 
-export function TreeAiChatDialog({ isOpen, onOpenChange, treeState }: TreeAiChatDialogProps) {
-  const { user } = useAuth();
+export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: TreeAiChatDialogProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -143,7 +143,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, treeState }: TreeAiChat
             disabled={isLoading}
           />
           <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="w-4 w-4" />}
             <span className="sr-only">Send</span>
           </Button>
         </form>

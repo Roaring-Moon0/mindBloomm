@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/hooks/use-auth';
+import React, { useState, useEffect } from 'react';
+import type { User } from 'firebase/auth';
 import { useFirestoreCollection } from '@/hooks/use-firestore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -26,10 +26,10 @@ interface Message {
 interface ChatHistoryDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  user: User;
 }
 
-function ChatMessages({ chatId }: { chatId: string }) {
-  const { user } = useAuth();
+function ChatMessages({ chatId, user }: { chatId: string, user: User }) {
   const { data: messages, loading, error } = useFirestoreCollection<Message>(`users/${user?.uid}/chats/${chatId}/messages`);
 
   if (loading) {
@@ -83,8 +83,7 @@ function ChatMessages({ chatId }: { chatId: string }) {
 }
 
 
-export function ChatHistoryDialog({ isOpen, onOpenChange }: ChatHistoryDialogProps) {
-  const { user } = useAuth();
+export function ChatHistoryDialog({ isOpen, onOpenChange, user }: ChatHistoryDialogProps) {
   const { data: chats, loading, error } = useFirestoreCollection<Chat>(`users/${user?.uid}/chats`);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
@@ -149,7 +148,7 @@ export function ChatHistoryDialog({ isOpen, onOpenChange }: ChatHistoryDialogPro
           </div>
           {/* Messages View */}
           <div className="col-span-2 overflow-y-auto">
-            {selectedChatId ? <ChatMessages chatId={selectedChatId} /> : (
+            {selectedChatId ? <ChatMessages chatId={selectedChatId} user={user} /> : (
                 <div className="flex items-center justify-center h-full text-muted-foreground">
                     <p>Select a chat to view messages.</p>
                 </div>

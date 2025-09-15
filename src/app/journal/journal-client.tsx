@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User } from 'firebase/auth';
@@ -9,7 +8,7 @@ export default function JournalClientPage({ user }: { user: User }) {
     return (
         <FadeIn>
             <div className="container mx-auto py-8">
-               <TreeSection />
+               <TreeSection user={user} />
             </div>
         </FadeIn>
     )

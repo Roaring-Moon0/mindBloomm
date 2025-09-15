@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import type { User } from 'firebase/auth';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
@@ -143,8 +143,7 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection() {
-  const { user, loading: authLoading } = useAuth();
+export default function TreeSection({ user }: { user: User }) {
   const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
   const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
 
@@ -176,8 +175,7 @@ export default function TreeSection() {
 
   useEffect(() => { setTreeNameInput(treeName); }, [treeName]);
 
-  if (authLoading || notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
-  if (!user) return <div className="p-4 text-center text-destructive font-medium">You must be logged in to view this section.</div>;
+  if (notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
@@ -278,8 +276,8 @@ export default function TreeSection() {
 
       {/* Dialogs */}
       <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-      <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
-      <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} />
+      <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
+      <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
     </div>
   );
 }
