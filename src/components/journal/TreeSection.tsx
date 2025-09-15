@@ -96,7 +96,7 @@ const NotesGraph = ({ notes }: { notes: Note[] }) => {
 
 export default function TreeSection() {
   const { user } = useAuth();
-  const { data: notes = [] } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
+  const { data: notes } = useFirestoreCollection<Note>(user ? `users/${user.uid}/notes` : '');
   const { data: treeState } = useFirestoreDocument<TreeState>(user ? `users/${user.uid}` : '');
 
   const [newNote, setNewNote] = useState("");
@@ -112,9 +112,10 @@ export default function TreeSection() {
 
   const { toast } = useToast();
 
-  const goodNotes = notes.filter(n => n.type === 'good');
-  const badNotes = notes.filter(n => n.type === 'bad');
-  const totalNotes = notes.length;
+  const validNotes = notes || [];
+  const goodNotes = validNotes.filter(n => n.type === 'good');
+  const badNotes = validNotes.filter(n => n.type === 'bad');
+  const totalNotes = validNotes.length;
 
   const treeHealthRatio = totalNotes > 0 ? goodNotes.length / totalNotes : 0.5;
   const treeHealth = treeHealthRatio > 0.66 ? "healthy" : treeHealthRatio > 0.33 ? "weak" : "withered";
@@ -162,7 +163,7 @@ export default function TreeSection() {
   const downloadPDF = () => {
     const doc = new jsPDF();
     doc.text("Your Memories", 10, 10);
-    notes.forEach((n, i) => {
+    validNotes.forEach((n, i) => {
         const date = n.createdAt?.toDate ? format(n.createdAt.toDate(), 'P p') : 'N/A';
         doc.text(`[${n.type.toUpperCase()}] ${n.text} (${date})`, 10, 20 + i * 10);
     });
@@ -203,7 +204,7 @@ export default function TreeSection() {
             <CardTitle>Memories Graph</CardTitle>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <NotesGraph notes={notes} />
+            <NotesGraph notes={validNotes} />
           </CardContent>
         </Card>
         
@@ -217,9 +218,9 @@ export default function TreeSection() {
               <DialogDescription>A complete history of your thoughts.</DialogDescription>
             </DialogHeader>
             <div className="space-y-2 max-h-96 overflow-y-auto p-1">
-              {notes.length > 0 ? notes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} /> : <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
+              {validNotes.length > 0 ? validNotes.map((n) => (n.type === "good" ? <GoodNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} /> : <BurningNote key={n.id} text={n.text} createdAt={format(n.createdAt.toDate(), 'P p')} />)) : <p className="text-muted-foreground text-center py-8">No memories yet.</p>}
             </div>
-            <Button onClick={downloadPDF} disabled={notes.length === 0}><Download className="mr-2 h-4 w-4" /> Download as PDF</Button>
+            <Button onClick={downloadPDF} disabled={validNotes.length === 0}><Download className="mr-2 h-4 w-4" /> Download as PDF</Button>
           </DialogContent>
         </Dialog>
 
@@ -303,3 +304,5 @@ export default function TreeSection() {
     </div>
   );
 }
+
+    
