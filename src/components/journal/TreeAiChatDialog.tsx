@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -32,7 +33,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const scrollAreaViewportRef = useRef<HTMLDivElement>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,9 +51,8 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
   }, [isOpen, treeState.name]);
   
   useEffect(() => {
-    const viewport = scrollAreaViewportRef.current;
-    if (viewport) {
-      viewport.scrollTop = viewport.scrollHeight;
+    if (scrollAreaRef.current) {
+        scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -105,7 +105,7 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
           </DialogDescription>
         </DialogHeader>
         
-        <ScrollArea className="flex-grow my-4 pr-6 -mr-6" viewportRef={scrollAreaViewportRef}>
+        <ScrollArea className="flex-grow my-4 pr-4 -mr-4" viewportRef={scrollAreaRef}>
            <div className="space-y-4">
             {messages.map((message, index) => (
               <div
