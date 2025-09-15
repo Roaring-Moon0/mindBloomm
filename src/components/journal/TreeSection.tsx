@@ -207,10 +207,10 @@ export default function TreeSection({ user }: { user: User }) {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 p-2 sm:p-4 md:p-6">
 
-      {/* CENTER COLUMN - Order 1 on mobile */}
-      <div className="flex flex-col items-center justify-center space-y-4 md:order-2 order-1">
+      {/* CENTER COLUMN - Order 1 on mobile, 2 on desktop */}
+      <div className="flex flex-col items-center justify-center space-y-4 md:order-2 order-1 text-center">
         <TreeVisualizer health={treeHealth} />
         {editingName ?
           <div className="flex items-center space-x-2">
@@ -220,7 +220,7 @@ export default function TreeSection({ user }: { user: User }) {
           </div> :
           <div className="group flex items-center gap-2">
             <h2 className="text-2xl font-bold">{treeName}</h2>
-            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100" onClick={() => setEditingName(true)}>Rename</Button>
+            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 text-primary hover:text-primary/80" onClick={() => setEditingName(true)}>Rename</Button>
           </div>
         }
         <div className="text-lg font-semibold text-muted-foreground">{treeAge} days old</div>
@@ -232,11 +232,11 @@ export default function TreeSection({ user }: { user: User }) {
         </div>
       </div>
 
-      {/* RIGHT COLUMN - Order 2 on mobile */}
+      {/* RIGHT COLUMN - Order 2 on mobile, 3 on desktop */}
       <div className="space-y-4 md:order-3 order-2">
-        <Card>
-            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+         <Card>
+          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
@@ -247,7 +247,7 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-        <Card>
+         <Card>
           <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
           <CardContent className="space-y-2">
             <div className="flex space-x-2">
@@ -266,7 +266,7 @@ export default function TreeSection({ user }: { user: User }) {
         </Card>
       </div>
 
-      {/* LEFT COLUMN - Order 3 on mobile */}
+      {/* LEFT COLUMN - Order 3 on mobile, 1 on desktop */}
       <div className="space-y-4 md:order-1 order-3">
         <Card>
           <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
@@ -278,8 +278,8 @@ export default function TreeSection({ user }: { user: User }) {
 
       {/* Dialogs */}
       <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-      <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
-      <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
+      {user && <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />}
+      {user && <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />}
     </div>
   );
 }
