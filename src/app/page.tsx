@@ -9,6 +9,7 @@ import { FadeIn } from '@/components/ui/fade-in';
 import { FloatingPetals } from '@/components/ui/floating-petals';
 import Image from 'next/image';
 import { ParallaxSection } from '@/components/ui/parallax-section';
+import { ParticlesCanvas } from '@/components/animations/HeroParticles';
 
 
 const features = [
@@ -50,6 +51,7 @@ export default function Home() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative w-full py-20 md:py-32 lg:py-48 bg-primary/10 overflow-hidden">
+          <ParticlesCanvas />
           <FloatingPetals />
           <div className="container px-4 md:px-6 z-10 relative">
             <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
