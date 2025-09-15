@@ -16,8 +16,6 @@ const navLinks = [
   { href: '/contact', label: 'Contact' },
 ];
 
-const adminLink = { href: '/admin', label: 'Admin' };
-
 export function Header() {
   return (
     <header className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -31,7 +29,7 @@ export function Header() {
             </Link>
         </div>
 
-        <MobileNav navLinks={navLinks} adminLink={adminLink} />
+        <MobileNav navLinks={navLinks} />
         
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex flex-1 items-center gap-1 text-sm">
@@ -49,16 +47,6 @@ export function Header() {
 
         {/* Right side actions */}
         <div className="flex flex-shrink-0 items-center justify-end gap-2">
-            <div className="hidden lg:flex items-center gap-1">
-                 <Button key={adminLink.href} variant="ghost" asChild>
-                    <Link
-                        href={adminLink.href}
-                        className="transition-colors hover:text-foreground text-muted-foreground border-l ml-1 pl-3 rounded-none"
-                    >
-                        {adminLink.label}
-                    </Link>
-                </Button>
-            </div>
           <AuthButton />
         </div>
       </div>

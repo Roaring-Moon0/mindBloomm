@@ -26,10 +26,9 @@ interface NavLink {
 
 interface MobileNavProps {
     navLinks: NavLink[];
-    adminLink: NavLink;
 }
 
-export function MobileNav({ navLinks, adminLink }: MobileNavProps) {
+export function MobileNav({ navLinks }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -60,7 +59,7 @@ export function MobileNav({ navLinks, adminLink }: MobileNavProps) {
               <span className="font-bold">MindBloom</span>
             </Link>
             <div className="flex flex-col space-y-2">
-              {[...navLinks, adminLink].map((link) => (
+              {navLinks.map((link) => (
                 <SheetClose asChild key={link.href}>
                   <Link
                     href={link.href}

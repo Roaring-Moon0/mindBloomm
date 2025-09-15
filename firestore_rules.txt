@@ -4,11 +4,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is an admin.
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-
     // By default, deny all reads and writes.
     match /{document=**} {
       allow read, write: if false;
@@ -17,12 +12,9 @@ service cloud.firestore {
     // Users Collection
     // - Authenticated users can create their own user document.
     // - Users can only read and update their own document.
-    // - Admins can read any user's document.
     match /users/{userId} {
       allow create: if request.auth.uid == userId;
-      allow read, update: if request.auth.uid == userId || isAdmin();
-      // Admins can list all users.
-      allow list: if isAdmin();
+      allow read, update: if request.auth.uid == userId;
     }
     
     // User-specific subcollections (journal, notes, chats, etc.)
@@ -31,32 +23,16 @@ service cloud.firestore {
       allow read, write: if request.auth.uid == userId;
     }
 
-    // Admin Codes Collection
-    // Authenticated users can read this collection to verify their admin code.
-    match /adminCodes/{codeId} {
-      allow read: if request.auth != null;
-    }
-
-    // Admins Collection
-    // Admins can see who else is an admin.
-    match /admins/{adminId} {
-      allow read: if isAdmin();
-    }
-
     // Surveys Collection
     // - Any authenticated user can read surveys that are marked as visible.
-    // - Admins have full access to create, update, delete, and list surveys.
     match /surveys/{surveyId} {
       allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
-      allow list, create, update, delete: if isAdmin();
     }
 
     // Videos Collection
     // - Any authenticated user can read videos that are marked as visible.
-    // - Admins have full access.
     match /videos/{videoId} {
         allow read: if request.auth != null && (resource.data.visible == true || resource.data.visible == null);
-        allow list, create, update, delete: if isAdmin();
     }
   }
 }

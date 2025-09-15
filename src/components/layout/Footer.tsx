@@ -37,7 +37,6 @@ export function Footer() {
               <li><Link href="/games" className="hover:text-primary">Games</Link></li>
               <li><Link href="#" className="hover:text-primary">Privacy Policy</Link></li>
               <li><Link href="#" className="hover:text-primary">Terms of Service</Link></li>
-              <li><Link href="/admin" className="hover:text-primary">Admin</Link></li>
             </ul>
           </div>
           <div className="space-y-4">
