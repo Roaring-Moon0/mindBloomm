@@ -1,15 +1,13 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
-import { Sparkles, Plus, Download, X } from "lucide-react";
+import { Plus, Download, Sparkles } from "lucide-react";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -17,30 +15,13 @@ import jsPDF from "jspdf";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreeAiChatDialog } from './TreeAiChatDialog';
+import dynamic from 'next/dynamic';
+import { Skeleton } from "../ui/skeleton";
 
-// -------- 3D Components --------
-
-function Tree3D({ health }: { health: string }) {
-  // Simple tree: a cylinder trunk + sphere foliage
-  const trunkHeight = 1.2;
-  const trunkRadius = 0.1;
-  const foliageColor = health === "healthy" ? "#4ade80" : health === "weak" ? "#facc15" : "#a3a3a3";
-
-  return (
-    <mesh position={[0, trunkHeight / 2 - 0.6, 0]}>
-      <cylinderGeometry args={[trunkRadius, trunkRadius, trunkHeight, 16]} />
-      <meshStandardMaterial color="#8b5a2b" />
-      <mesh position={[0, trunkHeight / 2 + 0.5, 0]}>
-        <sphereGeometry args={[0.6, 32, 32]} />
-        <meshStandardMaterial color={foliageColor} metalness={0.2} roughness={0.7}/>
-      </mesh>
-    </mesh>
-  );
-}
-
-function ParticleBackground() {
-  return <Stars radius={100} depth={50} count={2000} factor={4} saturation={0} fade />;
-}
+const TreeCanvas = dynamic(() => import("./TreeCanvas").then(mod => mod.TreeCanvas), { 
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-96 rounded-xl bg-white/50" />
+});
 
 // -------- UI Components --------
 
@@ -194,24 +175,14 @@ export default function TreeSection() {
                 {latestBad ? <BadNote text={latestBad.text} createdAt={latestBad.createdAt} /> : <p className="text-sm text-center py-4 text-muted-foreground">No recent challenges logged.</p>}
               </CardContent>
             </Card>
-             <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}>
+            <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}>
                 View All Memories
              </Button>
           </div>
 
           {/* CENTER TREE */}
           <div className="flex flex-col items-center justify-start space-y-4">
-            <div className="w-full h-96 rounded-xl shadow-lg bg-white/50 backdrop-blur-sm">
-              <Canvas>
-                <ambientLight intensity={0.8} />
-                <directionalLight position={[5, 10, 5]} intensity={1} />
-                <Suspense fallback={null}>
-                  <Tree3D health={treeHealth} />
-                  <ParticleBackground />
-                </Suspense>
-                <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5}/>
-              </Canvas>
-            </div>
+            <TreeCanvas health={treeHealth} />
             <motion.div className="text-lg font-semibold text-gray-700">Tree Age: {treeAge} days</motion.div>
             <motion.div className="text-6xl" animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>{mood}</motion.div>
             <Card className="p-4 rounded-xl shadow-md bg-white/80 w-full max-w-sm">
