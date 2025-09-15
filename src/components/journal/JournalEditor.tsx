@@ -11,12 +11,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Loader2, PlusCircle } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
   content: z.string().min(10, { message: "Your entry must be at least 10 characters." }),
 });
 
-export function JournalEditor({ uid }: { uid: string }) {
+export function JournalEditor() {
+    const { user } = useAuth();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: { content: "" },
@@ -25,13 +27,8 @@ export function JournalEditor({ uid }: { uid: string }) {
     const { formState: { isSubmitting } } = form;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        if (!uid) {
-            toast({ variant: 'destructive', title: 'Authentication Error', description: 'You must be logged in to save an entry.' });
-            return;
-        }
-
         try {
-            await addJournalEntry({ content: values.content }, uid);
+            await addJournalEntry({ content: values.content });
             toast({ title: "Entry Saved", description: "Your tree has grown a little today!" });
             form.reset();
         } catch (error: any) {
@@ -65,7 +62,7 @@ export function JournalEditor({ uid }: { uid: string }) {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSubmitting || !uid}>
+                        <Button type="submit" disabled={isSubmitting || !user}>
                             {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</> : <><PlusCircle className="mr-2 h-4 w-4"/> Save Entry</>}
                         </Button>
                     </form>

@@ -24,15 +24,11 @@ interface JournalEntry {
     createdAt: any;
 }
 
-export function JournalEntryCard({ entry, uid }: { entry: JournalEntry, uid: string }) {
+export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
     
     const handleDelete = async () => {
-        if (!uid) {
-            toast({ variant: 'destructive', title: "Error", description: "User ID is missing." });
-            return;
-        }
         try {
-            await deleteJournalEntry(entry.id, uid);
+            await deleteJournalEntry(entry.id);
             toast({ title: "Entry Deleted" });
         } catch (error: any) {
              toast({ variant: 'destructive', title: "Error Deleting Entry", description: error.message });

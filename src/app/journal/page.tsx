@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
@@ -45,5 +44,5 @@ export default function JournalPage() {
         )
     }
 
-    return <JournalClientPage uid={user.uid} />;
+    return <JournalClientPage user={user} />;
 }
