@@ -180,7 +180,11 @@ export default function TreeSection({ user }: { user: User }) {
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { await renameTree(treeNameInput, user); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
+    try { 
+        await renameTree(treeNameInput, user); 
+        toast({ title: 'Tree renamed successfully!' }); 
+        setEditingName(false); 
+    }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
@@ -220,7 +224,10 @@ export default function TreeSection({ user }: { user: User }) {
           </div> :
           <div className="group flex items-center gap-2">
             <h2 className="text-2xl font-bold">{treeName}</h2>
-            <Button size="sm" variant="ghost" className="text-primary hover:text-primary/80" onClick={() => setEditingName(true)}>Rename</Button>
+             <Button size="icon" variant="ghost" className="text-primary hover:text-primary/80 h-7 w-7" onClick={() => setEditingName(true)}>
+                <Sparkles className="h-4 w-4"/>
+                <span className="sr-only">Rename</span>
+            </Button>
           </div>
         }
         <div className="text-lg font-semibold text-muted-foreground">{treeAge} days old</div>
@@ -231,10 +238,10 @@ export default function TreeSection({ user }: { user: User }) {
           <p className="text-xs text-muted-foreground mt-1 text-center">More notes help your tree grow strong.</p>
         </div>
       </div>
-
+      
       {/* RIGHT COLUMN - Order 2 on mobile, 3 on desktop */}
       <div className="space-y-4 md:order-3 order-2">
-         <Card>
+        <Card>
           <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
           <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
         </Card>
@@ -256,7 +263,7 @@ export default function TreeSection({ user }: { user: User }) {
             </div>
           </CardContent>
         </Card>
-         <Card>
+        <Card>
           <CardHeader><CardTitle>Interact</CardTitle><CardDescription>Chat with your tree or review past conversations.</CardDescription></CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
             <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
