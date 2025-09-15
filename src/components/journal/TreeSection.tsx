@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import type { User } from 'firebase/auth';
-import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
@@ -21,21 +20,12 @@ import { format } from 'date-fns';
 
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
-import { JournalEntryCard } from './JournalEntryCard';
-import { JournalEditor } from './JournalEditor';
-import { JournalTree } from './JournalTree';
 
 interface Note {
   id: string;
   text: string;
   type: 'good' | 'bad';
   createdAt: any;
-}
-
-interface JournalEntry {
-    id: string;
-    content: string;
-    createdAt: any;
 }
 
 interface TreeState {
@@ -148,12 +138,9 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection({ uid }: { uid: string }) {
-  const { user } = useAuth();
-  const { data: journalEntries, loading: entriesLoading } = useFirestoreCollection<JournalEntry>(`users/${uid}/journalEntries`);
-  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${uid}/notes`);
-  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${uid}/journal/state`);
-
+export default function TreeSection({ user }: { user: User }) {
+  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${user.uid}/notes`);
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${user.uid}/journal/state`);
   const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
   const [badNote, setBadNote] = useState('');
@@ -173,8 +160,6 @@ export default function TreeSection({ uid }: { uid: string }) {
   const goodNotes = useMemo(() => notes.filter(n => n.type === 'good'), [notes]);
   const totalNotes = notes.length;
 
-  const entryCount = journalEntries?.length || 0;
-
   const treeHealthRatio = useMemo(() => totalNotes > 0 ? goodNotes.length / totalNotes : 0.5, [totalNotes, goodNotes]);
   const treeHealth = useMemo(() => treeHealthRatio > 0.66 ? 'healthy' : treeHealthRatio > 0.33 ? 'weak' : 'withered', [treeHealthRatio]);
   const treeProgress = useMemo(() => totalNotes > 0 ? Math.min(100, (totalNotes / 30) * 100) : 0, [totalNotes]);
@@ -187,30 +172,26 @@ export default function TreeSection({ uid }: { uid: string }) {
     }
   }, [editingName, treeName]);
 
-  const loading = entriesLoading || notesLoading || treeStateLoading;
+  const loading = notesLoading || treeStateLoading;
   if (loading && !notesData) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { 
-        await renameTree(treeNameInput, uid); 
-        toast({ title: 'Tree renamed successfully!' }); 
-        setEditingName(false); 
-    }
+    try { await renameTree(treeNameInput, user.uid); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(user.uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }, uid); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { await addNote({ text: goodNote, type: 'good' }, user.uid); setGoodNote(''); toast({ title: 'Note added!' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -218,73 +199,97 @@ export default function TreeSection({ uid }: { uid: string }) {
   const handleAddBadNote = async () => {
     if (!badNote.trim()) return;
     setIsSavingBad(true);
-    try { await addNote({ text: badNote, type: 'bad' }, uid); setBadNote(''); toast({ title: 'Note released.' }); }
+    try { await addNote({ text: badNote, type: 'bad' }, user.uid); setBadNote(''); toast({ title: 'Note released.' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingBad(false); }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
-            <JournalEditor uid={uid} />
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold">Past Entries</h3>
-                {journalEntries && journalEntries.length > 0 ? (
-                    journalEntries.map(entry => (
-                        <JournalEntryCard key={entry.id} entry={entry} uid={uid} />
-                    ))
-                ) : (
-                    <Card>
-                        <CardContent className="pt-6 text-center text-muted-foreground">
-                            No journal entries yet. Add one above to start growing your tree!
-                        </CardContent>
-                    </Card>
-                )}
-            </div>
+    <div className="max-w-4xl mx-auto space-y-8">
+      {/* Top Header */}
+      <div className="text-center space-y-2">
+        {!editingName ? (
+          <h1 className="text-3xl font-bold flex justify-center items-center gap-2">
+            {treeName}
+            <Button variant="ghost" size="icon" onClick={() => { setEditingName(true); }} className="h-8 w-8"><Edit className="h-5 w-5" /></Button>
+          </h1>
+        ) : (
+          <div className="flex justify-center items-center gap-2">
+            <Input value={treeNameInput} onChange={e => setTreeNameInput(e.target.value)} className="text-3xl font-bold h-12 w-auto max-w-sm text-center" disabled={isSavingName} />
+            <Button size="icon" onClick={handleSaveTreeName} disabled={isSavingName}>{isSavingName ? <Loader2 className="animate-spin" /> : <Check />}</Button>
+          </div>
+        )}
+        <p className="text-muted-foreground">This is your digital gratitude tree, a place to nurture positive thoughts.</p>
+      </div>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        {/* Left - Good/Bad Notes */}
+        <div className="md:col-span-1 space-y-6">
+          <Card>
+            <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
+            <CardContent className="space-y-2">
+              <Label htmlFor="good-note" className="sr-only">Good Note</Label>
+              <Textarea id="good-note" value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} />
+              <Button onClick={handleAddGoodNote} disabled={isSavingGood || !goodNote.trim()} className="w-full">{isSavingGood ? <Loader2 className="animate-spin" /> : <><Sparkles className="mr-2" />Add Note</>}</Button>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
+            <CardContent className="space-y-2">
+              <Label htmlFor="bad-note" className="sr-only">Bad Note</Label>
+              <Textarea id="bad-note" value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} />
+              <Button onClick={handleAddBadNote} disabled={isSavingBad || !badNote.trim()} variant="destructive" className="w-full">{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release Note'}</Button>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-6">
-            <JournalTree entryCount={entryCount} treeName={treeName} uid={uid} />
-            <Card>
-                <CardHeader>
-                    <CardTitle>Interact</CardTitle>
-                    <CardDescription>Chat with your tree or review past conversations.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-2">
-                    <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2 h-4 w-4" /> Talk to Your Tree</Button>
-                    <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2 h-4 w-4" /> Start New Chat</Button>
-                    <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2 h-4 w-4" /> Chat History</Button>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="flex space-x-2">
-                    <Input value={goodNote} onChange={e => setGoodNote(e.target.value)} placeholder="What are you grateful for?" disabled={isSavingGood} onKeyDown={(e) => e.key === 'Enter' && handleAddGoodNote()}/>
-                    <Button onClick={handleAddGoodNote} disabled={isSavingGood || !goodNote}>{isSavingGood ? <Loader2 className="animate-spin" /> : 'Add'}</Button>
-                    </div>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader><CardTitle>Bad Notes</CardTitle><CardDescription>Acknowledge and release.</CardDescription></CardHeader>
-                <CardContent className="space-y-2">
-                    <div className="flex space-x-2">
-                    <Input value={badNote} onChange={e => setBadNote(e.target.value)} placeholder="What's weighing on you?" disabled={isSavingBad} onKeyDown={(e) => e.key === 'Enter' && handleAddBadNote()} />
-                    <Button onClick={handleAddBadNote} disabled={isSavingBad || !badNote}>{isSavingBad ? <Loader2 className="animate-spin" /> : 'Release'}</Button>
-                    </div>
-                </CardContent>
-            </Card>
+        {/* Center - Tree */}
+        <div className="md:col-span-1 flex flex-col items-center gap-4 order-first md:order-none">
+          <TreeVisualizer health={treeHealth} />
+          <Card className="w-full text-center">
+            <CardHeader><CardTitle>Tree Health: {treeHealth.charAt(0).toUpperCase() + treeHealth.slice(1)}</CardTitle></CardHeader>
+            <CardContent className="space-y-2">
+              <TreeMood health={treeHealth} />
+              <Progress value={treeHealthRatio * 100} />
+              <p className="text-sm text-muted-foreground">{goodNotes.length} good notes / {totalNotes} total</p>
+            </CardContent>
+          </Card>
+          <Button onClick={() => setIsMemoriesOpen(true)}>View All Memories</Button>
         </div>
 
+        {/* Right - Stats & Actions */}
+        <div className="md:col-span-1 space-y-6">
+          <Card>
+            <CardHeader><CardTitle>Tree Statistics</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Tree Age</Label>
+                <p className="text-2xl font-bold">{treeAge} day{treeAge > 1 ? 's' : ''}</p>
+              </div>
+              <div>
+                <Label>Progress to next stage</Label>
+                <Progress value={treeProgress} />
+                <p className="text-xs text-muted-foreground">{totalNotes} / 30 notes for full bloom</p>
+              </div>
+              <NotesGraph notes={notes} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader><CardTitle>Interact</CardTitle></CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2" /> Talk to Your Tree</Button>
+              <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2" /> Start New Chat</Button>
+              <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2" /> Chat History</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
 
       {/* Dialogs */}
-      {user && <>
-        <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
-        <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
-        <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
-      </>}
+      <MemoriesDialog notes={notes} isOpen={isMemoriesOpen} onOpenChange={setIsMemoriesOpen} />
+      <TreeAiChatDialog isOpen={isAiChatOpen} onOpenChange={setIsAiChatOpen} user={user} treeState={{ name: treeName, health: treeHealthRatio * 100, mood: treeHealth }} />
+      <ChatHistoryDialog isOpen={isChatHistoryOpen} onOpenChange={setIsChatHistoryOpen} user={user} />
     </div>
   );
 }
