@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -28,7 +29,11 @@ export function useFirestoreDocument<T>(path: string) {
     }
 
     try {
-      const docRef = doc(db, ...pathToSegments(path));
+      const pathSegments = pathToSegments(path);
+      if (pathSegments.length % 2 !== 0) {
+        throw new Error("Invalid document path: must have an even number of segments.");
+      }
+      const docRef = doc(db, ...pathSegments);
 
       const unsubscribe = onSnapshot(
         docRef,
@@ -41,7 +46,7 @@ export function useFirestoreDocument<T>(path: string) {
           setLoading(false);
         },
         (err: any) => {
-          console.error("Firestore Document Error:", err.code, err.message);
+          console.error(`Firestore Document Error (${path}):`, err.code, err.message);
           setError(err);
           setLoading(false);
         }
@@ -71,7 +76,11 @@ export function useFirestoreCollection<T>(path: string) {
     }
 
     try {
-      const collectionRef = collection(db, ...pathToSegments(path));
+      const pathSegments = pathToSegments(path);
+       if (pathSegments.length % 2 === 0) {
+        throw new Error("Invalid collection path: must have an odd number of segments.");
+      }
+      const collectionRef = collection(db, ...pathSegments);
       const q = query(collectionRef);
 
       const unsubscribe = onSnapshot(

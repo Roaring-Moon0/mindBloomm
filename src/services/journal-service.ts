@@ -1,7 +1,8 @@
+
 'use server';
 
 import { auth, db } from '@/lib/firebase';
-import { collection, addDoc, doc, serverTimestamp, runTransaction, query, where, getDocs, writeBatch, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, serverTimestamp, runTransaction, query, where, getDocs, writeBatch, deleteDoc, setDoc } from 'firebase/firestore';
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 
@@ -18,10 +19,11 @@ export const addNote = async (payload: z.infer<typeof noteSchema>) => {
     const user = auth.currentUser;
     if (!user) throw new Error('You must be logged in to add a note.');
 
+    console.log("Saving note for:", user.uid); // Debugging as per user suggestion
     const validated = noteSchema.parse(payload);
     
     const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
-    const newNoteRef = doc(collection(db, `users/${user.uid}/notes`));
+    const newNoteRef = doc(db, `users/${user.uid}/notes/${Date.now()}`);
 
     await runTransaction(db, async (transaction) => {
         const stateDoc = await transaction.get(journalStateRef);
@@ -87,14 +89,7 @@ export const updateTreeName = async (payload: z.infer<typeof nameSchema>) => {
     const validated = nameSchema.parse(payload);
     const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
 
-    await runTransaction(db, async (transaction) => {
-        const stateDoc = await transaction.get(journalStateRef);
-        if (!stateDoc.exists()) {
-             transaction.set(journalStateRef, { treeName: validated.name });
-        } else {
-            transaction.update(journalStateRef, { treeName: validated.name });
-        }
-    });
+    await setDoc(journalStateRef, { treeName: validated.name }, { merge: true });
 
     revalidatePath('/journal');
 };
