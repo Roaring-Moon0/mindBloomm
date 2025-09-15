@@ -15,7 +15,7 @@ import type { User } from 'firebase/auth';
 // ==============================
 // Interfaces
 // ==============================
-interface NotePayload {
+export interface NotePayload {
   text: string;
   type: 'good' | 'bad';
 }
@@ -82,20 +82,17 @@ export const startNewChat = async (uid: string) => {
 // ==============================
 // Journal Entries
 // ==============================
-export const addJournalEntry = async (
-  payload: JournalEntryPayload,
-  uid: string
-) => {
+export const addJournalEntry = async (uid: string, content: string) => {
   if (!uid) throw new Error('You must be logged in to save a journal entry.');
 
   const journalCollectionRef = collection(db, `users/${uid}/journalEntries`);
   await addDoc(journalCollectionRef, {
-    content: payload.content,
+    content: content,
     createdAt: serverTimestamp(),
   });
 };
 
-export const deleteJournalEntry = async (entryId: string, uid: string) => {
+export const deleteJournalEntry = async (uid: string, entryId: string) => {
   if (!uid) throw new Error('You must be logged in to delete a journal entry.');
 
   const entryDocRef = doc(db, `users/${uid}/journalEntries`, entryId);
@@ -104,11 +101,11 @@ export const deleteJournalEntry = async (entryId: string, uid: string) => {
 
 // ==============================
 // Update Tree Name (Journal)
-export const updateTreeName = async (payload: { name: string }, user: User) => {
-  if (!user) throw new Error('You must be logged in to update the tree name.');
-  
-  const treeStateRef = doc(db, `users/${user.uid}/journal/state`);
+export const updateTreeName = async (uid: string, name: string) => {
+  if (!uid) throw new Error('You must be logged in to update the tree name.');
+
+  const treeStateRef = doc(db, `users/${uid}/journal/state`);
   await updateDoc(treeStateRef, {
-    treeName: payload.name,
+    treeName: name,
   });
 };

@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { addJournalEntry } from '@/services/journal-service';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -17,6 +18,7 @@ const formSchema = z.object({
 });
 
 export function JournalEditor() {
+    const { user } = useAuth();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: { content: "" },
@@ -25,8 +27,11 @@ export function JournalEditor() {
     const { formState: { isSubmitting } } = form;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        if (!user) {
+            return toast({ variant: 'destructive', title: 'You must be logged in to save an entry.' });
+        }
         try {
-            await addJournalEntry(values);
+            await addJournalEntry(user.uid, values.content);
             toast({ title: "Entry Saved", description: "Your tree has grown a little today!" });
             form.reset();
         } catch (error: any) {
@@ -60,7 +65,7 @@ export function JournalEditor() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button type="submit" disabled={isSubmitting || !user}>
                             {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Saving...</> : <><PlusCircle className="mr-2 h-4 w-4"/> Save Entry</>}
                         </Button>
                     </form>

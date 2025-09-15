@@ -24,11 +24,14 @@ interface JournalEntry {
     createdAt: any;
 }
 
-export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
+export function JournalEntryCard({ entry, uid }: { entry: JournalEntry; uid: string }) {
     
     const handleDelete = async () => {
+        if (!uid) {
+            return toast({ variant: 'destructive', title: "Error", description: "User ID is missing." });
+        }
         try {
-            await deleteJournalEntry(entry.id);
+            await deleteJournalEntry(uid, entry.id);
             toast({ title: "Entry Deleted" });
         } catch (error: any) {
              toast({ variant: 'destructive', title: "Error Deleting Entry", description: error.message });
@@ -48,7 +51,7 @@ export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
             <CardFooter className="flex justify-end">
                  <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" disabled={!uid}>
                             <Trash2 className="w-4 h-4"/>
                         </Button>
                     </AlertDialogTrigger>
