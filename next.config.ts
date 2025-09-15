@@ -3,6 +3,7 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  dynamic: 'force-dynamic',
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
