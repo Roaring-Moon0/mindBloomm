@@ -1,45 +1,35 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Public collections that anyone can read
-    match /videos/{docId} {
-      allow read: if true;
-      allow write: if false; // Writes should be handled by backend/admin logic
+    // Users can only read/write their own documents.
+    match /users/{userId}/{documents=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Surveys can be read by anyone, but only authenticated users can write
-    // (assuming admin logic on the backend protects against unauthorized writes)
-    match /surveys/{docId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // Admins can read/write admin-related data.
+    match /admins/{adminId} {
+      allow read, write: if request.auth != null && get(/databases/$(database)/documents/admins/$(request.auth.uid)).exists();
     }
-
-    // Admin codes can be read by authenticated users during verification
-    match /adminCodes/{docId} {
+    
+    // Admin codes can be read by any authenticated user for verification purposes.
+    match /adminCodes/{codeId} {
       allow read: if request.auth != null;
-      allow write: if false;
+      allow write: if false; // Nobody can write to these from the client.
     }
 
-    // Admins can only manage their own admin document
-    match /admins/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Surveys and videos can be read by any authenticated user.
+    match /surveys/{surveyId} {
+        allow read: if request.auth != null;
+        // Writes are handled by admin-gated server-side functions.
+        allow write: if false; 
     }
 
-    // User-specific data
-    match /users/{userId} {
-      // A user can read and write their own main user document
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-
-      // A user can read, write, and delete documents in their own 'notes' subcollection
-      match /notes/{noteId} {
-        allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-      }
-
-      // A user can read and write documents in their own 'journal' subcollection (e.g., the 'state' document)
-      match /journal/{journalDocId} {
-         allow read, write: if request.auth != null && request.auth.uid == userId;
-      }
+     match /videos/{videoId} {
+        allow read: if request.auth != null;
+        // Writes are handled by admin-gated server-side functions.
+        allow write: if false;
     }
   }
 }

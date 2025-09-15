@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 220 20% 98%; /* #FBFCFE - Near-white */
     --foreground: 224 71.4% 4.1%;
 
     --card: 0 0% 100%;
@@ -13,36 +13,36 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    /* Green */
-    --primary: 142 76% 36%;
-    --primary-foreground: 0 0% 100%;
+    /* #9FD8FF - Pastel Blue */
+    --primary: 205 100% 81%;
+    --primary-foreground: 210 40% 9.8%;
 
-    /* Muted Green */
-    --secondary: 140 40% 90%;
-    --secondary-foreground: 142 76% 20%;
+    /* Lighter blue for secondary elements */
+    --secondary: 205 100% 95%;
+    --secondary-foreground: 205 100% 30%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    /* Soft Blue */
-    --accent: 200 80% 60%;
-    --accent-foreground: 0 0% 100%;
+    /* #C9B6FF - Lavender */
+    --accent: 255 100% 86%;
+    --accent-foreground: 255 40% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 76% 36%;
+    --ring: 205 100% 81%;
     
     --radius: 0.5rem;
     
     /* Charts */
-    --chart-1: 142 76% 36%;
-    --chart-2: 200 80% 60%;
-    --chart-3: 25 80% 60%;
-    --chart-4: 142 76% 50%;
-    --chart-5: 200 80% 40%;
+    --chart-1: 205 100% 81%; /* primary */
+    --chart-2: 255 100% 86%; /* accent */
+    --chart-3: 45 90% 70%;  /* Soft Yellow */
+    --chart-4: 160 80% 75%; /* Soft Teal */
+    --chart-5: 340 90% 80%; /* Soft Pink */
   }
 }
 
