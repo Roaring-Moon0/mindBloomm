@@ -27,7 +27,7 @@ function ParticleBackground() {
 }
 
 
-export function TreeCanvas({ health }: { health: string }) {
+export default function TreeCanvas({ health }: { health: string }) {
   return (
     <div className="w-full h-96 rounded-xl shadow-lg bg-white/50 backdrop-blur-sm">
       <Canvas>
