@@ -65,10 +65,11 @@ Based on your state, tailor your response.
 {{#if history}}
 This is the conversation history. Continue it naturally.
 {{#each history}}
-  {{#if (eq this.role 'user')}}
+  {{#if (this.role === 'user')}}
     User: {{{this.content}}}
-  {{else}}
-    {{../treeName}}: {{{this.content}}}
+  {{/if}}
+  {{#if (this.role === 'assistant')}}
+    {{{../treeName}}}: {{{this.content}}}
   {{/if}}
 {{/each}}
 {{/if}}
