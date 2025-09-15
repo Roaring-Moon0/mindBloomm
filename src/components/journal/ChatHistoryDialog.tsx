@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection } from '@/hooks/use-firestore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -89,11 +89,11 @@ export function ChatHistoryDialog({ isOpen, onOpenChange }: ChatHistoryDialogPro
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
 
   // When chats load, select the first one by default
-  useState(() => {
+  useEffect(() => {
     if (chats && chats.length > 0 && !selectedChatId) {
       setSelectedChatId(chats[0].id);
     }
-  });
+  }, [chats, selectedChatId]);
 
   // Reset selected chat when dialog is closed
   useEffect(() => {
