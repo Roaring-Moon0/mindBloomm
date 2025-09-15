@@ -4,11 +4,10 @@ import { useState, useEffect } from "react";
 import dynamic from 'next/dynamic';
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PieChart, Pie, Cell, Tooltip } from "recharts";
-import { Plus, Download, Sparkles } from "lucide-react";
+import { Plus, Download, Sparkles, Brain } from "lucide-react";
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -25,52 +24,20 @@ const TreeCanvas = dynamic(() => import("./TreeCanvas"), {
 
 // -------- UI Components --------
 
-function GoodNote({ text, createdAt }: { text: string; createdAt: string }) {
-  return (
-    <motion.div
-      className="p-3 rounded-xl bg-green-100 border border-green-400 text-sm shadow-md"
-      animate={{ opacity: [1, 0.8, 1] }}
-      transition={{ repeat: Infinity, duration: 3 }}
-    >
-      ✨ {text}
-      <div className="text-xs text-gray-600 mt-1">{createdAt}</div>
-    </motion.div>
-  );
-}
+const GoodNote = ({ text, createdAt }: { text: string; createdAt: string }) => (
+  <div className="p-3 rounded-xl bg-green-100 border border-green-400 text-sm shadow-md">
+    ✨ {text}
+    <div className="text-xs text-gray-600 mt-1">{createdAt}</div>
+  </div>
+);
 
-function BadNote({ text, createdAt }: { text: string; createdAt: string }) {
-  return (
-    <motion.div
-      className="p-3 rounded-xl bg-red-100 border border-red-400 text-sm shadow-md"
-      animate={{ opacity: [1, 0.6, 1], scale: [1, 1.05, 1] }}
-      transition={{ repeat: Infinity, duration: 1.5 }}
-    >
-      🔥 {text}
-      <div className="text-xs text-gray-600 mt-1">{createdAt}</div>
-    </motion.div>
-  );
-}
+const BadNote = ({ text, createdAt }: { text: string; createdAt: string }) => (
+  <div className="p-3 rounded-xl bg-red-100 border border-red-400 text-sm shadow-md">
+    🔥 {text}
+    <div className="text-xs text-gray-600 mt-1">{createdAt}</div>
+  </div>
+);
 
-function NotesGraph({ notes }: { notes: any[] }) {
-  const good = notes.filter((n) => n.type === "good").length;
-  const bad = notes.filter((n) => n.type === "bad").length;
-  const data = [
-    { name: "Good", value: good || 0 },
-    { name: "Bad", value: bad || 0 },
-  ];
-  const COLORS = ["#4ade80", "#f87171"];
-
-  return (
-    <PieChart width={200} height={200}>
-      <Pie data={data} cx={100} cy={100} outerRadius={80} dataKey="value">
-        {data.map((_, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-    </PieChart>
-  );
-}
 
 // -------- Main Component --------
 
@@ -146,87 +113,69 @@ export default function TreeSection() {
       treeHealth = 'withered';
   }
 
-  const mood = treeHealth === "healthy" ? "😄" : treeHealth === "weak" ? "😕" : "😢";
-
   return (
     <>
-      <div className="min-h-screen p-6 bg-gradient-to-b from-blue-50 via-green-50 to-pink-50 rounded-xl shadow-inner">
-         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* LEFT COLUMN - BAD NOTES & ACTIONS */}
-          <div className="space-y-6">
-            <Card className="bg-red-50/50 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>Bad Notes</CardTitle>
-                <Button size="sm" onClick={() => setNoteType("bad")}>
-                  <Plus className="mr-1 h-4 w-4" /> Write
+      <div className="p-4 sm:p-6 md:p-8 space-y-8 max-w-4xl mx-auto">
+        
+        {/* Header and Actions */}
+        <div className="flex justify-between items-center">
+            <h1 className="text-2xl sm:text-3xl font-bold font-headline">My Growth Journal</h1>
+            <div className="flex items-center gap-2">
+                <Button variant="outline" onClick={() => setIsMemoriesOpen(true)}>
+                    <Brain className="mr-2 h-4 w-4" />
+                    Memories
                 </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {noteType === "bad" && (
-                  <div className="flex space-x-2 mb-2">
-                    <Input
-                      value={newNote}
-                      onChange={(e) => setNewNote(e.target.value)}
-                      placeholder="What's weighing on you?"
-                    />
-                    <Button onClick={addNote}>Save</Button>
-                  </div>
-                )}
-                {latestBad ? <BadNote text={latestBad.text} createdAt={latestBad.createdAt} /> : <p className="text-sm text-center py-4 text-muted-foreground">No recent challenges logged.</p>}
-              </CardContent>
-            </Card>
-            <Button className="w-full" variant="outline" onClick={() => setIsMemoriesOpen(true)}>
-                View All Memories
-             </Button>
-          </div>
-
-          {/* CENTER TREE */}
-          <div className="flex flex-col items-center justify-start space-y-4">
-            <TreeCanvas health={treeHealth} />
-            <motion.div className="text-lg font-semibold text-gray-700">Tree Age: {treeAge} days</motion.div>
-            <motion.div className="text-6xl" animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>{mood}</motion.div>
-            <Card className="p-4 rounded-xl shadow-md bg-white/80 w-full max-w-sm">
-              <CardTitle>Tree Progress</CardTitle>
-              <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
-                 <div
-                    className="bg-green-500 h-4 rounded-full transition-all duration-500"
-                    style={{ width: `${Math.min(treeAge * 5, 100)}%` }}
-                ></div>
-              </div>
-            </Card>
-          </div>
-
-          {/* RIGHT COLUMN - GOOD NOTES & ACTIONS */}
-          <div className="space-y-6">
-            <Card className="bg-green-50/50 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle>Good Notes</CardTitle>
-                <Button size="sm" onClick={() => setNoteType("good")}>
-                  <Plus className="mr-1 h-4 w-4" /> Write
+                 <Button variant="outline" onClick={() => setIsChatOpen(true)}>
+                    <Sparkles className="mr-2 h-4 w-4" /> Talk to Tree
                 </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {noteType === "good" && (
-                  <div className="flex space-x-2 mb-2">
-                    <Input
-                      value={newNote}
-                      onChange={(e) => setNewNote(e.target.value)}
-                      placeholder="What are you grateful for?"
-                    />
-                    <Button onClick={addNote}>Save</Button>
-                  </div>
-                )}
-                {latestGood ? <GoodNote text={latestGood.text} createdAt={latestGood.createdAt} /> : <p className="text-sm text-center py-4 text-muted-foreground">No recent good notes yet.</p>}
-              </CardContent>
-            </Card>
-             <Button className="w-full" variant="outline" onClick={() => setIsChatOpen(true)}>
-                <Sparkles className="mr-2 h-4 w-4" /> Talk to Your Tree
-            </Button>
-          </div>
+            </div>
         </div>
+
+        {/* 3D Tree Canvas */}
+        <div className="my-6">
+            <TreeCanvas health={treeHealth} />
+        </div>
+        
+        {/* Latest Notes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {latestGood ? <GoodNote text={latestGood.text} createdAt={latestGood.createdAt} /> : <div className="p-3 text-center text-sm text-muted-foreground bg-secondary rounded-xl">No good notes yet.</div>}
+            {latestBad ? <BadNote text={latestBad.text} createdAt={latestBad.createdAt} /> : <div className="p-3 text-center text-sm text-muted-foreground bg-secondary rounded-xl">No challenges logged yet.</div>}
+        </div>
+
+        {/* Write New Note */}
+        <Card>
+            <CardHeader>
+                <CardTitle>New Entry</CardTitle>
+                <CardDescription>
+                    What's on your mind? Switch between logging a positive moment or a challenge.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                    <Input 
+                        value={newNote} 
+                        onChange={e => setNewNote(e.target.value)} 
+                        placeholder={`Write a ${noteType} note...`} 
+                        className="flex-grow"
+                    />
+                    <div className="flex gap-2">
+                        <Button onClick={addNote} className="w-full sm:w-auto">
+                            <Plus className="mr-2 h-4 w-4"/> Save
+                        </Button>
+                        <Button 
+                            variant="outline"
+                            onClick={() => setNoteType(noteType === "good" ? "bad" : "good")}
+                            className="w-full sm:w-auto"
+                        >
+                            Switch to {noteType === "good" ? "Bad" : "Good"}
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
       </div>
 
-       {/* All Memories Dialog */}
+      {/* All Memories Dialog */}
       <Dialog open={isMemoriesOpen} onOpenChange={setIsMemoriesOpen}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
@@ -257,12 +206,12 @@ export default function TreeSection() {
         </DialogContent>
       </Dialog>
       
-      {/* AI Chat Dialog */}
+        {/* AI Chat Dialog */}
         <TreeAiChatDialog 
             isOpen={isChatOpen} 
             onOpenChange={setIsChatOpen} 
             treeState={{ 
-                name: "My Tree", // This could be dynamic in the future from journal state
+                name: "My Tree", // This could be dynamic in the future
                 health: Math.max(10, 100 - (badNotes.length * 5) + (goodNotes.length * 2)),
                 mood: treeHealth,
             }}
