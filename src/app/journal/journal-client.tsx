@@ -6,7 +6,7 @@ import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firest
 import { FadeIn } from '@/components/ui/fade-in';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
-import { TreeSection } from '@/components/journal/TreeSection';
+import TreeSection from '@/components/journal/TreeSection';
 import { NotesSection } from '@/components/journal/NotesSection';
 import { StatsSection } from '@/components/journal/StatsSection';
 import type { Note, Journal } from '@/lib/journal-utils';
@@ -65,7 +65,7 @@ export default function JournalClientPage({ user }: { user: User }) {
                         </div>
 
                         {/* Center Column */}
-                        <TreeSection journal={journal} />
+                        <TreeSection />
 
                         {/* Right Column */}
                         <div className="space-y-8">

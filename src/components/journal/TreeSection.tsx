@@ -1,138 +1,189 @@
+"use client";
 
-'use client';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PieChart, Pie, Cell, Tooltip } from "recharts";
+import { Sparkles } from "lucide-react";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { toast } from '@/hooks/use-toast';
-import { updateTreeName } from '@/services/journal-service';
-import { Loader2, Edit, Check } from 'lucide-react';
-import { getTreeStage, type Journal } from '@/lib/journal-utils';
-import { motion } from 'framer-motion';
-
-
-interface TreeSectionProps {
-    journal: Journal | null;
-}
-
-const CodeTree = ({ health }: { health: number }) => {
-  const leavesCount = Math.max(0, Math.floor(health / 10));
-
-  // Base trunk color on health
-  const trunkColor = health < 40 ? '#8B4513' : '#654321';
-  // Base leaf color on health
-  const leafColor = `hsl(${80 + health * 0.4}, 60%, ${30 + health * 0.2}%)`;
-
-  return (
-    <motion.svg 
-      viewBox="0 0 200 200" 
-      className="w-full h-full"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-    >
-      {/* Trunk and branches */}
-      <path 
-        d="M100 200 V100 M100 140 L70 110 M100 120 L130 90 M70 110 L50 90 M130 90 L150 70" 
-        stroke={trunkColor} 
-        strokeWidth="10" 
-        strokeLinecap="round" 
-      />
-
-      {/* Leaves */}
-      {Array.from({ length: leavesCount }).map((_, i) => {
-        // Distribute leaves around branches
-        const positions = [
-          { cx: 70, cy: 100 }, { cx: 130, cy: 80 }, { cx: 50, cy: 80 },
-          { cx: 150, cy: 60 }, { cx: 90, cy: 90 }, { cx: 110, cy: 70 },
-          { cx: 60, cy: 120 }, { cx: 140, cy: 100 }, { cx: 80, cy: 70 }, { cx: 120, cy: 60 }
-        ];
-        const pos = positions[i % positions.length];
-        const randomX = (Math.random() - 0.5) * 20;
-        const randomY = (Math.random() - 0.5) * 20;
-        
-        return (
-           <motion.circle 
-                key={i}
-                cx={pos.cx + randomX} 
-                cy={pos.cy + randomY} 
-                r="8" 
-                fill={leafColor}
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-           />
-        )
-      })}
-    </motion.svg>
-  );
+// 🟢 Dummy Journal Data
+const mockJournal = {
+  treeAge: 12, // days old
+  treeHealth: "healthy", // healthy | weak | withered
+  notes: [
+    { id: 1, text: "Had a peaceful day ✨", type: "good" },
+    { id: 2, text: "Got stressed at work 😓", type: "bad" },
+    { id: 3, text: "Meditated for 15 minutes 🧘", type: "good" },
+  ],
 };
 
+// 🌳 Tree Visualizer (center column)
+function TreeVisualizer({ health }: { health: string }) {
+  let treeEmoji = "🌱";
+  if (health === "healthy") treeEmoji = "🌳";
+  if (health === "weak") treeEmoji = "🍂";
+  if (health === "withered") treeEmoji = "🪵";
 
-export function TreeSection({ journal }: TreeSectionProps) {
-    const [isEditingName, setIsEditingName] = useState(false);
-    const [newName, setNewName] = useState(journal?.treeName || '');
-    const [isSaving, setIsSaving] = useState(false);
-    
-    const treeHealth = journal?.treeHealth ?? 80;
-    const initialTreeName = journal?.treeName || "My Tree";
-    
-    const { stageName } = getTreeStage(treeHealth);
+  return (
+    <motion.div
+      className="text-8xl flex justify-center"
+      animate={{ scale: [1, 1.1, 1] }}
+      transition={{ repeat: Infinity, duration: 3 }}
+    >
+      {treeEmoji}
+    </motion.div>
+  );
+}
 
-    const handleSaveName = async () => {
-        if (!newName.trim()) {
-            toast({ variant: 'destructive', title: 'Name cannot be empty.' });
-            return;
-        }
-        setIsSaving(true);
-        try {
-            await updateTreeName({ name: newName });
-            toast({ title: 'Tree name updated!' });
-            setIsEditingName(false);
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Error saving name', description: error.message });
-        } finally {
-            setIsSaving(false);
-        }
-    };
-    
-    return (
-        <Card className="sticky top-24 shadow-lg border-primary/10">
-            <CardHeader className="text-center">
-                {!isEditingName ? (
-                    <CardTitle className="flex items-center justify-center gap-2 text-2xl font-headline">
-                        {initialTreeName}
-                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setIsEditingName(true); setNewName(initialTreeName); }}>
-                            <Edit className="h-4 w-4" />
-                        </Button>
-                    </CardTitle>
-                ) : (
-                    <div className="flex items-center gap-2">
-                        <Input
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            placeholder="Give your tree a name"
-                            disabled={isSaving}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-                        />
-                         <Button size="icon" onClick={handleSaveName} disabled={isSaving} className="h-9 w-9">
-                            {isSaving ? <Loader2 className="h-4 w-4 animate-spin"/> : <Check className="h-4 w-4"/>}
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => setIsEditingName(false)} disabled={isSaving} className="h-9 w-9">
-                           <Edit className="h-4 w-4"/>
-                        </Button>
-                    </div>
-                )}
-                 <CardDescription>
-                    Health: {Math.round(treeHealth)}% | Stage: {stageName} | Mood: {journal?.mood || 'happy'} {journal?.emoji || '😊'}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center p-6">
-                <div className="relative w-full aspect-square max-w-[300px]">
-                    <CodeTree health={treeHealth} />
-                </div>
-            </CardContent>
+// 😀 Mood Emoji (right column)
+function TreeMood({ health }: { health: string }) {
+  let mood = "🙂";
+  if (health === "healthy") mood = "😄";
+  if (health === "weak") mood = "😕";
+  if (health === "withered") mood = "😢";
+
+  return (
+    <motion.div
+      className="text-6xl text-center"
+      animate={{ y: [0, -5, 0] }}
+      transition={{ repeat: Infinity, duration: 2 }}
+    >
+      {mood}
+    </motion.div>
+  );
+}
+
+// 🔥 Burning Effect Note (bad notes only)
+function BurningNote({ text }: { text: string }) {
+  return (
+    <motion.div
+      className="p-2 rounded-md bg-red-100 border border-red-400"
+      animate={{ opacity: [1, 0.6, 1], scale: [1, 1.05, 1] }}
+      transition={{ repeat: Infinity, duration: 1.5 }}
+    >
+      {text} 🔥
+    </motion.div>
+  );
+}
+
+// 📊 Good vs Bad Pie Graph
+function NotesGraph({ notes }: { notes: any[] }) {
+  const good = notes.filter((n) => n.type === "good").length;
+  const bad = notes.filter((n) => n.type === "bad").length;
+
+  const data = [
+    { name: "Good", value: good },
+    { name: "Bad", value: bad },
+  ];
+  const COLORS = ["#4ade80", "#f87171"];
+
+  return (
+    <PieChart width={200} height={200}>
+      <Pie
+        data={data}
+        cx={100}
+        cy={100}
+        labelLine={false}
+        outerRadius={80}
+        fill="#8884d8"
+        dataKey="value"
+      >
+        {data.map((_, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+      <Tooltip />
+    </PieChart>
+  );
+}
+
+// 🌱 Main Tree Section
+export default function TreeSection() {
+  const [journal] = useState(mockJournal);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+      {/* LEFT COLUMN */}
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Bad Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {journal.notes
+              .filter((n) => n.type === "bad")
+              .map((n) => (
+                <BurningNote key={n.id} text={n.text} />
+              ))}
+          </CardContent>
         </Card>
-    );
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Memories Graph</CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <NotesGraph notes={journal.notes} />
+          </CardContent>
+        </Card>
+
+        <Button className="w-full" variant="outline">
+          <Sparkles className="mr-2 h-4 w-4" /> Talk to Your Tree
+        </Button>
+      </div>
+
+      {/* CENTER COLUMN */}
+      <div className="flex flex-col items-center justify-center space-y-6">
+        <TreeVisualizer health={journal.treeHealth} />
+        <div className="text-lg font-semibold">
+          Tree Age: {journal.treeAge} days
+        </div>
+      </div>
+
+      {/* RIGHT COLUMN */}
+      <div className="space-y-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Good Notes</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {journal.notes
+              .filter((n) => n.type === "good")
+              .map((n) => (
+                <div
+                  key={n.id}
+                  className="p-2 rounded-md bg-green-100 border border-green-400"
+                >
+                  {n.text} 🌟
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tree Mood</CardTitle>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <TreeMood health={journal.treeHealth} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Tree Progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="w-full bg-gray-200 rounded-full h-4">
+              <div
+                className="bg-green-500 h-4 rounded-full"
+                style={{ width: `${Math.min(journal.treeAge * 5, 100)}%` }}
+              ></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }
