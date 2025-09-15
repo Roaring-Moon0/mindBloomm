@@ -2,18 +2,9 @@
 
 import { db } from '@/lib/firebase';
 import { 
-  collection, addDoc, doc, updateDoc, serverTimestamp, runTransaction, getDoc, setDoc 
+  collection, addDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc
 } from 'firebase/firestore';
 import type { User } from 'firebase/auth';
-import { z } from 'zod';
-
-const entrySchema = z.object({
-  content: z.string().min(1, 'Content cannot be empty.'),
-});
-
-const nameSchema = z.object({
-  name: z.string().min(1, 'Tree name cannot be empty.').max(50, 'Tree name is too long.'),
-});
 
 // --- Add Note ---
 export const addNote = async (payload: { text: string; type: 'good' | 'bad' }, user: User) => {
@@ -30,8 +21,9 @@ export const addNote = async (payload: { text: string; type: 'good' | 'bad' }, u
 export const renameTree = async (newName: string, user: User) => {
   if (!user) throw new Error('You must be logged in.');
 
-  const userRef = doc(db, "users", user.uid);
-  await updateDoc(userRef, { treeName: newName });
+  const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
+  // Use set with merge:true to create the document if it doesn't exist, or update it if it does.
+  await setDoc(journalStateRef, { treeName: newName }, { merge: true });
 };
 
 // --- Start New Chat ---
@@ -48,67 +40,4 @@ export const startNewChat = async (user: User) => {
     await updateDoc(newChatRef, { title: `Chat #${newChatRef.id.substring(0,4)}...`});
     
     return newChatRef.id;
-};
-
-
-export const addJournalEntry = async (payload: z.infer<typeof entrySchema>, user: User) => {
-    if (!user) throw new Error('You must be logged in to add an entry.');
-
-    const validated = entrySchema.parse(payload);
-    
-    const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
-    const newEntryRef = doc(collection(db, `users/${user.uid}/entries`));
-
-    return runTransaction(db, async (transaction) => {
-        const stateDoc = await transaction.get(journalStateRef);
-
-        transaction.set(newEntryRef, {
-            ...validated,
-            createdAt: serverTimestamp(),
-            uid: user.uid,
-        });
-
-        if (!stateDoc.exists()) {
-            transaction.set(journalStateRef, { 
-                treeName: "My Gratitude Tree",
-                entryCount: 1,
-                lastEntryDate: serverTimestamp()
-            });
-        } else {
-            const newCount = (stateDoc.data().entryCount || 0) + 1;
-            transaction.update(journalStateRef, { 
-                entryCount: newCount,
-                lastEntryDate: serverTimestamp()
-            });
-        }
-    });
-};
-
-export const deleteJournalEntry = async (id: string, user: User) => {
-    if (!user) throw new Error('You must be logged in to delete an entry.');
-
-    const entryRef = doc(db, `users/${user.uid}/entries`, id);
-    const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
-
-    return runTransaction(db, async (transaction) => {
-        const stateDoc = await transaction.get(journalStateRef);
-        if (!stateDoc.exists()) {
-            transaction.delete(entryRef);
-            return;
-        };
-
-        const currentCount = stateDoc.data().entryCount || 0;
-        
-        transaction.delete(entryRef);
-        transaction.update(journalStateRef, { entryCount: Math.max(0, currentCount - 1) });
-    });
-};
-
-export const updateTreeName = async (payload: z.infer<typeof nameSchema>, user: User) => {
-    if (!user) throw new Error('You must be logged in to update the tree name.');
-    
-    const validated = nameSchema.parse(payload);
-    const journalStateRef = doc(db, `users/${user.uid}/journal/state`);
-
-    await setDoc(journalStateRef, { treeName: validated.name }, { merge: true });
 };

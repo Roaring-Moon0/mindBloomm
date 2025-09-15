@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/hooks/use-auth';
-import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -13,12 +11,13 @@ import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Sparkles, Plus, Download, Bot, History, Loader2 } from 'lucide-react';
+import { Sparkles, Plus, Download, Bot, History, Loader2, Edit } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { TreeAiChatDialog } from './TreeAiChatDialog';
 import { ChatHistoryDialog } from './ChatHistoryDialog';
 import type { User } from 'firebase/auth';
+import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 
 interface Note {
   id: string;
@@ -173,7 +172,12 @@ export default function TreeSection({ user }: { user: User }) {
   const treeAge = treeState?.createdAt?.toDate ? Math.max(1, Math.ceil((new Date().getTime() - treeState.createdAt.toDate().getTime()) / (1000 * 60 * 60 * 24))) : 1;
   const treeName = treeState?.treeName || 'My Tree';
 
-  useEffect(() => { setTreeNameInput(treeName); }, [treeName]);
+  // Effect to sync local input with Firestore state when editing begins
+  useEffect(() => {
+    if (editingName) {
+      setTreeNameInput(treeName);
+    }
+  }, [editingName, treeName]);
 
   if (notesLoading || treeStateLoading) return <div className="flex justify-center items-center h-96"><Loader2 className="w-12 h-12 animate-spin text-primary" /></div>;
 
@@ -225,7 +229,7 @@ export default function TreeSection({ user }: { user: User }) {
           <div className="group flex items-center gap-2">
             <h2 className="text-2xl font-bold">{treeName}</h2>
              <Button size="icon" variant="ghost" className="text-primary hover:text-primary/80 h-7 w-7" onClick={() => setEditingName(true)}>
-                <Sparkles className="h-4 w-4"/>
+                <Edit className="h-4 w-4 text-green-500" />
                 <span className="sr-only">Rename</span>
             </Button>
           </div>
@@ -241,9 +245,9 @@ export default function TreeSection({ user }: { user: User }) {
       
       {/* RIGHT COLUMN - Order 2 on mobile, 3 on desktop */}
       <div className="space-y-4 md:order-3 order-2">
-        <Card>
-          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
-          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+        <Card className='md:hidden'>
+            <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+            <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Good Notes</CardTitle><CardDescription>Cultivate gratitude.</CardDescription></CardHeader>
@@ -275,6 +279,10 @@ export default function TreeSection({ user }: { user: User }) {
 
       {/* LEFT COLUMN - Order 3 on mobile, 1 on desktop */}
       <div className="space-y-4 md:order-1 order-3">
+        <Card className='hidden md:block'>
+          <CardHeader><CardTitle>Tree Mood</CardTitle></CardHeader>
+          <CardContent className="flex justify-center"><TreeMood health={treeHealth} /></CardContent>
+        </Card>
         <Card>
           <CardHeader><CardTitle>Memories Graph</CardTitle></CardHeader>
           <CardContent className="flex justify-center"><NotesGraph notes={notes} /></CardContent>
