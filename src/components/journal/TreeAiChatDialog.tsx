@@ -42,14 +42,21 @@ export function TreeAiChatDialog({ isOpen, onOpenChange, user, treeState }: Tree
           content: `Hello. I am ${treeState.name}. It is good to feel the sun with you. What is on your mind?`,
         },
       ]);
+    } else {
+        // Clear messages when closing the dialog
+        setMessages([]);
     }
   }, [isOpen, treeState.name]);
   
   useEffect(() => {
     if (scrollAreaViewportRef.current) {
-      scrollAreaViewportRef.current.scrollTop = scrollAreaViewportRef.current.scrollHeight;
+        setTimeout(() => {
+            if (scrollAreaViewportRef.current) {
+                scrollAreaViewportRef.current.scrollTop = scrollAreaViewportRef.current.scrollHeight;
+            }
+        }, 0);
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
