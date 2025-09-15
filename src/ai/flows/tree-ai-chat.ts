@@ -65,10 +65,9 @@ Based on your state, tailor your response.
 {{#if history}}
 This is the conversation history. Continue it naturally.
 {{#each history}}
-  {{#if (this.role === 'user')}}
+  {{#if this.isUser}}
     User: {{{this.content}}}
-  {{/if}}
-  {{#if (this.role === 'assistant')}}
+  {{else}}
     {{{../treeName}}}: {{{this.content}}}
   {{/if}}
 {{/each}}
@@ -88,7 +87,10 @@ const treeAiChatFlow = ai.defineFlow(
     outputSchema: TreeAiChatOutputSchema,
   },
   async (input) => {
-    const { output } = await prompt(input);
+    // Add isUser flag to history for valid Handlebars syntax
+    const processedHistory = input.history?.map(msg => ({...msg, isUser: msg.role === 'user'}));
+
+    const { output } = await prompt({...input, history: processedHistory});
     return { response: output!.response };
   }
 );
