@@ -1,7 +1,9 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import type { User } from 'firebase/auth';
+import { useAuth } from '@/hooks/use-auth';
 import { useFirestoreCollection, useFirestoreDocument } from '@/hooks/use-firestore';
 import { addNote, renameTree, startNewChat } from '@/services/journal-service';
 import { useToast } from '@/hooks/use-toast';
@@ -139,9 +141,10 @@ function MemoriesDialog({ notes, isOpen, onOpenChange }: { notes: Note[], isOpen
 }
 
 // ----------------- Main TreeSection -----------------
-export default function TreeSection({ user }: { user: User }) {
-  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${user.uid}/notes`);
-  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${user.uid}/journal/state`);
+export default function TreeSection({ uid }: { uid: string }) {
+  const { user } = useAuth(); // Still need this for Dialogs that need the full user object.
+  const { data: notesData, loading: notesLoading } = useFirestoreCollection<Note>(`users/${uid}/notes`);
+  const { data: treeState, loading: treeStateLoading } = useFirestoreDocument<TreeState>(`users/${uid}/journal/state`);
   const [goodNote, setGoodNote] = useState('');
   const [isSavingGood, setIsSavingGood] = useState(false);
   const [badNote, setBadNote] = useState('');
@@ -179,20 +182,20 @@ export default function TreeSection({ user }: { user: User }) {
   const handleSaveTreeName = async () => {
     if (!treeNameInput.trim()) return toast({ variant: 'destructive', title: 'Name cannot be empty.' });
     setIsSavingName(true);
-    try { await renameTree(treeNameInput, user.uid); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
+    try { await renameTree(treeNameInput, uid); toast({ title: 'Tree renamed successfully!' }); setEditingName(false); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingName(false); }
   };
 
   const handleNewChat = async () => {
-    try { await startNewChat(user.uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
+    try { await startNewChat(uid); toast({ title: 'New chat started!' }); setIsChatHistoryOpen(true); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error starting chat' }); }
   };
 
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }, user.uid); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { await addNote({ text: goodNote, type: 'good' }, uid); setGoodNote(''); toast({ title: 'Note added!' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -200,7 +203,7 @@ export default function TreeSection({ user }: { user: User }) {
   const handleAddBadNote = async () => {
     if (!badNote.trim()) return;
     setIsSavingBad(true);
-    try { await addNote({ text: badNote, type: 'bad' }, user.uid); setBadNote(''); toast({ title: 'Note released.' }); }
+    try { await addNote({ text: badNote, type: 'bad' }, uid); setBadNote(''); toast({ title: 'Note released.' }); }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingBad(false); }
   };
