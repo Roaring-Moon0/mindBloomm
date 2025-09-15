@@ -60,7 +60,7 @@ export function GamesClient() {
                                 <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
                             </CardHeader>
                             <CardContent className="flex flex-col items-center justify-center p-6 flex-grow">
-                                <Paintbrush className="w-24 h-24 text-primary" />
+                                <Paintbrush className="w-32 h-32 text-primary" />
                             </CardContent>
                         </Card>
                     </DialogTrigger>
