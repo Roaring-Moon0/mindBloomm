@@ -28,8 +28,10 @@ export const renameTree = async (newName: string) => {
     if (!user) throw new Error('You must be logged in.');
     if (!newName.trim()) throw new Error('Name cannot be empty.');
 
+    // This updates the displayName at the root of the user document
     await updateDoc(doc(db, "users", user.uid), { treeName: newName });
 };
+
 
 export const startNewChat = async (): Promise<string> => {
     const user = auth.currentUser;
