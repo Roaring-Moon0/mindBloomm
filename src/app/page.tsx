@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion, Search, Users } from 'lucide-react';
+import { ArrowRight, Flower, MessageSquareHeart, Gamepad2, FileQuestion, Search, Users, NotebookPen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -31,10 +31,10 @@ const features = [
     href: '/games',
   },
   {
-    icon: <FileQuestion className="h-8 w-8 text-primary" />,
-    title: 'Community Survey',
-    description: 'Share your feedback to help us improve our platform and support.',
-    href: '/survey',
+    icon: <NotebookPen className="h-8 w-8 text-primary" />,
+    title: 'Gratitude Journal',
+    description: 'Cultivate positivity by recording your thoughts and watching your digital tree grow.',
+    href: '/journal',
   },
 ];
 
@@ -237,3 +237,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
