@@ -39,10 +39,10 @@ const features = [
 ];
 
 const teamMembers = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man' },
-  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face' },
-  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png' },
+  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png' },
+  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png' },
 ];
 
 export default function Home() {
@@ -175,7 +175,7 @@ export default function Home() {
                   <Card className="h-full overflow-hidden text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-2 border-transparent hover:border-primary/50 bg-card rounded-xl">
                     <CardContent className="p-6 flex flex-col items-center">
                         <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20 shadow-sm">
-                          <AvatarImage src={member.avatar} data-ai-hint={member.dataAiHint} />
+                          <AvatarImage src={member.avatar} />
                           <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <CardTitle className="text-xl">{member.name}</CardTitle>
@@ -237,5 +237,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

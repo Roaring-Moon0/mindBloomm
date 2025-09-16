@@ -14,19 +14,18 @@ interface TeamMember {
     name: string;
     role: string;
     avatar: string;
-    dataAiHint: string;
     bio: string;
     email: string;
     linkedin?: string;
 }
 
 const teamMembers: TeamMember[] = [
-  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', dataAiHint: 'anime man', bio: 'As the team leader and a B.Tech student in AI/ML, I guide our project\'s vision. My goal is to merge technology with empathy to create genuinely helpful mental wellness solutions.', email: 'watervolt69@gmail.com', linkedin: 'https://www.linkedin.com/in/aryan-4500a7380' },
-  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', dataAiHint: 'person face', bio: "As the team's Presentation Designer, I craft the visuals that tell our story with clarity and impact. I also contribute as a Co-Developer, helping to blend creative design with functional technology to build a user-friendly and effective experience.", email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
-  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', dataAiHint: 'person face', bio: 'As a B.Tech CSE student, I focus on gathering and curating the articles, videos, and music for our resource library, ensuring our content is both helpful and supportive.', email: 'gauravxns001@gmail.com', linkedin: 'https://www.linkedin.com/in/gaurav-sharma-a44435378' },
-  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', dataAiHint: 'person face', bio: 'As a B.Tech student in Robotics and AI, I contribute as a tester to ensure the website is reliable, user-friendly, and impactful for everyone who uses it.', email: 'kartiksharmaa2066@gmail.com', linkedin: 'https://www.linkedin.com/in/kartik-sharma-41b552336' },
-  { name: 'Anubhav', role: 'Tester', avatar: '/assets/anubhav1.png', dataAiHint: 'person face', bio: 'As a B.Tech student specializing in AI & ML, I\'m passionate about quality assurance. As a tester, I\'m dedicated to delivering seamless and bug-free user experiences, all while actively seeking to apply new skills to improve the process. I leverage my analytical skills to identify issues and ensure the reliability of this app.', email: 'anubhavahluwalia02@gmail.com', linkedin: 'https://www.linkedin.com/in/anubhav-ahluwalia-55a459384' },
-  { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', dataAiHint: 'person face', bio: 'I assist in finding and organizing high-quality resources for our library, helping to provide users with valuable and effective mental wellness content.', email: 'ruhikumari2672@gmail.com', linkedin: 'https://www.linkedin.com/in/ruhi-kumari-774a95378' },
+  { name: 'Aryan', role: 'Founder & Leader', avatar: '/assets/aryan.png', bio: 'As the team leader and a B.Tech student in AI/ML, I guide our project\'s vision. My goal is to merge technology with empathy to create genuinely helpful mental wellness solutions.', email: 'watervolt69@gmail.com', linkedin: 'https://www.linkedin.com/in/aryan-4500a7380' },
+  { name: 'Dharvi', role: 'Presentation Designer & Co-developer', avatar: '/assets/Dharvi.png', bio: "As the team's Presentation Designer, I craft the visuals that tell our story with clarity and impact. I also contribute as a Co-Developer, helping to blend creative design with functional technology to build a user-friendly and effective experience.", email: 'shivimehta2008@gmail.com', linkedin: 'https://www.linkedin.com/in/dharvi-mehta-b44952239' },
+  { name: 'Gaurav', role: 'Resources Provider', avatar: '/assets/gaurav.png', bio: 'As a B.Tech CSE student, I focus on gathering and curating the articles, videos, and music for our resource library, ensuring our content is both helpful and supportive.', email: 'gauravxns001@gmail.com', linkedin: 'https://www.linkedin.com/in/gaurav-sharma-a44435378' },
+  { name: 'Kartik', role: 'Tester', avatar: '/assets/kartik.png', bio: 'As a B.Tech student in Robotics and AI, I contribute as a tester to ensure the website is reliable, user-friendly, and impactful for everyone who uses it.', email: 'kartiksharmaa2066@gmail.com', linkedin: 'https://www.linkedin.com/in/kartik-sharma-41b552336' },
+  { name: 'Anubhav', role: 'Tester', avatar: '/assets/anubhav1.png', bio: 'As a B.Tech student specializing in AI & ML, I\'m passionate about quality assurance. As a tester, I\'m dedicated to delivering seamless and bug-free user experiences, all while actively seeking to apply new skills to improve the process. I leverage my analytical skills to identify issues and ensure the reliability of this app.', email: 'anubhavahluwalia02@gmail.com', linkedin: 'https://www.linkedin.com/in/anubhav-ahluwalia-55a459384' },
+  { name: 'Ruhi', role: 'Resources Provider', avatar: '/assets/ruhi.png', bio: 'I assist in finding and organizing high-quality resources for our library, helping to provide users with valuable and effective mental wellness content.', email: 'ruhikumari2672@gmail.com', linkedin: 'https://www.linkedin.com/in/ruhi-kumari-774a95378' },
 ];
 
 const values = [
@@ -68,7 +67,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
                 >
                     <CardContent className="p-6 flex flex-col items-center">
                         <Avatar className="w-32 h-32 mb-4 border-4 border-primary/20">
-                            <AvatarImage src={avatarSrc} alt={member.name} data-ai-hint={member.dataAiHint} />
+                            <AvatarImage src={avatarSrc} alt={member.name} />
                             <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
                         </Avatar>
                         <CardTitle className="text-xl">{member.name}</CardTitle>
@@ -79,7 +78,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
             <DialogContent className="sm:max-w-[425px]" onMouseLeave={!isMobile ? () => setIsOpen(false) : undefined}>
                 <DialogHeader className="items-center text-center">
                      <Avatar className="w-24 h-24 mb-4 border-4 border-primary/20">
-                        <AvatarImage src={avatarSrc} alt={member.name} data-ai-hint={member.dataAiHint} />
+                        <AvatarImage src={avatarSrc} alt={member.name} />
                         <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <DialogTitle className="text-2xl">{member.name}</DialogTitle>
