@@ -5,7 +5,7 @@
  * @fileOverview This file defines a Genkit flow for searching YouTube videos.
  *
  * It uses a custom tool to interact with the YouTube Data API, filters out
- * harmful queries, and contextualizes searches for mental well-being.
+ * harmful queries, and rephrases searches for mental well-being.
  *
  * @exports searchYoutubeVideos - The main function to trigger the YouTube search flow.
  */
@@ -13,10 +13,11 @@
 import { ai } from '@/ai/genkit';
 import { youtubeSearchTool } from '../tools/youtube-search';
 import { YoutubeSearchInputSchema, YoutubeSearchOutputSchema, YoutubeSearchInput, YoutubeSearchOutput } from '@/ai/schemas/youtube-search';
+import { rephraseQueryForWellbeing } from './rephrase-query-for-wellbeing';
 
 // List of banned keywords to prevent harmful searches
 const BANNED_KEYWORDS = [
-  'suicide', 'self-harm', 'selfharm', 'kill myself', 'how to die',
+  'suicide', 'self-harm', 'selfharm', 'kill myself', 'how to die', 'schizophrenia', 'disturbing',
   // Add other sensitive or 18+ terms as needed
 ];
 
@@ -41,12 +42,11 @@ const searchYoutubeVideosFlow = ai.defineFlow(
       return { videos: [] };
     }
 
-    // 2. Contextualize the search for mental health
-    // This helps ensure results are relevant even for general topics.
-    const contextualQuery = `mental health ${query}`;
+    // 2. Rephrase the query for positive, supportive content
+    const { rephrasedQuery } = await rephraseQueryForWellbeing({ originalQuery: query });
 
-    // 3. Call the YouTube search tool with the safe, contextual query
-    const searchResult = await youtubeSearchTool({ query: contextualQuery });
+    // 3. Call the YouTube search tool with the safe, rephrased query
+    const searchResult = await youtubeSearchTool({ query: rephrasedQuery });
 
     // 4. Map the results to the output schema
     return {
