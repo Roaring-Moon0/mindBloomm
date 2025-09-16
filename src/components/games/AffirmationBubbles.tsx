@@ -23,29 +23,37 @@ const affirmations = [
 interface Bubble {
   id: number;
   x: number;
-  y: number;
   size: number;
   text: string;
+  popped: boolean;
+  controls: any; // Animation controls for this specific bubble
 }
 
-const BubbleComponent = ({ bubble, onPop, onComplete, animationControls }: { bubble: Bubble, onPop: (id: number) => void, onComplete: (id: number) => void, animationControls: any }) => {
+const BubbleComponent = ({ bubble, onPop }: { bubble: Bubble; onPop: (id: number) => void; }) => {
+  useEffect(() => {
+    // Start animation on mount
+    bubble.controls.start({
+      y: -(containerHeight + bubble.size), // Animate off-screen
+      transition: { duration: Math.random() * 6 + 9, ease: 'linear' },
+    });
+  }, [bubble.controls, bubble.size]);
+
     return (
         <motion.div
             key={bubble.id}
+            custom={bubble}
+            animate={bubble.controls}
             initial={{ y: 0, x: bubble.x, opacity: 1, scale: 1 }}
-            animate={animationControls}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ duration: Math.random() * 6 + 9, ease: 'linear' }}
-            onAnimationComplete={() => onComplete(bubble.id)}
-            className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center p-2"
+            exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
+            className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center"
             style={{
                 width: bubble.size,
                 height: bubble.size,
-                bottom: 0,
+                bottom: -bubble.size, // Start from just below the container
             }}
             onClick={() => onPop(bubble.id)}
         >
-             <AnimatePresence>
+            <AnimatePresence>
                 {bubble.popped && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -54,22 +62,29 @@ const BubbleComponent = ({ bubble, onPop, onComplete, animationControls }: { bub
                         className="absolute inset-0 flex items-center justify-center p-2"
                     >
                         <span className="text-sm font-semibold text-primary-foreground/80 select-none text-center leading-tight whitespace-normal">
-                        {bubble.text}
+                            {bubble.text}
                         </span>
                     </motion.div>
                 )}
             </AnimatePresence>
         </motion.div>
     );
-}
+};
+
+let containerHeight = 500; // Default or SSR value
 
 export function AffirmationBubbles() {
-  const [bubbles, setBubbles] = useState<any[]>([]);
+  const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [gameState, setGameState] = useState<'stopped' | 'playing' | 'paused'>('stopped');
   const containerRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const animationControls = useAnimationControls();
+
+  useEffect(() => {
+    if (containerRef.current) {
+        containerHeight = containerRef.current.offsetHeight;
+    }
+  }, []);
 
   const createBubble = useCallback(() => {
     const container = containerRef.current;
@@ -79,23 +94,34 @@ export function AffirmationBubbles() {
     const newBubble = {
       id: nextId.current++,
       x: Math.random() * (container.offsetWidth - size),
-      y: container.offsetHeight,
       size,
       text: affirmations[Math.floor(Math.random() * affirmations.length)],
       popped: false,
+      controls: useAnimationControls(),
     };
-    setBubbles((prev) => [...prev, newBubble]);
+    
+    // Add new bubble and set a timeout to remove it if it goes off-screen
+    setBubbles((prev) => {
+        const newBubbles = [...prev, newBubble];
+        setTimeout(() => {
+            setBubbles(current => current.filter(b => b.id !== newBubble.id));
+        }, 15000); // Remove after 15s regardless
+        return newBubbles;
+    });
+
   }, []);
 
   useEffect(() => {
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+    }
     if (gameState === 'playing') {
-      animationControls.start({ y: -(containerRef.current?.offsetHeight || 800) });
+      bubbles.forEach(b => b.controls.start({ y: -(containerHeight + b.size) }));
       intervalRef.current = setInterval(createBubble, 2500);
     } else if (gameState === 'paused') {
-      animationControls.stop();
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      bubbles.forEach(b => b.controls.stop());
     } else if (gameState === 'stopped') {
-       if (intervalRef.current) clearInterval(intervalRef.current);
+       setBubbles([]);
     }
     
     return () => {
@@ -103,35 +129,25 @@ export function AffirmationBubbles() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [gameState, createBubble, animationControls]);
+  }, [gameState]);
   
   const handlePop = (id: number) => {
-    setBubbles(prev => prev.map(b => {
-        if (b.id === id) {
-            return {...b, popped: true };
-        }
-        return b;
-    }));
+    setBubbles(prev => prev.map(b => b.id === id ? {...b, popped: true } : b));
     setTimeout(() => {
         setBubbles(prev => prev.filter(b => b.id !== id));
     }, 800);
   };
   
-  const handleAnimationComplete = (id: number) => {
-    setBubbles(prev => prev.filter(b => b.id !== id));
-  };
-  
   const handleStop = () => {
       setGameState('stopped');
-      setBubbles([]);
   };
 
-  const handleStart = () => {
-      setGameState('playing');
-  };
-
-  const handlePause = () => {
-      setGameState('paused');
+  const handleStartPause = () => {
+      if (gameState === 'playing') {
+          setGameState('paused');
+      } else {
+          setGameState('playing');
+      }
   };
 
 
@@ -148,18 +164,14 @@ export function AffirmationBubbles() {
                 key={bubble.id}
                 bubble={bubble} 
                 onPop={handlePop} 
-                onComplete={handleAnimationComplete}
-                animationControls={animationControls}
             />
           ))}
         </AnimatePresence>
       </CardContent>
        <CardFooter className="flex justify-center gap-4 pt-6">
-        <Button onClick={handleStart} disabled={gameState === 'playing'}>
-            <Play className="mr-2 h-4 w-4"/> Start
-        </Button>
-        <Button onClick={handlePause} variant="outline" disabled={gameState !== 'playing'}>
-            <Pause className="mr-2 h-4 w-4"/> Pause
+        <Button onClick={handleStartPause} disabled={gameState === 'stopped' && bubbles.length > 0}>
+            {gameState === 'playing' ? <Pause className="mr-2 h-4 w-4"/> : <Play className="mr-2 h-4 w-4"/>}
+            {gameState === 'playing' ? 'Pause' : 'Start'}
         </Button>
         <Button onClick={handleStop} variant="destructive" disabled={gameState === 'stopped'}>
             <Square className="mr-2 h-4 w-4"/> Stop
