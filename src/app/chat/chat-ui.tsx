@@ -172,7 +172,7 @@ export function ChatUI() {
         className="flex-1 overflow-y-auto min-h-0"
         aria-live="polite"
       >
-        <div className="space-y-6 pb-24 md:pb-28">
+        <div className="space-y-6 pb-6">
           {messages.map((message, index) => {
               const isLastMessage = index === messages.length - 1;
               return (
@@ -230,7 +230,7 @@ export function ChatUI() {
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 right-0 mt-auto pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="mt-auto pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-4 pb-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
