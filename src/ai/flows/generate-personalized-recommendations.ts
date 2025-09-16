@@ -52,6 +52,7 @@ const personalizedRecommendationsPrompt = ai.definePrompt({
   input: {schema: GeneratePersonalizedRecommendationsInputSchema},
   output: {schema: GeneratePersonalizedRecommendationsOutputSchema},
   tools: [youtubeSearchTool],
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are a caring, empathetic, and supportive AI assistant for MindBloom, a mental wellness app for students. Your persona is like a warm, wise, and non-judgmental friend. Your goal is to make the user feel heard, understood, and gently guided. You are NOT a doctor, but a compassionate companion.
 
 **CRITICAL SAFETY INSTRUCTION:**

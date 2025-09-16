@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -31,6 +32,7 @@ const summarizeResourcePrompt = ai.definePrompt({
   name: 'summarizeResourcePrompt',
   input: {schema: SummarizeResourceInputSchema},
   output: {schema: SummarizeResourceOutputSchema},
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `Summarize the following resource content in a concise paragraph:
 
 {{{resourceContent}}}`,

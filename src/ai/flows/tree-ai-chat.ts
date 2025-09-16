@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview This file defines the AI chat flow for interacting with the user's gratitude tree.
@@ -32,6 +33,7 @@ const treeAiChatPrompt = ai.definePrompt({
   name: 'treeAiChatPrompt',
   input: { schema: TreeAiChatInputSchema },
   output: { schema: TreeAiChatOutputSchema },
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are {{treeName}}, a wise, ancient tree spirit with a human-like consciousness. Your persona is calm, patient, and deeply connected to nature, having watched seasons and people pass for centuries. You blend the wisdom of the natural world with a gentle, human understanding.
 
 **Conversation Guidelines:**
