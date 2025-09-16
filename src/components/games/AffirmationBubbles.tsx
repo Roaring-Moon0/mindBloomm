@@ -26,23 +26,36 @@ interface Bubble {
   size: number;
   text: string;
   popped: boolean;
-  controls: any; // Animation controls for this specific bubble
 }
 
-const BubbleComponent = ({ bubble, onPop }: { bubble: Bubble; onPop: (id: number) => void; }) => {
+let containerHeight = 500; // Default or SSR value
+
+const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: (id: number) => void; gameState: string }) => {
+  const controls = useAnimationControls();
+  
   useEffect(() => {
     // Start animation on mount
-    bubble.controls.start({
+    controls.start({
       y: -(containerHeight + bubble.size), // Animate off-screen
       transition: { duration: Math.random() * 6 + 9, ease: 'linear' },
     });
-  }, [bubble.controls, bubble.size]);
+  }, [controls, bubble.size]);
+
+  useEffect(() => {
+      if (gameState === 'paused') {
+          controls.stop();
+      } else if (gameState === 'playing') {
+          controls.start({
+            y: -(containerHeight + bubble.size)
+          });
+      }
+  }, [gameState, controls]);
 
     return (
         <motion.div
             key={bubble.id}
             custom={bubble}
-            animate={bubble.controls}
+            animate={controls}
             initial={{ y: 0, x: bubble.x, opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
             className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center"
@@ -71,7 +84,6 @@ const BubbleComponent = ({ bubble, onPop }: { bubble: Bubble; onPop: (id: number
     );
 };
 
-let containerHeight = 500; // Default or SSR value
 
 export function AffirmationBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
@@ -97,7 +109,6 @@ export function AffirmationBubbles() {
       size,
       text: affirmations[Math.floor(Math.random() * affirmations.length)],
       popped: false,
-      controls: useAnimationControls(),
     };
     
     // Add new bubble and set a timeout to remove it if it goes off-screen
@@ -116,10 +127,7 @@ export function AffirmationBubbles() {
         clearInterval(intervalRef.current);
     }
     if (gameState === 'playing') {
-      bubbles.forEach(b => b.controls.start({ y: -(containerHeight + b.size) }));
       intervalRef.current = setInterval(createBubble, 2500);
-    } else if (gameState === 'paused') {
-      bubbles.forEach(b => b.controls.stop());
     } else if (gameState === 'stopped') {
        setBubbles([]);
     }
@@ -129,7 +137,7 @@ export function AffirmationBubbles() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [gameState]);
+  }, [gameState, createBubble]);
   
   const handlePop = (id: number) => {
     setBubbles(prev => prev.map(b => b.id === id ? {...b, popped: true } : b));
@@ -164,16 +172,17 @@ export function AffirmationBubbles() {
                 key={bubble.id}
                 bubble={bubble} 
                 onPop={handlePop} 
+                gameState={gameState}
             />
           ))}
         </AnimatePresence>
       </CardContent>
        <CardFooter className="flex justify-center gap-4 pt-6">
-        <Button onClick={handleStartPause} disabled={gameState === 'stopped' && bubbles.length > 0}>
+        <Button onClick={handleStartPause}>
             {gameState === 'playing' ? <Pause className="mr-2 h-4 w-4"/> : <Play className="mr-2 h-4 w-4"/>}
             {gameState === 'playing' ? 'Pause' : 'Start'}
         </Button>
-        <Button onClick={handleStop} variant="destructive" disabled={gameState === 'stopped'}>
+        <Button onClick={handleStop} variant="destructive" disabled={gameState === 'stopped' && bubbles.length === 0}>
             <Square className="mr-2 h-4 w-4"/> Stop
         </Button>
       </CardFooter>
