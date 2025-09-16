@@ -35,25 +35,25 @@ const AffirmationBubbles = dynamic(() => import('@/components/games/AffirmationB
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             
-            <div className="lg:col-span-1 md:col-span-2 flex justify-center">
+            <div className="flex justify-center w-full">
                 <BreathingVisualizer />
             </div>
 
-            <div className="lg:col-span-2 md:col-span-2 flex justify-center w-full">
-                <PatternTracer />
-            </div>
-            
             <div className="flex justify-center w-full">
                 <ColorMatch />
             </div>
 
-            <div className="md:col-span-2 lg:col-span-3 flex justify-center w-full">
+            <div className="flex justify-center w-full">
+                <PatternTracer />
+            </div>
+
+            <div className="flex justify-center w-full">
                <AffirmationBubbles />
             </div>
             
-            <div className="md:col-span-2 lg:col-span-3 flex justify-center w-full">
+            <div className="md:col-span-2 flex justify-center w-full">
                 <MemoryGame />
             </div>
 

@@ -35,7 +35,7 @@ export function AffirmationBubbles() {
     const container = containerRef.current;
     if (!container) return;
 
-    const size = Math.random() * 50 + 60; // 60 to 110px
+    const size = Math.random() * 60 + 80; // 80 to 140px
     const newBubble: Bubble = {
       id: nextId.current++,
       x: Math.random() * (container.offsetWidth - size),
@@ -91,7 +91,9 @@ export function AffirmationBubbles() {
                     exit={{ opacity: 0, scale: 1.2, transition: { duration: 0.5 } }}
                     className="absolute inset-0 flex items-center justify-center p-2"
                   >
-                    <span className="text-xs font-semibold text-primary-foreground/80 select-none">{bubble.text}</span>
+                    <span className="text-xs font-semibold text-primary-foreground/80 select-none text-center leading-tight">
+                      {bubble.text}
+                    </span>
                   </motion.div>
               )}
               </AnimatePresence>
