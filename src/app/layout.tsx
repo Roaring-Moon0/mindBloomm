@@ -21,8 +21,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const heads = headers();
-  const pathname = heads.get('next-url') || '';
+  const pathname = headers().get('next-url') || '';
   const isChatPage = pathname.startsWith('/chat');
 
   return (
