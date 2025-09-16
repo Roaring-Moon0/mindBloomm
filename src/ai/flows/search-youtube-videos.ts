@@ -4,8 +4,8 @@
 /**
  * @fileOverview This file defines a Genkit flow for searching YouTube videos.
  *
- * It uses a custom tool to interact with the YouTube Data API, filters out
- * harmful queries, and rephrases searches for mental well-being.
+ * It uses a custom tool to interact with the YouTube Data API and filters out
+ * harmful queries.
  *
  * @exports searchYoutubeVideos - The main function to trigger the YouTube search flow.
  */
@@ -13,7 +13,6 @@
 import { ai } from '@/ai/genkit';
 import { youtubeSearchTool } from '../tools/youtube-search';
 import { YoutubeSearchInputSchema, YoutubeSearchOutputSchema, YoutubeSearchInput, YoutubeSearchOutput } from '@/ai/schemas/youtube-search';
-import { rephraseQueryForWellbeing } from './rephrase-query-for-wellbeing';
 
 // List of banned keywords to prevent harmful searches
 const BANNED_KEYWORDS = [
@@ -42,13 +41,10 @@ const searchYoutubeVideosFlow = ai.defineFlow(
       return { videos: [] };
     }
 
-    // 2. Rephrase the query for positive, supportive content
-    const { rephrasedQuery } = await rephraseQueryForWellbeing({ originalQuery: query });
+    // 2. Call the YouTube search tool with the original query
+    const searchResult = await youtubeSearchTool({ query });
 
-    // 3. Call the YouTube search tool with the safe, rephrased query
-    const searchResult = await youtubeSearchTool({ query: rephrasedQuery });
-
-    // 4. Map the results to the output schema
+    // 3. Map the results to the output schema
     return {
       videos: searchResult.map((item: any) => ({
           id: item.id.videoId,
