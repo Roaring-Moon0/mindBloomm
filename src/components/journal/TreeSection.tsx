@@ -281,8 +281,6 @@ export default function TreeSection({ user }: { user: User }) {
             <CardHeader><CardTitle>Interact</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-2">
               <Button variant="outline" onClick={() => setIsAiChatOpen(true)}><Bot className="mr-2" /> Talk to Your Tree</Button>
-              <Button variant="outline" onClick={handleNewChat}><Plus className="mr-2" /> Start New Chat</Button>
-              <Button variant="outline" onClick={() => setIsChatHistoryOpen(true)}><History className="mr-2" /> Chat History</Button>
             </CardContent>
           </Card>
         </div>
