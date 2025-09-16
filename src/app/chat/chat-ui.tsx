@@ -177,13 +177,13 @@ export function ChatUI() {
   const showNewMessagesButton = !isAtBottom && messages.length > lastSeenRef.current;
 
   return (
-    <div className="relative flex flex-col w-full max-w-3xl mx-auto p-4 md:p-6 h-full">
+    <div className="relative flex flex-col w-full max-w-3xl mx-auto h-full">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto min-h-0 pr-4 -mr-4"
+        className="flex-1 overflow-y-auto min-h-0"
         aria-live="polite"
       >
-        <div className="space-y-6 pb-4">
+        <div className="space-y-6 pb-24 md:pb-28">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -239,45 +239,47 @@ export function ChatUI() {
         </div>
       )}
 
-      <div className="mt-auto pt-4 border-t flex-shrink-0 bg-background">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="userInput"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="sr-only">Your message</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Textarea
-                        placeholder="Tell me what's on your mind..."
-                        className="min-h-[60px] md:min-h-[80px] pr-20 resize-none"
-                        {...field}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            form.handleSubmit(onSubmit)();
-                          }
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        size="icon"
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2"
-                        disabled={isLoading || !field.value.trim()}
-                      >
-                        <Send className="w-5 h-5" />
-                        <span className="sr-only">Send message</span>
-                      </Button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+      <div className="absolute bottom-0 left-0 right-0 mt-auto pt-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="px-4 pb-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="userInput"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="sr-only">Your message</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Textarea
+                          placeholder="Tell me what's on your mind..."
+                          className="min-h-[60px] md:min-h-[80px] pr-12 resize-none shadow-md"
+                          {...field}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              form.handleSubmit(onSubmit)();
+                            }
+                          }}
+                        />
+                        <Button
+                          type="submit"
+                          size="icon"
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2"
+                          disabled={isLoading || !field.value.trim()}
+                        >
+                          <Send className="w-5 h-5" />
+                          <span className="sr-only">Send message</span>
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );

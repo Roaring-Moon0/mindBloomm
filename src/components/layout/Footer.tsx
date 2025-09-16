@@ -13,7 +13,7 @@ const helplines = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-secondary/30">
+    <footer className="border-t bg-secondary/30 [.is-chat-page_&]:hidden">
       <div className="container py-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="space-y-4">
