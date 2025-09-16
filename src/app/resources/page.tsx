@@ -162,12 +162,12 @@ function ResourcesContent() {
     return uniqueVideos;
   }, [curatedVideos]);
 
-  const filteredVideos = useMemo(() => {
-    if (!debouncedSearchQuery) {
+  const filteredCuratedVideos = useMemo(() => {
+    if (!searchQuery) {
         return allCuratedVideos;
     }
-    return allCuratedVideos.filter(video => video.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase()));
-  }, [allCuratedVideos, debouncedSearchQuery]);
+    return allCuratedVideos.filter(video => video.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  }, [allCuratedVideos, searchQuery]);
 
   useEffect(() => {
     const newUrl = searchQuery ? `/resources?q=${encodeURIComponent(searchQuery)}` : '/resources';
@@ -189,6 +189,8 @@ function ResourcesContent() {
     </Card>
   );
   
+  const showYoutubeResults = debouncedSearchQuery && (isSearching || searchResults);
+
   return (
       <FadeIn>
         <div className="container mx-auto py-12 px-4 md:px-6">
@@ -212,9 +214,9 @@ function ResourcesContent() {
             />
           </div>
   
-          {(isSearching || searchResults) && (
+          {showYoutubeResults && (
             <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6 font-headline">Search Results for "{debouncedSearchQuery}"</h2>
+              <h2 className="text-2xl font-bold mb-6 font-headline">YouTube Search Results for "{debouncedSearchQuery}"</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {isSearching ? (
                    Array.from({ length: 3 }).map((_, i) => <VideoSkeleton key={i} />)
@@ -253,7 +255,9 @@ function ResourcesContent() {
           )}
 
 
-          <h2 className="text-2xl font-bold mb-6 font-headline border-t pt-12">Curated For You</h2>
+          <h2 className="text-2xl font-bold mb-6 font-headline border-t pt-12">
+            {searchQuery ? `Curated Results for "${searchQuery}"` : "Curated For You"}
+          </h2>
           {curatedLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => <VideoSkeleton key={i} />)}
@@ -264,9 +268,9 @@ function ResourcesContent() {
                 <p className="font-semibold text-destructive">Could not load resources.</p>
                 <p className="text-sm">There was an issue connecting to the database.</p>
             </div>
-          ) : filteredVideos.length > 0 ? (
+          ) : filteredCuratedVideos.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {filteredVideos.map((video) => (
+                {filteredCuratedVideos.map((video) => (
                     <Link
                         href={video.url}
                         target="_blank"
@@ -302,7 +306,7 @@ function ResourcesContent() {
                 <p className="font-semibold">
                   No curated videos found for "{searchQuery}".
                 </p>
-                <p className="text-sm">Please try a different search term.</p>
+                <p className="text-sm">Please try a different search term or clear the search to see all curated videos.</p>
               </div>
           )}
         </div>
