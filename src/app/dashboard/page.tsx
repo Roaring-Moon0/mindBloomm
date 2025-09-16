@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog, Home } from "lucide-react";
+import { BookOpen, Gamepad2, MessageSquareHeart, RefreshCw, Loader2, UserCog, Home, NotebookPen } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AccountSettings from "./account-settings";
@@ -57,11 +57,11 @@ function QuoteDisplay() {
   const currentQuote = quoteIndex !== null ? allQuotes[quoteIndex] : null;
 
   return (
-    <Card className="bg-gradient-to-r from-purple-100 via-pink-100 to-teal-100 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-teal-900/30">
+    <Card className="bg-gradient-to-r from-purple-100 via-pink-100 to-teal-100 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-teal-900/30 h-full flex flex-col">
       <CardHeader>
         <CardTitle className="text-xl font-headline">Quote of the Day</CardTitle>
       </CardHeader>
-      <CardContent className="text-center space-y-4">
+      <CardContent className="text-center space-y-4 flex-grow flex flex-col justify-center">
         {currentQuote ? (
           <>
             <blockquote className="italic text-muted-foreground text-lg">
@@ -72,7 +72,7 @@ function QuoteDisplay() {
         ) : (
           <p>Loading quote...</p>
         )}
-        <Button onClick={handleChangeQuote} variant="outline" size="sm">
+        <Button onClick={handleChangeQuote} variant="outline" size="sm" className="mt-auto mx-auto">
           <RefreshCw className="mr-2 h-4 w-4" /> New Quote
         </Button>
       </CardContent>
@@ -82,18 +82,17 @@ function QuoteDisplay() {
 
 function MainDashboard() {
     const { user } = useAuth();
-    const displayName = user?.displayName || user?.email?.split('@')[0] || 'Friend';
     
     return (
         <>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-8">
+            <div className="grid gap-8 md:grid-cols-2">
                 {/* Quick Links */}
-                <Card className="lg:col-span-2">
+                <Card>
                     <CardHeader>
                         <CardTitle>Quick Links</CardTitle>
                         <CardDescription>Jump right back into your favorite activities.</CardDescription>
                     </CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Link href="/resources" passHref>
                             <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
                                 <BookOpen className="w-10 h-10 text-primary mb-2"/>
@@ -112,13 +111,17 @@ function MainDashboard() {
                                 <h3 className="font-semibold">Chat with Bloom</h3>
                             </Card>
                         </Link>
+                        <Link href="/journal" passHref>
+                            <Card className="h-full flex flex-col items-center justify-center p-6 text-center hover:bg-secondary hover:border-primary/50 transition-colors">
+                                <NotebookPen className="w-10 h-10 text-primary mb-2"/>
+                                <h3 className="font-semibold">Gratitude Journal</h3>
+                            </Card>
+                        </Link>
                     </CardContent>
                 </Card>
 
                 {/* Quote of the Day */}
-                <div className="lg:col-span-1">
-                    <QuoteDisplay />
-                </div>
+                <QuoteDisplay />
             </div>
         </>
     )
