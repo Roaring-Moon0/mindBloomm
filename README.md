@@ -10,8 +10,10 @@ This project was built iteratively in Firebase Studio.
 - **User Authentication**: Secure user sign-up and login using Firebase Authentication, including email/password and Google Sign-In.
 - **Personalized Dashboard**: A user-specific dashboard that provides quick access to core features and displays an inspirational quote of the day.
 - **Resource Library**: A curated collection of articles, videos, and audio resources categorized into topics like Anxiety, Depression, Sleep, and Stress. Includes a search feature to easily find relevant content.
-- **AI-Powered Chat Assistant**: An empathetic and supportive AI assistant (built with Genkit) that provides personalized recommendations and coping strategies based on user input.
+- **AI-Powered Chat Assistant "Bloom"**: An empathetic and supportive AI assistant (built with Genkit) that provides personalized recommendations and coping strategies based on user input.
+- **Gratitude Journal**: A private space for users to record things they are grateful for. Each entry helps a personal digital tree grow from a sprout to a flourishing tree. Features an interactive AI chat with the tree spirit.
 - **Calming Games**: A suite of interactive mini-games designed to promote relaxation and mindfulness, including a Breathing Visualizer, a Color Matching game, and a Memory game.
+- **Survey Page**: Allows users to participate in community surveys to help improve the platform.
 - **About Us Page**: Introduces the mission, values, and the dedicated team behind MindBloom.
 - **Contact Page**: A simple and accessible contact form, along with an FAQ section to address common user questions.
 
