@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 const GameSkeleton = ({ height = 400 }: { height?: number }) => (
     <div className="w-full max-w-md mx-auto">
-        <Skeleton className="w-full" style={{ height: `${height}px` }}/>
+        <Skeleton style={{ height: `${height}px` }} className="w-full" />
     </div>
 );
 
@@ -23,21 +23,45 @@ const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mo
     loading: () => <GameSkeleton />,
     ssr: false
 });
+const ZenGarden = dynamic(() => import('@/components/games/ZenGarden').then(mod => mod.ZenGarden), {
+    loading: () => <GameSkeleton height={450} />,
+    ssr: false
+});
+const PatternTracer = dynamic(() => import('@/components/games/PatternTracer').then(mod => mod.PatternTracer), {
+    loading: () => <GameSkeleton height={450} />,
+    ssr: false
+});
+const AffirmationBubbles = dynamic(() => import('@/components/games/AffirmationBubbles').then(mod => mod.AffirmationBubbles), {
+    loading: () => <GameSkeleton height={450} />,
+    ssr: false
+});
 
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
             
-            <div className="md:col-span-1 flex justify-center">
+            <div className="lg:col-span-1 md:col-span-2 flex justify-center">
                 <BreathingVisualizer />
             </div>
 
-            <div className="md:col-span-1 flex justify-center">
-                <ColorMatch />
+            <div className="lg:col-span-2 md:col-span-2 flex justify-center w-full">
+                <PatternTracer />
             </div>
             
-            <div className="md:col-span-2 flex justify-center w-full">
+            <div className="lg:col-span-2 md:col-span-1 flex justify-center w-full">
+                <ZenGarden />
+            </div>
+            
+            <div className="lg:col-span-1 md:col-span-1 flex justify-center">
+                <ColorMatch />
+            </div>
+
+            <div className="md:col-span-2 lg:col-span-3 flex justify-center w-full">
+               <AffirmationBubbles />
+            </div>
+            
+            <div className="md:col-span-2 lg:col-span-3 flex justify-center w-full">
                 <MemoryGame />
             </div>
 
