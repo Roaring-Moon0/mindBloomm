@@ -24,29 +24,20 @@ const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mo
     loading: () => <GameSkeleton />,
     ssr: false
 });
-const PatternTracer = dynamic(() => import('@/components/games/PatternTracer').then(mod => mod.PatternTracer), {
-    loading: () => <GameSkeleton height={450} />,
-    ssr: false
-});
-const AffirmationBubbles = dynamic(() => import('@/components/games/AffirmationBubbles').then(mod => mod.AffirmationBubbles), {
-    loading: () => <GameSkeleton height={450} />,
-    ssr: false
-});
-
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
             
-            <BreathingVisualizer />
-            
-            <ColorMatch />
+            <div className="md:col-span-1 flex justify-center">
+                <BreathingVisualizer />
+            </div>
 
-            <PatternTracer />
-
-            <AffirmationBubbles />
+            <div className="md:col-span-1 flex justify-center">
+                <ColorMatch />
+            </div>
             
-            <div className="md:col-span-2">
+            <div className="md:col-span-2 flex justify-center">
                 <MemoryGame />
             </div>
 
