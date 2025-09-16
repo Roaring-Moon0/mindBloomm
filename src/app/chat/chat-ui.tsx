@@ -59,8 +59,7 @@ export function ChatUI() {
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const lastSeenRef = useRef<number>(0);
 
@@ -111,27 +110,21 @@ export function ChatUI() {
       }
     };
     el.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    onScroll(); // Check on mount
     return () => el.removeEventListener('scroll', onScroll);
   }, [messages.length]);
 
   useEffect(() => {
-    if (isAtBottom) {
-      bottomRef.current?.scrollIntoView({
-        behavior: isFirstLoad ? 'auto' : 'smooth',
-        block: 'nearest',
-      });
+    if (isAtBottom && lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
       lastSeenRef.current = messages.length;
     }
-    if (isFirstLoad) setIsFirstLoad(false);
-  }, [messages, isLoading, isAtBottom, isFirstLoad]);
+  }, [messages, isLoading, isAtBottom]);
 
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
-    const el = scrollRef.current;
+    const el = lastMessageRef.current;
     if (el) {
-      el.scrollTo({ top: el.scrollHeight, behavior });
-    } else {
-      bottomRef.current?.scrollIntoView({ behavior, block: 'nearest' });
+      el.scrollIntoView({ behavior, block: 'end' });
     }
     setIsAtBottom(true);
     lastSeenRef.current = messages.length;
@@ -148,10 +141,6 @@ export function ChatUI() {
 
     const userMessage: Message = { role: 'user', content: values.userInput };
     setMessages((prev) => [...prev, userMessage]);
-
-    if (isAtBottom) {
-      requestAnimationFrame(() => scrollToBottom('smooth'));
-    }
 
     try {
       const result = await generatePersonalizedRecommendations({
@@ -184,32 +173,36 @@ export function ChatUI() {
         aria-live="polite"
       >
         <div className="space-y-6 pb-24 md:pb-28">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}
-            >
-              {message.role === 'assistant' && (
-                <Avatar className="w-8 h-8 border-2 border-primary/50">
-                  <AvatarFallback>
-                    <Logo className="w-5 h-5 text-primary" />
-                  </AvatarFallback>
-                </Avatar>
-              )}
-              <div className={`rounded-lg p-3 max-w-md text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
-                <div dangerouslySetInnerHTML={{ __html: formatMarkdown(message.content) }} />
-              </div>
-              {message.role === 'user' && user && (
-                <Avatar className="w-8 h-8">
-                  <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
-                  <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                </Avatar>
-              )}
-            </div>
-          ))}
+          {messages.map((message, index) => {
+              const isLastMessage = index === messages.length - 1;
+              return (
+                 <div
+                    key={index}
+                    ref={isLastMessage ? lastMessageRef : null}
+                    className={`flex items-start gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}
+                 >
+                    {message.role === 'assistant' && (
+                        <Avatar className="w-8 h-8 border-2 border-primary/50">
+                        <AvatarFallback>
+                            <Logo className="w-5 h-5 text-primary" />
+                        </AvatarFallback>
+                        </Avatar>
+                    )}
+                    <div className={`rounded-lg p-3 max-w-md text-sm ${message.role === 'user' ? 'bg-primary/20' : 'bg-secondary'}`}>
+                        <div dangerouslySetInnerHTML={{ __html: formatMarkdown(message.content) }} />
+                    </div>
+                    {message.role === 'user' && user && (
+                        <Avatar className="w-8 h-8">
+                        <AvatarImage src={user.photoURL || undefined} alt={user.displayName || 'User'} />
+                        <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                        </Avatar>
+                    )}
+                </div>
+              )
+          })}
 
           {isLoading && (
-            <div className="flex items-start gap-4">
+            <div ref={lastMessageRef} className="flex items-start gap-4">
               <Avatar className="w-8 h-8 border-2 border-primary/50">
                 <AvatarFallback>
                   <Logo className="w-5 h-5 text-primary" />
@@ -221,8 +214,6 @@ export function ChatUI() {
               </div>
             </div>
           )}
-
-          <div ref={bottomRef} />
         </div>
       </div>
 
