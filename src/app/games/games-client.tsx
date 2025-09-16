@@ -42,18 +42,23 @@ const MindPaint = dynamic(() => import('@/components/games/MindPaint').then(mod 
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
             
-            {/* Breathing Visualizer */}
-            <div className="flex justify-center sm:col-span-1">
+            {/* Breathing Visualizer - Takes full width on small screens, one-third on large */}
+            <div className="lg:col-span-1 md:col-span-2 flex justify-center">
                 <BreathingVisualizer />
             </div>
 
+            {/* Color Match */}
+            <div className="lg:col-span-1 md:col-span-1 flex justify-center">
+                <ColorMatch />
+            </div>
+            
             {/* Mind Paint */}
-            <div className="flex justify-center sm:col-span-2 lg:col-span-2 w-full">
+            <div className="lg:col-span-1 md:col-span-1 flex justify-center">
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Card className="w-full max-w-lg text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50 h-full flex flex-col">
+                        <Card className="w-full max-w-md text-center hover:shadow-lg transition-shadow cursor-pointer hover:bg-secondary hover:border-primary/50 h-full flex flex-col">
                             <CardHeader>
                                 <CardTitle className="text-2xl font-headline">Mind Paint</CardTitle>
                                 <CardDescription>Click here to open the canvas and let your creativity flow.</CardDescription>
@@ -75,13 +80,8 @@ export function GamesClient() {
                 </Dialog>
             </div>
 
-            {/* Color Match */}
-            <div className="flex justify-center sm:col-span-1">
-                <ColorMatch />
-            </div>
-
-            {/* Memory Game */}
-            <div className="flex justify-center col-span-1 sm:col-span-2 lg:col-span-3 w-full">
+            {/* Memory Game - Spans full width */}
+            <div className="lg:col-span-3 md:col-span-2 flex justify-center w-full">
                 <MemoryGame />
             </div>
 
