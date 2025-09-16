@@ -36,6 +36,38 @@ interface TreeState {
   createdAt?: any;
 }
 
+// ----------------- Leaf Burst Animation -----------------
+const LeafBurst = ({ onAnimationComplete }: { onAnimationComplete: () => void }) => {
+    const leaves = Array.from({ length: 12 });
+    return (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            {leaves.map((_, i) => (
+                <motion.div
+                    key={i}
+                    className="absolute text-2xl"
+                    initial={{ scale: 0, opacity: 1 }}
+                    animate={{
+                        scale: 1,
+                        opacity: 0,
+                        x: (Math.random() - 0.5) * 200,
+                        y: (Math.random() - 0.5) * 200,
+                        rotate: Math.random() * 360,
+                    }}
+                    transition={{
+                        duration: 1,
+                        ease: 'easeOut',
+                        delay: Math.random() * 0.2,
+                    }}
+                    onAnimationComplete={i === 0 ? onAnimationComplete : undefined}
+                >
+                   🍃
+                </motion.div>
+            ))}
+        </div>
+    )
+};
+
+
 // ----------------- Tree Visualizer & Mood -----------------
 const TreeVisualizer = ({ health }: { health: string }) => {
   let treeEmoji = '🌱';
@@ -149,6 +181,7 @@ export default function TreeSection({ user }: { user: User }) {
   const [badNote, setBadNote] = useState('');
   const [isSavingBad, setIsSavingBad] = useState(false);
   const [burningNote, setBurningNote] = useState<string | null>(null);
+  const [showLeafBurst, setShowLeafBurst] = useState(false);
 
   const [editingName, setEditingName] = useState(false);
   const [treeNameInput, setTreeNameInput] = useState('');
@@ -195,7 +228,12 @@ export default function TreeSection({ user }: { user: User }) {
   const handleAddGoodNote = async () => {
     if (!goodNote.trim()) return;
     setIsSavingGood(true);
-    try { await addNote({ text: goodNote, type: 'good' }); setGoodNote(''); toast({ title: 'Note added!' }); }
+    try { 
+      await addNote({ text: goodNote, type: 'good' }); 
+      setGoodNote(''); 
+      toast({ title: 'Note added!' });
+      setShowLeafBurst(true);
+    }
     catch (e: any) { toast({ variant: 'destructive', title: 'Error', description: e.message }); }
     finally { setIsSavingGood(false); }
   };
@@ -279,7 +317,8 @@ export default function TreeSection({ user }: { user: User }) {
           </div>
 
           {/* Center - Tree */}
-          <div className="md:col-span-1 flex flex-col items-center gap-4 order-first md:order-none">
+          <div className="md:col-span-1 flex flex-col items-center gap-4 order-first md:order-none relative">
+            {showLeafBurst && <LeafBurst onAnimationComplete={() => setShowLeafBurst(false)} />}
             <TreeVisualizer health={treeHealth} />
             <Card className="w-full text-center">
               <CardHeader><CardTitle>Tree Health: {treeHealth.charAt(0).toUpperCase() + treeHealth.slice(1)}</CardTitle></CardHeader>
