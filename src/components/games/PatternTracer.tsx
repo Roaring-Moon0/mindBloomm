@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -108,12 +109,12 @@ export function PatternTracer() {
     };
 
     return (
-        <Card className="w-full max-w-lg mx-auto">
+        <Card className="w-full max-w-lg mx-auto h-full flex flex-col">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-headline">Pattern Tracer</CardTitle>
                 <CardDescription>Trace the shape to focus your mind. Pattern: {patterns[patternIndex].name}</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center gap-4 p-4">
+            <CardContent className="flex flex-col items-center justify-center gap-4 p-4 flex-grow">
                  <div className="bg-background rounded-lg border p-2">
                     <canvas
                         ref={canvasRef}

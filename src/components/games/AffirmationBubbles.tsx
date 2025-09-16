@@ -1,8 +1,11 @@
+
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Play, Pause, Square } from 'lucide-react';
 
 const affirmations = [
   "I am calm and centered.",
@@ -28,14 +31,16 @@ interface Bubble {
 export function AffirmationBubbles() {
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [poppedId, setPoppedId] = useState<number | null>(null);
+  const [gameState, setGameState] = useState<'playing' | 'paused' | 'stopped'>('playing');
   const containerRef = useRef<HTMLDivElement>(null);
   const nextId = useRef(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const createBubble = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const size = Math.random() * 60 + 80; // 80 to 140px
+    const size = Math.random() * 80 + 100; // 100 to 180px
     const newBubble: Bubble = {
       id: nextId.current++,
       x: Math.random() * (container.offsetWidth - size),
@@ -47,9 +52,20 @@ export function AffirmationBubbles() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(createBubble, 2500);
-    return () => clearInterval(interval);
-  }, [createBubble]);
+    if (gameState === 'playing') {
+      intervalRef.current = setInterval(createBubble, 2500);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    }
+    
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [gameState, createBubble]);
   
   const handlePop = (id: number) => {
     setPoppedId(id);
@@ -58,9 +74,26 @@ export function AffirmationBubbles() {
         setPoppedId(null);
     }, 800);
   };
+  
+  const handleStop = () => {
+      setGameState('stopped');
+      setBubbles([]);
+  }
+
+  const handleStart = () => {
+      if (gameState === 'stopped') {
+          setBubbles([]); // Clear any stragglers if stopped
+      }
+      setGameState('playing');
+  }
+
+  const handlePause = () => {
+      setGameState('paused');
+  }
+
 
   return (
-    <Card className="w-full max-w-lg mx-auto h-[500px] flex flex-col">
+    <Card className="w-full max-w-lg mx-auto h-full flex flex-col">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-headline">Affirmation Bubbles</CardTitle>
         <CardDescription>Pop the bubbles to reveal positive affirmations.</CardDescription>
@@ -91,7 +124,7 @@ export function AffirmationBubbles() {
                     exit={{ opacity: 0, scale: 1.2, transition: { duration: 0.5 } }}
                     className="absolute inset-0 flex items-center justify-center p-2"
                   >
-                    <span className="text-xs font-semibold text-primary-foreground/80 select-none text-center leading-tight">
+                    <span className="text-sm font-semibold text-primary-foreground/80 select-none text-center leading-tight whitespace-normal">
                       {bubble.text}
                     </span>
                   </motion.div>
@@ -101,6 +134,17 @@ export function AffirmationBubbles() {
           ))}
         </AnimatePresence>
       </CardContent>
+       <CardFooter className="flex justify-center gap-4 pt-6">
+        <Button onClick={handleStart} disabled={gameState === 'playing'}>
+            <Play className="mr-2 h-4 w-4"/> Start
+        </Button>
+        <Button onClick={handlePause} variant="outline" disabled={gameState !== 'playing'}>
+            <Pause className="mr-2 h-4 w-4"/> Pause
+        </Button>
+        <Button onClick={handleStop} variant="destructive" disabled={gameState === 'stopped'}>
+            <Square className="mr-2 h-4 w-4"/> Stop
+        </Button>
+      </CardFooter>
     </Card>
   );
 }

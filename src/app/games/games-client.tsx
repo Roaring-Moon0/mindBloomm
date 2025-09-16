@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -35,25 +36,17 @@ const AffirmationBubbles = dynamic(() => import('@/components/games/AffirmationB
 
 export function GamesClient() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
             
-            <div className="flex justify-center w-full">
-                <BreathingVisualizer />
-            </div>
-
-            <div className="flex justify-center w-full">
-                <ColorMatch />
-            </div>
-
-            <div className="flex justify-center w-full">
-                <PatternTracer />
-            </div>
-
-            <div className="flex justify-center w-full">
-               <AffirmationBubbles />
-            </div>
+            <BreathingVisualizer />
             
-            <div className="md:col-span-2 flex justify-center w-full">
+            <ColorMatch />
+
+            <PatternTracer />
+
+            <AffirmationBubbles />
+            
+            <div className="md:col-span-2">
                 <MemoryGame />
             </div>
 

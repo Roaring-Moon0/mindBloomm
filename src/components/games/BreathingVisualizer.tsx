@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -30,12 +31,12 @@ export function BreathingVisualizer() {
   }, [isBreathing]);
 
   return (
-    <Card className="w-full max-w-md mx-auto border-2 border-primary/20 shadow-xl">
+    <Card className="w-full max-w-md mx-auto border-2 border-primary/20 shadow-xl h-full flex flex-col">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-headline">Breathing Exercise</CardTitle>
         <CardDescription>Follow the circle to guide your breath and find calm.</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center gap-8 p-8">
+      <CardContent className="flex flex-col items-center justify-center gap-8 p-8 flex-grow">
         <div className="relative w-48 h-48 flex items-center justify-center">
           <div
             className={cn(

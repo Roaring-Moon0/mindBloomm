@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -66,12 +67,12 @@ export function ColorMatch() {
     };
 
     return (
-        <Card className="w-full max-w-md mx-auto">
+        <Card className="w-full max-w-md mx-auto h-full flex flex-col">
             <CardHeader className="text-center">
                 <CardTitle className="text-2xl font-headline">Color Match</CardTitle>
                 <CardDescription>Match the color to the swatch. Current score: {score}</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center gap-8 p-8">
+            <CardContent className="flex flex-col items-center justify-center gap-8 p-8 flex-grow">
                 <div className="w-32 h-32 rounded-lg" style={{ backgroundColor: targetColor }} />
                 
                 <div className="grid grid-cols-2 gap-4">
