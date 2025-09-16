@@ -28,7 +28,7 @@ interface Bubble {
   popped: boolean;
 }
 
-let containerHeight = 500; // Default or SSR value
+let containerHeight = 450; // Default or SSR value
 
 const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: (id: number) => void; gameState: string }) => {
   const controls = useAnimationControls();
@@ -37,9 +37,12 @@ const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: 
     // Start animation on mount
     controls.start({
       y: -(containerHeight + bubble.size), // Animate off-screen
-      transition: { duration: Math.random() * 6 + 9, ease: 'linear' },
+      transition: { duration: Math.random() * 6 + 9, ease: 'linear' }, // Slower: 9-15 seconds
+    }).then(() => {
+        // Clean up bubble when animation is complete
+        onPop(bubble.id);
     });
-  }, [controls, bubble.size]);
+  }, [controls, bubble.size, bubble.id, onPop]);
 
   useEffect(() => {
       if (gameState === 'paused') {
@@ -49,7 +52,7 @@ const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: 
             y: -(containerHeight + bubble.size)
           });
       }
-  }, [gameState, controls]);
+  }, [gameState, controls, bubble.size]);
 
     return (
         <motion.div
@@ -58,7 +61,7 @@ const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: 
             animate={controls}
             initial={{ y: 0, x: bubble.x, opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5, transition: { duration: 0.3 } }}
-            className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center"
+            className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center p-2"
             style={{
                 width: bubble.size,
                 height: bubble.size,
@@ -67,17 +70,15 @@ const BubbleComponent = ({ bubble, onPop, gameState }: { bubble: Bubble; onPop: 
             onClick={() => onPop(bubble.id)}
         >
             <AnimatePresence>
-                {bubble.popped && (
-                    <motion.div
+                {!bubble.popped && (
+                    <motion.span
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 1.2, transition: { duration: 0.5 } }}
-                        className="absolute inset-0 flex items-center justify-center p-2"
+                        className="text-sm font-semibold text-primary-foreground/80 select-none text-center leading-tight whitespace-normal"
                     >
-                        <span className="text-sm font-semibold text-primary-foreground/80 select-none text-center leading-tight whitespace-normal">
-                            {bubble.text}
-                        </span>
-                    </motion.div>
+                        {bubble.text}
+                    </motion.span>
                 )}
             </AnimatePresence>
         </motion.div>
@@ -102,7 +103,7 @@ export function AffirmationBubbles() {
     const container = containerRef.current;
     if (!container) return;
 
-    const size = Math.random() * 80 + 100; // 100 to 180px
+    const size = Math.random() * 80 + 120; // 120 to 200px
     const newBubble = {
       id: nextId.current++,
       x: Math.random() * (container.offsetWidth - size),
@@ -111,23 +112,27 @@ export function AffirmationBubbles() {
       popped: false,
     };
     
-    // Add new bubble and set a timeout to remove it if it goes off-screen
-    setBubbles((prev) => {
-        const newBubbles = [...prev, newBubble];
-        setTimeout(() => {
-            setBubbles(current => current.filter(b => b.id !== newBubble.id));
-        }, 15000); // Remove after 15s regardless
-        return newBubbles;
-    });
-
+    setBubbles((prev) => [...prev, newBubble]);
   }, []);
 
   useEffect(() => {
+    const startBubbleGenerator = () => {
+        const burst = () => {
+            const burstCount = Math.floor(Math.random() * 2) + 2; // 2-3 bubbles per burst
+            for (let i = 0; i < burstCount; i++) {
+                setTimeout(createBubble, i * 500); // Stagger bubble creation
+            }
+        };
+        burst();
+        intervalRef.current = setInterval(burst, 4000); // New burst every 4 seconds
+    };
+
     if (intervalRef.current) {
         clearInterval(intervalRef.current);
     }
+
     if (gameState === 'playing') {
-      intervalRef.current = setInterval(createBubble, 2500);
+      startBubbleGenerator();
     } else if (gameState === 'stopped') {
        setBubbles([]);
     }
@@ -143,7 +148,7 @@ export function AffirmationBubbles() {
     setBubbles(prev => prev.map(b => b.id === id ? {...b, popped: true } : b));
     setTimeout(() => {
         setBubbles(prev => prev.filter(b => b.id !== id));
-    }, 800);
+    }, 400); // Faster removal after pop
   };
   
   const handleStop = () => {
