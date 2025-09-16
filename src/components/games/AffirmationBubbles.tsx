@@ -35,7 +35,7 @@ export function AffirmationBubbles() {
     const container = containerRef.current;
     if (!container) return;
 
-    const size = Math.random() * 40 + 40; // 40 to 80px
+    const size = Math.random() * 50 + 60; // 60 to 110px
     const newBubble: Bubble = {
       id: nextId.current++,
       x: Math.random() * (container.offsetWidth - size),
@@ -47,7 +47,7 @@ export function AffirmationBubbles() {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(createBubble, 2000);
+    const interval = setInterval(createBubble, 2500);
     return () => clearInterval(interval);
   }, [createBubble]);
   
@@ -56,7 +56,7 @@ export function AffirmationBubbles() {
     setTimeout(() => {
         setBubbles(prev => prev.filter(b => b.id !== id));
         setPoppedId(null);
-    }, 500);
+    }, 800);
   };
 
   return (
@@ -65,7 +65,7 @@ export function AffirmationBubbles() {
         <CardTitle className="text-2xl font-headline">Affirmation Bubbles</CardTitle>
         <CardDescription>Pop the bubbles to reveal positive affirmations.</CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow relative w-full" ref={containerRef}>
+      <CardContent className="flex-grow relative w-full overflow-hidden" ref={containerRef}>
         <AnimatePresence>
           {bubbles.map((bubble) => (
             <motion.div
@@ -73,9 +73,9 @@ export function AffirmationBubbles() {
               initial={{ y: 0, x: bubble.x, opacity: 1, scale: 1 }}
               animate={{ y: -bubble.y - bubble.size }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: Math.random() * 5 + 8, ease: 'linear' }}
+              transition={{ duration: Math.random() * 6 + 9, ease: 'linear' }}
               onAnimationComplete={() => setBubbles(prev => prev.filter(b => b.id !== bubble.id))}
-              className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center"
+              className="absolute rounded-full bg-primary/30 border-2 border-primary/50 cursor-pointer flex items-center justify-center text-center p-2"
               style={{
                 width: bubble.size,
                 height: bubble.size,
@@ -88,10 +88,10 @@ export function AffirmationBubbles() {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.2 }}
+                    exit={{ opacity: 0, scale: 1.2, transition: { duration: 0.5 } }}
                     className="absolute inset-0 flex items-center justify-center p-2"
                   >
-                    <span className="text-xs font-semibold text-primary-foreground select-none">{bubble.text}</span>
+                    <span className="text-xs font-semibold text-primary-foreground/80 select-none">{bubble.text}</span>
                   </motion.div>
               )}
               </AnimatePresence>

@@ -23,10 +23,6 @@ const MemoryGame = dynamic(() => import('@/components/games/MemoryGame').then(mo
     loading: () => <GameSkeleton />,
     ssr: false
 });
-const ZenGarden = dynamic(() => import('@/components/games/ZenGarden').then(mod => mod.ZenGarden), {
-    loading: () => <GameSkeleton height={450} />,
-    ssr: false
-});
 const PatternTracer = dynamic(() => import('@/components/games/PatternTracer').then(mod => mod.PatternTracer), {
     loading: () => <GameSkeleton height={450} />,
     ssr: false
@@ -49,11 +45,7 @@ export function GamesClient() {
                 <PatternTracer />
             </div>
             
-            <div className="lg:col-span-2 md:col-span-1 flex justify-center w-full">
-                <ZenGarden />
-            </div>
-            
-            <div className="lg:col-span-1 md:col-span-1 flex justify-center">
+            <div className="flex justify-center w-full">
                 <ColorMatch />
             </div>
 
