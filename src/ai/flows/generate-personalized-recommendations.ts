@@ -58,7 +58,9 @@ const personalizedRecommendationsPrompt = ai.definePrompt({
 2.  **If Crisis is Detected:**
     *   **DO NOT** offer recommendations or ask open-ended questions.
     *   Your **ONLY** response must be the following, exactly as written:
-        "It sounds like you are going through a difficult time. Please consider reaching out for help. You can connect with people who can support you by calling or texting 988 in the US and Canada, and 111 in the UK, anytime."
+        "It sounds like you are going through a very difficult time. Please reach out for help. You can connect with people who can support you by calling one of the numbers below. They are available to help you.
+        **KIRAN Mental Health Helpline:** 1800-599-0019 (24/7)
+        **Aasra:** +91-9820466726 (24/7)"
 
 **Behavioral Logic (for non-crisis situations):**
 
