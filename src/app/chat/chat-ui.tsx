@@ -77,26 +77,35 @@ export function ChatUI() {
     return email.substring(0, 2).toUpperCase();
   };
 
+  const chatHistoryKey = user ? `chatHistory_${user.uid}` : null;
+
   useEffect(() => {
-    const saved = localStorage.getItem('chatHistory');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as Message[];
-        setMessages(parsed);
-        lastSeenRef.current = parsed.length;
-      } catch {
+    if (chatHistoryKey) {
+      const saved = localStorage.getItem(chatHistoryKey);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved) as Message[];
+          setMessages(parsed);
+          lastSeenRef.current = parsed.length;
+        } catch {
+          setMessages([defaultInitialMessage]);
+          lastSeenRef.current = 1;
+        }
+      } else {
         setMessages([defaultInitialMessage]);
         lastSeenRef.current = 1;
       }
     } else {
-      setMessages([defaultInitialMessage]);
-      lastSeenRef.current = 1;
+        // Clear messages if user is logged out
+        setMessages([defaultInitialMessage]);
     }
-  }, []);
+  }, [chatHistoryKey]);
 
   useEffect(() => {
-    localStorage.setItem('chatHistory', JSON.stringify(messages));
-  }, [messages]);
+    if (chatHistoryKey) {
+        localStorage.setItem(chatHistoryKey, JSON.stringify(messages));
+    }
+  }, [messages, chatHistoryKey]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -275,3 +284,5 @@ export function ChatUI() {
     </div>
   );
 }
+
+    
