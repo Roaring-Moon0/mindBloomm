@@ -8,6 +8,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { AuthProvider } from '@/hooks/use-auth';
 import { headers } from 'next/headers';
+import { Analytics } from "@vercel/analytics/react"
+
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -45,6 +47,7 @@ export default function RootLayout({
             </div>
             <Toaster />
           </AuthProvider>
+          <Analytics />
       </body>
     </html>
   );
