@@ -49,3 +49,5 @@ npm run build
 ```
 
 This will generate an optimized version of the app in the `.next` directory.
+Live Preview 
+mind-bloom-xf.vercel.app
